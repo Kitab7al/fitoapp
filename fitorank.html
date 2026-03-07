@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FITO — Твои Рекорды</title>
+<title>FitoRank — Твои Рекорды</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
   :root { --black:#080808; --white:#f5f2ee; --red:#e8260b; --red-dark:#b51e08; --gray:#1a1a1a; --gray-mid:#2e2e2e; --gray-light:#888; }
@@ -140,7 +140,7 @@
 <div class="cursor-trail" id="cursorTrail"></div>
 
 <nav>
-  <a href="#" class="logo">FIT<span>O</span></a>
+  <a href="#" class="logo">FITO<span>RANK</span></a>
   <div class="nav-right">
     <ul class="nav-links">
       <li><a href="#how" class="t" data-ru="Как работает" data-en="How It Works">Как работает</a></li>
@@ -360,7 +360,7 @@
 </section>
 
 <footer>
-  <div class="footer-logo">FIT<span>O</span></div>
+  <div class="footer-logo">FITO<span>RANK</span></div>
   <div class="footer-text t" data-ru="Честный спорт · Реальные люди · Твои рекорды" data-en="Honest Sport · Real People · Your Records">Честный спорт · Реальные люди · Твои рекорды</div>
   <div class="footer-text">© 2025 Fito</div>
 </footer>
@@ -386,7 +386,7 @@
     document.getElementById('btn-ru').classList.toggle('active', l==='ru');
     document.getElementById('btn-en').classList.toggle('active', l==='en');
     document.documentElement.lang = l;
-    document.title = l==='ru' ? 'FITO — Твои Рекорды' : 'FITO — Your Records';
+    document.title = l==='ru' ? 'FitoRank — Твои Рекорды' : 'FitoRank — Your Records';
 
     document.querySelectorAll('.t[data-ru][data-en]').forEach(el=>{
       const val = el.getAttribute('data-'+l);
