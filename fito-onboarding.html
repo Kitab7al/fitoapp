@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FITO — Регистрация</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+  .cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transition:transform 0.1s;}
+  .cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all 0.12s ease;}
+
+  /* LAYOUT */
+  .ob-layout{display:grid;grid-template-columns:1fr 420px;min-height:100vh;position:relative;z-index:1;}
+
+  /* LEFT — VISUAL PANEL */
+  .ob-left{background:var(--gray);display:flex;flex-direction:column;justify-content:space-between;padding:48px;position:sticky;top:0;height:100vh;overflow:hidden;}
+  .ob-left::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,38,11,0.06),transparent 60%);pointer-events:none;}
+
+  .ob-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:0.1em;position:relative;z-index:1;}
+  .ob-logo span{color:var(--red);}
+
+  /* BIG STEP NUMBER */
+  .ob-step-visual{position:absolute;right:-40px;top:50%;transform:translateY(-50%);font-family:'Bebas Neue',sans-serif;font-size:28rem;line-height:1;color:rgba(255,255,255,0.025);pointer-events:none;transition:opacity 0.5s;}
+
+  /* CATEGORY LIVE CARD */
+  .category-live{background:var(--black);padding:24px;position:relative;z-index:1;transition:all 0.4s;}
+  .cl-tag{font-size:0.58rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+  .cl-category{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1.1;color:var(--white);min-height:48px;transition:all 0.3s;}
+  .cl-category.empty{color:var(--gray-light);}
+  .cl-users{font-size:0.7rem;color:var(--gray-light);margin-top:8px;}
+  .cl-users b{color:var(--green);}
+  .cl-bar{height:3px;background:var(--gray-mid);margin-top:14px;border-radius:2px;overflow:hidden;}
+  .cl-bar-fill{height:100%;background:linear-gradient(to right,var(--red),var(--gold));border-radius:2px;transition:width 0.6s ease;width:0%;}
+
+  /* STEPS INDICATOR */
+  .ob-steps-indicator{display:flex;gap:6px;position:relative;z-index:1;}
+  .si-step{height:3px;flex:1;background:var(--gray-mid);border-radius:2px;transition:background 0.3s;}
+  .si-step.active{background:var(--red);}
+  .si-step.done{background:var(--green);}
+
+  /* STEP LABELS */
+  .ob-step-labels{display:flex;flex-direction:column;gap:6px;position:relative;z-index:1;}
+  .sl-item{display:flex;align-items:center;gap:10px;opacity:0.35;transition:opacity 0.3s;}
+  .sl-item.active{opacity:1;}
+  .sl-item.done{opacity:0.6;}
+  .sl-num{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gray-light);width:20px;}
+  .sl-item.active .sl-num{color:var(--red);}
+  .sl-item.done .sl-num{color:var(--green);}
+  .sl-name{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+
+  /* RIGHT — FORM PANEL */
+  .ob-right{padding:48px 40px;display:flex;flex-direction:column;overflow-y:auto;}
+  .ob-right-inner{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:340px;margin:0 auto;width:100%;}
+
+  /* STEP HEADER */
+  .step-tag{font-size:0.58rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:12px;}
+  .step-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1;margin-bottom:8px;}
+  .step-sub{font-size:0.78rem;color:var(--gray-light);line-height:1.6;margin-bottom:32px;}
+
+  /* FORM ELEMENTS */
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+  .field-label{font-size:0.62rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gray-light);}
+  .field-input{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.88rem;font-weight:600;padding:13px 16px;outline:none;transition:border-color 0.2s;cursor:none;-webkit-appearance:none;}
+  .field-input::placeholder{color:var(--gray-light);font-weight:400;}
+  .field-input:focus{border-color:var(--red);}
+  .field-input.filled{border-color:rgba(61,220,132,0.4);}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .field-hint{font-size:0.6rem;color:var(--gray-light);margin-top:2px;}
+
+  /* GENDER SELECT */
+  .gender-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+  .gender-btn{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:14px;cursor:none;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .gender-btn:hover{border-color:var(--gray-light);color:var(--white);}
+  .gender-btn.selected{background:rgba(232,38,11,0.1);border-color:var(--red);color:var(--white);}
+
+  /* LEAGUE CARDS */
+  .league-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+  .league-card{background:var(--gray);border:1px solid var(--gray-mid);padding:20px;cursor:none;transition:all 0.2s;position:relative;overflow:hidden;}
+  .league-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;transition:height 0.3s;}
+  .league-card:hover{border-color:var(--gray-light);}
+  .league-card.selected{border-color:var(--red);background:rgba(232,38,11,0.06);}
+  .league-card.selected::before{height:100%;background:var(--red);}
+  .league-card.pro-card.selected{border-color:var(--gold);background:rgba(245,200,66,0.06);}
+  .league-card.pro-card.selected::before{background:var(--gold);}
+  .lc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .lc-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.05em;}
+  .lc-badge{font-size:0.55rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border-radius:2px;}
+  .lc-badge.amateur{background:rgba(74,158,255,0.15);color:var(--blue);border:1px solid rgba(74,158,255,0.25);}
+  .lc-badge.pro{background:rgba(245,200,66,0.15);color:var(--gold);border:1px solid rgba(245,200,66,0.25);}
+  .lc-desc{font-size:0.7rem;color:var(--gray-light);line-height:1.5;}
+  .lc-radio{width:18px;height:18px;border:2px solid var(--gray-mid);border-radius:50%;flex-shrink:0;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
+  .league-card.selected .lc-radio{border-color:var(--red);background:var(--red);}
+  .league-card.selected .lc-radio::after{content:'';width:6px;height:6px;background:var(--white);border-radius:50%;}
+  .league-card.pro-card.selected .lc-radio{border-color:var(--gold);background:var(--gold);}
+
+  /* ARBITRAGE NOTICE */
+  .arbitrage-notice{background:rgba(245,200,66,0.06);border:1px solid rgba(245,200,66,0.2);padding:14px 16px;margin-bottom:20px;display:none;}
+  .arbitrage-notice.show{display:block;}
+  .an-title{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .an-text{font-size:0.68rem;color:var(--gray-light);line-height:1.6;}
+
+  /* STATUS CARDS */
+  .status-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+  .status-card{background:var(--gray);border:1px solid var(--gray-mid);padding:18px 20px;cursor:none;transition:all 0.2s;display:flex;align-items:center;gap:14px;}
+  .status-card:hover{border-color:var(--gray-light);}
+  .status-card.selected-natural{border-color:var(--green);background:rgba(61,220,132,0.06);}
+  .status-card.selected-pharma{border-color:var(--red);background:rgba(232,38,11,0.06);}
+  .sc-icon{font-size:1.6rem;flex-shrink:0;}
+  .sc-body{flex:1;}
+  .sc-name{font-size:0.85rem;font-weight:700;margin-bottom:3px;}
+  .sc-desc{font-size:0.65rem;color:var(--gray-light);line-height:1.4;}
+  .sc-radio{width:18px;height:18px;border:2px solid var(--gray-mid);border-radius:50%;flex-shrink:0;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
+  .status-card.selected-natural .sc-radio{border-color:var(--green);background:var(--green);}
+  .status-card.selected-natural .sc-radio::after{content:'';width:6px;height:6px;background:var(--black);border-radius:50%;}
+  .status-card.selected-pharma .sc-radio{border-color:var(--red);background:var(--red);}
+  .status-card.selected-pharma .sc-radio::after{content:'';width:6px;height:6px;background:var(--white);border-radius:50%;}
+
+  /* PR TYPE CARDS */
+  .pr-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+  .pr-card{background:var(--gray);border:1px solid var(--gray-mid);padding:20px;cursor:none;transition:all 0.2s;position:relative;overflow:hidden;}
+  .pr-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;transition:height 0.3s;}
+  .pr-card:hover{border-color:var(--gray-light);}
+  .pr-card.selected{border-color:var(--red);background:rgba(232,38,11,0.06);}
+  .pr-card.selected::before{height:100%;background:var(--red);}
+  .pr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+  .pr-left{}
+  .pr-type-tag{font-size:0.55rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+  .pr-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.04em;margin-bottom:4px;}
+  .pr-desc{font-size:0.68rem;color:var(--gray-light);line-height:1.5;}
+  .pr-example{font-size:0.65rem;color:var(--white);background:var(--black);padding:6px 10px;margin-top:10px;font-family:monospace;}
+  .pr-radio{width:18px;height:18px;border:2px solid var(--gray-mid);border-radius:50%;flex-shrink:0;margin-top:2px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
+  .pr-card.selected .pr-radio{border-color:var(--red);background:var(--red);}
+  .pr-card.selected .pr-radio::after{content:'';width:6px;height:6px;background:var(--white);border-radius:50%;}
+
+  /* EXERCISE SELECT */
+  .exercise-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+  .ex-btn{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:12px;cursor:none;transition:all 0.2s;text-align:center;}
+  .ex-btn:hover{border-color:var(--gray-light);color:var(--white);}
+  .ex-btn.selected{background:rgba(232,38,11,0.1);border-color:var(--red);color:var(--white);}
+
+  /* BUTTONS */
+  .btn-primary{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:16px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background 0.2s;margin-top:8px;}
+  .btn-primary:hover{background:var(--red-dark);}
+  .btn-primary:disabled{background:var(--gray-mid);color:var(--gray-light);cursor:not-allowed;}
+  .btn-back{background:transparent;color:var(--gray-light);border:none;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:12px 0;cursor:none;transition:color 0.2s;margin-bottom:8px;}
+  .btn-back:hover{color:var(--white);}
+
+  /* STEP CONTENT */
+  .step-content{display:none;}
+  .step-content.active{display:block;animation:fadeIn 0.3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SUCCESS */
+  .success-screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:40px 0;}
+  .success-screen.show{display:flex;}
+  .success-icon{font-size:3.5rem;animation:popIn 0.5s ease;}
+  @keyframes popIn{0%{transform:scale(0)}80%{transform:scale(1.2)}100%{transform:scale(1)}}
+  .success-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:0.05em;}
+  .success-sub{font-size:0.78rem;color:var(--gray-light);line-height:1.6;max-width:260px;}
+  .success-category{background:var(--gray);padding:16px 20px;width:100%;text-align:left;margin:8px 0;}
+  .sc-label{font-size:0.58rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+  .sc-value{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;}
+
+  /* SOCIAL LOGIN */
+  .social-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--gray-light);font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;}
+  .social-divider::before,.social-divider::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+  .social-btn{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:13px;cursor:none;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;}
+  .social-btn:hover{border-color:var(--gray-light);}
+
+  /* MOBILE */
+  @media(max-width:768px){
+    body{cursor:auto;}
+    .cursor,.cursor-trail{display:none;}
+    .ob-layout{grid-template-columns:1fr;}
+    .ob-left{display:none;}
+    .ob-right{padding:32px 20px;min-height:100vh;}
+    .ob-right-inner{max-width:100%;}
+    .step-title{font-size:2rem;}
+    .field-row{grid-template-columns:1fr;}
+    .ob-mobile-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+    .ob-mobile-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.1em;}
+    .ob-mobile-logo span{color:var(--red);}
+    .ob-mobile-steps{display:flex;gap:4px;}
+    .ms-dot{width:24px;height:3px;background:var(--gray-mid);border-radius:2px;transition:background 0.3s;}
+    .ms-dot.active{background:var(--red);}
+    .ms-dot.done{background:var(--green);}
+  }
+  @media(min-width:769px){
+    .ob-mobile-header{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<div class="ob-layout">
+
+  <!-- LEFT PANEL -->
+  <div class="ob-left">
+    <div class="ob-logo">FIT<span>O</span></div>
+
+    <div class="ob-step-visual" id="stepBig">1</div>
+
+    <div class="category-live" id="categoryLive">
+      <div class="cl-tag">Твоя категория формируется</div>
+      <div class="cl-category empty" id="catText">Заполни данные →</div>
+      <div class="cl-users" id="catUsers" style="display:none">В этой категории уже <b id="catCount">0</b> участников</div>
+      <div class="cl-bar"><div class="cl-bar-fill" id="catBar"></div></div>
+    </div>
+
+    <div>
+      <div class="ob-steps-indicator" id="stepsIndicator">
+        <div class="si-step active" id="si-1"></div>
+        <div class="si-step" id="si-2"></div>
+        <div class="si-step" id="si-3"></div>
+        <div class="si-step" id="si-4"></div>
+        <div class="si-step" id="si-5"></div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="ob-step-labels">
+        <div class="sl-item active" id="sl-1"><span class="sl-num">01</span><span class="sl-name">Кто ты</span></div>
+        <div class="sl-item" id="sl-2"><span class="sl-num">02</span><span class="sl-name">Твоё тело</span></div>
+        <div class="sl-item" id="sl-3"><span class="sl-num">03</span><span class="sl-name">Лига</span></div>
+        <div class="sl-item" id="sl-4"><span class="sl-num">04</span><span class="sl-name">Статус</span></div>
+        <div class="sl-item" id="sl-5"><span class="sl-num">05</span><span class="sl-name">Первый рекорд</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="ob-right">
+    <div class="ob-right-inner">
+
+      <!-- MOBILE HEADER -->
+      <div class="ob-mobile-header">
+        <div class="ob-mobile-logo">FIT<span>O</span></div>
+        <div class="ob-mobile-steps">
+          <div class="ms-dot active" id="md-1"></div>
+          <div class="ms-dot" id="md-2"></div>
+          <div class="ms-dot" id="md-3"></div>
+          <div class="ms-dot" id="md-4"></div>
+          <div class="ms-dot" id="md-5"></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 1: WHO ARE YOU ═══ -->
+      <div class="step-content active" id="step-1">
+        <div class="step-tag">Шаг 01 из 05</div>
+        <div class="step-title">КТО ТЫ</div>
+        <div class="step-sub">Создай аккаунт. Потребуется 3 минуты — и ты в своей лиге.</div>
+
+        <div class="field">
+          <div class="field-label">Имя или никнейм</div>
+          <input class="field-input" id="f-name" type="text" placeholder="Как тебя называть?" oninput="checkStep1()">
+        </div>
+
+        <div class="field">
+          <div class="field-label">Email</div>
+          <input class="field-input" id="f-email" type="email" placeholder="твой@email.com" oninput="checkStep1()">
+        </div>
+
+        <div class="field">
+          <div class="field-label">Пароль</div>
+          <input class="field-input" id="f-pass" type="password" placeholder="Минимум 8 символов" oninput="checkStep1()">
+        </div>
+
+        <div class="field">
+          <div class="field-label">Пол</div>
+          <div class="gender-row">
+            <button class="gender-btn" id="g-male" onclick="selectGender('male')">♂ Мужчина</button>
+            <button class="gender-btn" id="g-female" onclick="selectGender('female')">♀ Женщина</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Страна</div>
+          <select class="field-input" id="f-country" onchange="checkStep1()">
+            <option value="">Выбери страну</option>
+            <option value="ru">🇷🇺 Россия</option>
+            <option value="us">🇺🇸 США</option>
+            <option value="de">🇩🇪 Германия</option>
+            <option value="ua">🇺🇦 Украина</option>
+            <option value="kz">🇰🇿 Казахстан</option>
+            <option value="by">🇧🇾 Беларусь</option>
+            <option value="other">🌍 Другая</option>
+          </select>
+        </div>
+
+        <div class="social-divider">или войди через</div>
+        <button class="social-btn">
+          <span>G</span> Продолжить с Google
+        </button>
+        <button class="social-btn">
+          <span>VK</span> Продолжить с VK
+        </button>
+
+        <div style="height:16px"></div>
+        <button class="btn-primary" id="btn-1" onclick="goStep(2)" disabled>Продолжить →</button>
+      </div>
+
+      <!-- ═══ STEP 2: YOUR BODY ═══ -->
+      <div class="step-content" id="step-2">
+        <div class="step-tag">Шаг 02 из 05</div>
+        <div class="step-title">ТВОЁ ТЕЛО</div>
+        <div class="step-sub">Эти данные определяют твою категорию. Ты будешь соревноваться только с людьми твоего типа.</div>
+
+        <div class="field">
+          <div class="field-label">Возраст</div>
+          <input class="field-input" id="f-age" type="number" placeholder="лет" min="14" max="80" oninput="updateCategory();checkStep2()">
+          <div class="field-hint">От 14 до 80 лет</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <div class="field-label">Вес (кг)</div>
+            <input class="field-input" id="f-weight" type="number" placeholder="кг" min="40" max="200" oninput="updateCategory();checkStep2()">
+          </div>
+          <div class="field">
+            <div class="field-label">Рост (см)</div>
+            <input class="field-input" id="f-height" type="number" placeholder="см" min="140" max="230" oninput="updateCategory();checkStep2()">
+          </div>
+        </div>
+
+        <!-- LIVE CATEGORY PREVIEW (mobile only) -->
+        <div id="mobileCatPreview" style="display:none;background:var(--gray);padding:14px 16px;margin-bottom:20px;">
+          <div style="font-size:0.58rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">Твоя категория</div>
+          <div id="mobileCatText" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1.2;"></div>
+        </div>
+
+        <button class="btn-back" onclick="goStep(1)">← Назад</button>
+        <button class="btn-primary" id="btn-2" onclick="goStep(3)" disabled>Продолжить →</button>
+      </div>
+
+      <!-- ═══ STEP 3: LEAGUE ═══ -->
+      <div class="step-content" id="step-3">
+        <div class="step-tag">Шаг 03 из 05</div>
+        <div class="step-title">ВЫБЕРИ ЛИГУ</div>
+        <div class="step-sub">Честная конкуренция начинается с правильной лиги.</div>
+
+        <div class="league-grid">
+          <div class="league-card" id="lc-amateur" onclick="selectLeague('amateur')">
+            <div class="lc-top">
+              <div>
+                <div class="lc-name">Любительская</div>
+                <div class="lc-badge amateur">Amateur</div>
+              </div>
+              <div class="lc-radio"></div>
+            </div>
+            <div class="lc-desc">Для всех кто тренируется для себя. Пузатый мужик соревнуется с пузатыми мужиками — честно и мотивирующе.</div>
+          </div>
+
+          <div class="league-card pro-card" id="lc-pro" onclick="selectLeague('pro')">
+            <div class="lc-top">
+              <div>
+                <div class="lc-name">Про лига</div>
+                <div class="lc-badge pro">Pro</div>
+              </div>
+              <div class="lc-radio"></div>
+            </div>
+            <div class="lc-desc">Для верифицированных профессиональных спортсменов в своей дисциплине. Требует подтверждения сообщества.</div>
+          </div>
+        </div>
+
+        <!-- PRO ARBITRAGE NOTICE -->
+        <div class="arbitrage-notice" id="arbitrageNotice">
+          <div class="an-title">⚖️ Как работает Про лига</div>
+          <div class="an-text">Ты заявляешь свой профессиональный статус — мы тебе доверяем. Но сообщество может инициировать арбитраж: собрать доказательства и поставить вопрос на голосование. Если большинство подтверждает — статус закреплён. Если нет — тебя переводят в Любительскую лигу в этой дисциплине. Зато в других дисциплинах ты можешь выступать как любитель.</div>
+        </div>
+
+        <div class="field" id="proSportField" style="display:none;">
+          <div class="field-label">Твой профессиональный вид спорта</div>
+          <select class="field-input" id="f-prosport" onchange="checkStep3()">
+            <option value="">Выбери дисциплину</option>
+            <option value="powerlifting">Пауэрлифтинг</option>
+            <option value="weightlifting">Тяжёлая атлетика</option>
+            <option value="crossfit">CrossFit</option>
+            <option value="bodybuilding">Бодибилдинг</option>
+            <option value="streetlifting">Стритлифтинг</option>
+            <option value="athletics">Лёгкая атлетика</option>
+            <option value="swimming">Плавание</option>
+            <option value="other">Другое</option>
+          </select>
+          <div class="field-hint">В других дисциплинах ты можешь участвовать в любительской лиге</div>
+        </div>
+
+        <button class="btn-back" onclick="goStep(2)">← Назад</button>
+        <button class="btn-primary" id="btn-3" onclick="goStep(4)" disabled>Продолжить →</button>
+      </div>
+
+      <!-- ═══ STEP 4: STATUS ═══ -->
+      <div class="step-content" id="step-4">
+        <div class="step-tag">Шаг 04 из 05</div>
+        <div class="step-title">СТАТУС И КЛУБ</div>
+        <div class="step-sub">Честность — основа FITO. Сообщество оценит твои результаты исходя из твоего статуса.</div>
+
+        <div class="status-grid">
+          <div class="status-card" id="sc-natural" onclick="selectStatus('natural')">
+            <div class="sc-icon">🌿</div>
+            <div class="sc-body">
+              <div class="sc-name">Натурал</div>
+              <div class="sc-desc">Тренируюсь без препаратов, влияющих на спортивные результаты</div>
+            </div>
+            <div class="sc-radio"></div>
+          </div>
+          <div class="status-card" id="sc-pharma" onclick="selectStatus('pharma')">
+            <div class="sc-icon">💊</div>
+            <div class="sc-body">
+              <div class="sc-name">Фарма</div>
+              <div class="sc-desc">Использую фармакологическую поддержку — честно заявляю об этом</div>
+            </div>
+            <div class="sc-radio"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Клуб или место тренировок <span style="color:var(--gray-light);font-weight:400">(необязательно)</span></div>
+          <input class="field-input" id="f-club" type="text" placeholder="Название зала или адрес">
+          <div class="field-hint">Поможет найти спортсменов рядом с тобой в будущем</div>
+        </div>
+
+        <button class="btn-back" onclick="goStep(3)">← Назад</button>
+        <button class="btn-primary" id="btn-4" onclick="goStep(5)" disabled>Продолжить →</button>
+      </div>
+
+      <!-- ═══ STEP 5: FIRST RECORD ═══ -->
+      <div class="step-content" id="step-5">
+        <div class="step-tag">Шаг 05 из 05</div>
+        <div class="step-title">ПЕРВЫЙ РЕКОРД</div>
+        <div class="step-sub">Не уходи с пустым профилем. Добавь первый результат — это займёт 30 секунд.</div>
+
+        <div class="field">
+          <div class="field-label">Упражнение</div>
+          <div class="exercise-grid">
+            <button class="ex-btn" onclick="selectExercise(this,'Подтягивания')">Подтягивания</button>
+            <button class="ex-btn" onclick="selectExercise(this,'Жим лёжа')">Жим лёжа</button>
+            <button class="ex-btn" onclick="selectExercise(this,'Приседания')">Приседания</button>
+            <button class="ex-btn" onclick="selectExercise(this,'Становая тяга')">Становая тяга</button>
+            <button class="ex-btn" onclick="selectExercise(this,'Брусья')">Брусья</button>
+            <button class="ex-btn" onclick="selectExercise(this,'Другое')">Другое</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Тип рекорда</div>
+          <div class="pr-grid">
+            <div class="pr-card" id="pr-1rm" onclick="selectPRType('1rm')">
+              <div class="pr-top">
+                <div class="pr-left">
+                  <div class="pr-type-tag">1RM — One Rep Max</div>
+                  <div class="pr-name">Одноповторный максимум</div>
+                  <div class="pr-desc">Максимальный вес на одно повторение. Классика силовых видов спорта.</div>
+                  <div class="pr-example">Пример: Жим лёжа → 120 кг × 1</div>
+                </div>
+                <div class="pr-radio"></div>
+              </div>
+            </div>
+            <div class="pr-card" id="pr-repmax" onclick="selectPRType('repmax')">
+              <div class="pr-top">
+                <div class="pr-left">
+                  <div class="pr-type-tag">Rep Max</div>
+                  <div class="pr-name">Максимум повторений</div>
+                  <div class="pr-desc">Максимальное количество повторений. Безопаснее, не нужна страховка.</div>
+                  <div class="pr-example">Пример: Подтягивания → 15 повт. / Жим 80 кг → 12 повт.</div>
+                </div>
+                <div class="pr-radio"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row" id="resultFields" style="display:none;">
+          <div class="field">
+            <div class="field-label" id="resultLabel1">Вес (кг)</div>
+            <input class="field-input" id="f-result1" type="number" placeholder="0" oninput="checkStep5()">
+          </div>
+          <div class="field" id="result2wrap" style="display:none;">
+            <div class="field-label">Повторения</div>
+            <input class="field-input" id="f-result2" type="number" placeholder="0" oninput="checkStep5()">
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Ссылка на видео <span style="color:var(--gray-light);font-weight:400">(рекомендуем)</span></div>
+          <input class="field-input" id="f-video" type="url" placeholder="TikTok / YouTube / Instagram">
+          <div class="field-hint">Видео повышает доверие сообщества к твоему результату</div>
+        </div>
+
+        <button class="btn-back" onclick="goStep(4)">← Назад</button>
+        <button class="btn-primary" id="btn-5" onclick="finish()">Войти в FITO →</button>
+        <button class="btn-back" style="text-align:center;width:100%;margin-top:4px;" onclick="finish()">Пропустить — добавлю позже</button>
+      </div>
+
+      <!-- ═══ SUCCESS ═══ -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">🔥</div>
+        <div class="success-title">ДОБРО ПОЖАЛОВАТЬ!</div>
+        <div class="success-sub">Твой профиль создан. Ты в своей лиге среди равных.</div>
+        <div class="success-category">
+          <div class="sc-label">Твоя категория</div>
+          <div class="sc-value" id="successCat">—</div>
+        </div>
+        <div class="success-category" id="successLeagueWrap">
+          <div class="sc-label">Лига</div>
+          <div class="sc-value" id="successLeague">—</div>
+        </div>
+        <div class="success-category" id="successStatusWrap">
+          <div class="sc-label">Статус</div>
+          <div class="sc-value" id="successStatus">—</div>
+        </div>
+        <a href="fito-feed.html" class="btn-primary" style="text-decoration:none;display:block;text-align:center;margin-top:8px;">Перейти в ленту →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Cursor
+  const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+  let mx=0,my=0,tx=0,ty=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    cur.style.left=mx-6+'px';cur.style.top=my-6+'px';
+  });
+  (function loop(){
+    tx+=(mx-tx)*.15;ty+=(my-ty)*.15;
+    trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';
+    requestAnimationFrame(loop);
+  })();
+
+  // State
+  const state = {
+    step: 1,
+    gender: null,
+    age: null,
+    weight: null,
+    height: null,
+    league: null,
+    status: null,
+    exercise: null,
+    prType: null
+  };
+
+  // ─── NAVIGATION ───────────────────────────────────────────────
+  function goStep(n) {
+    document.getElementById('step-'+state.step).classList.remove('active');
+    state.step = n;
+    document.getElementById('step-'+n).classList.add('active');
+    updateStepUI();
+    window.scrollTo(0,0);
+  }
+
+  function updateStepUI() {
+    const n = state.step;
+    document.getElementById('stepBig').textContent = n;
+
+    // indicators
+    for(let i=1;i<=5;i++){
+      const si = document.getElementById('si-'+i);
+      const sl = document.getElementById('sl-'+i);
+      const md = document.getElementById('md-'+i);
+      si.className = 'si-step' + (i<n?' done':i===n?' active':'');
+      sl.className = 'sl-item' + (i<n?' done':i===n?' active':'');
+      if(md){ md.className = 'ms-dot' + (i<n?' done':i===n?' active':''); }
+    }
+  }
+
+  // ─── STEP 1 ────────────────────────────────────────────────────
+  function selectGender(g) {
+    state.gender = g;
+    document.getElementById('g-male').classList.toggle('selected', g==='male');
+    document.getElementById('g-female').classList.toggle('selected', g==='female');
+    checkStep1();
+    updateCategory();
+  }
+
+  function checkStep1() {
+    const name = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const pass = document.getElementById('f-pass').value;
+    const country = document.getElementById('f-country').value;
+    const ok = name.length>1 && email.includes('@') && pass.length>=6 && state.gender && country;
+    document.getElementById('btn-1').disabled = !ok;
+    if(name) document.getElementById('f-name').classList.add('filled');
+    if(email.includes('@')) document.getElementById('f-email').classList.add('filled');
+  }
+
+  // ─── STEP 2 ────────────────────────────────────────────────────
+  function checkStep2() {
+    const age = parseInt(document.getElementById('f-age').value);
+    const w = parseInt(document.getElementById('f-weight').value);
+    const h = parseInt(document.getElementById('f-height').value);
+    const ok = age>=14&&age<=80 && w>=40&&w<=200 && h>=140&&h<=230;
+    document.getElementById('btn-2').disabled = !ok;
+  }
+
+  function updateCategory() {
+    const gender = state.gender;
+    const age = parseInt(document.getElementById('f-age')?.value)||null;
+    const w = parseInt(document.getElementById('f-weight')?.value)||null;
+    const h = parseInt(document.getElementById('f-height')?.value)||null;
+
+    const catEl = document.getElementById('catText');
+    const usersEl = document.getElementById('catUsers');
+    const barEl = document.getElementById('catBar');
+    const mobilePreview = document.getElementById('mobileCatPreview');
+    const mobileCatText = document.getElementById('mobileCatText');
+
+    state.age = age; state.weight = w; state.height = h;
+
+    if(!gender && !age && !w && !h) {
+      catEl.textContent = 'Заполни данные →';
+      catEl.classList.add('empty');
+      usersEl.style.display='none';
+      barEl.style.width='0%';
+      return;
+    }
+
+    // Build category string
+    let parts = [];
+    if(gender) parts.push(gender==='male'?'Муж':'Жен');
+
+    if(age) {
+      const ageGroups = [[14,17],[18,24],[25,29],[30,34],[35,39],[40,44],[45,49],[50,54],[55,59],[60,99]];
+      for(const [lo,hi] of ageGroups){
+        if(age>=lo&&age<=hi){ parts.push(lo+'-'+(hi===99?'60+':hi)); break; }
+      }
+    }
+
+    if(w) {
+      const wGroups = [[0,59],[60,66],[67,73],[74,81],[82,89],[90,99],[100,109],[110,120],[121,999]];
+      for(const [lo,hi] of wGroups){
+        if(w>=lo&&w<=hi){ parts.push(lo+(hi===999?'+':'-'+hi)+' кг'); break; }
+      }
+    }
+
+    if(h) {
+      const hGroups = [[0,159],[160,164],[165,169],[170,174],[175,179],[180,184],[185,189],[190,999]];
+      for(const [lo,hi] of hGroups){
+        if(h>=lo&&h<=hi){ parts.push(lo+(hi===999?'+':'-'+hi)+' см'); break; }
+      }
+    }
+
+    const catStr = parts.join(' · ');
+    catEl.textContent = catStr || 'Заполни данные →';
+    catEl.classList.toggle('empty', !catStr);
+
+    // Simulate user count
+    if(parts.length >= 3) {
+      const count = Math.floor(Math.random()*120)+8;
+      document.getElementById('catCount').textContent = count;
+      usersEl.style.display='block';
+      barEl.style.width = Math.min(count/200*100, 85)+'%';
+
+      // Mobile preview
+      if(mobilePreview) {
+        mobilePreview.style.display='block';
+        mobileCatText.textContent = catStr;
+      }
+    }
+  }
+
+  // ─── STEP 3 ────────────────────────────────────────────────────
+  function selectLeague(l) {
+    state.league = l;
+    document.getElementById('lc-amateur').classList.toggle('selected', l==='amateur');
+    document.getElementById('lc-pro').classList.toggle('selected', l==='pro');
+    document.getElementById('arbitrageNotice').classList.toggle('show', l==='pro');
+    document.getElementById('proSportField').style.display = l==='pro'?'flex':'none';
+    checkStep3();
+  }
+
+  function checkStep3() {
+    const league = state.league;
+    const proSport = document.getElementById('f-prosport').value;
+    const ok = league && (league==='amateur' || (league==='pro' && proSport));
+    document.getElementById('btn-3').disabled = !ok;
+  }
+
+  // ─── STEP 4 ────────────────────────────────────────────────────
+  function selectStatus(s) {
+    state.status = s;
+    document.getElementById('sc-natural').className = 'status-card' + (s==='natural'?' selected-natural':'');
+    document.getElementById('sc-pharma').className = 'status-card' + (s==='pharma'?' selected-pharma':'');
+    document.getElementById('btn-4').disabled = false;
+  }
+
+  // ─── STEP 5 ────────────────────────────────────────────────────
+  function selectExercise(el, name) {
+    document.querySelectorAll('.ex-btn').forEach(b=>b.classList.remove('selected'));
+    el.classList.add('selected');
+    state.exercise = name;
+    checkStep5();
+  }
+
+  function selectPRType(t) {
+    state.prType = t;
+    document.getElementById('pr-1rm').classList.toggle('selected', t==='1rm');
+    document.getElementById('pr-repmax').classList.toggle('selected', t==='repmax');
+    document.getElementById('resultFields').style.display = 'grid';
+
+    if(t==='1rm') {
+      document.getElementById('resultLabel1').textContent = 'Вес (кг)';
+      document.getElementById('result2wrap').style.display = 'none';
+    } else {
+      document.getElementById('resultLabel1').textContent = 'Вес (кг) / 0 если без веса';
+      document.getElementById('result2wrap').style.display = 'flex';
+    }
+    checkStep5();
+  }
+
+  function checkStep5() {
+    // Step 5 is optional — always enable
+    document.getElementById('btn-5').disabled = false;
+  }
+
+  // ─── FINISH ───────────────────────────────────────────────────
+  function finish() {
+    // Hide all steps
+    document.querySelectorAll('.step-content').forEach(s=>s.classList.remove('active'));
+
+    // Build summary
+    const cat = document.getElementById('catText').textContent;
+    const league = state.league==='pro'?'🏆 Про лига':'💪 Любительская лига';
+    const status = state.status==='natural'?'🌿 Натурал':'💊 Фарма';
+
+    document.getElementById('successCat').textContent = cat !== 'Заполни данные →' ? cat : '—';
+    document.getElementById('successLeague').textContent = state.league ? league : '—';
+    document.getElementById('successStatus').textContent = state.status ? status : '—';
+
+    document.getElementById('successScreen').classList.add('show');
+
+    // Update left panel
+    document.getElementById('stepBig').style.opacity='0';
+    document.getElementById('catText').textContent = cat;
+
+    // Update step indicators to all done
+    for(let i=1;i<=5;i++){
+      document.getElementById('si-'+i).className='si-step done';
+      document.getElementById('sl-'+i).className='sl-item done';
+    }
+  }
+</script>
+</body>
+</html>
