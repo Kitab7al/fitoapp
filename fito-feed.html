@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FITO — Лента</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#080808; --white:#f5f2ee; --red:#e8260b; --red-dark:#b51e08; --gray:#1a1a1a; --gray-mid:#2e2e2e; --gray-light:#888; --green:#3ddc84; --gold:#f5c842; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+
+  .cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+  .cursor-trail{width:36px;height:36px;border:1px solid var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;opacity:0.5;transition:all 0.12s ease;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:100;opacity:0.4;}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,8,8,0.97);border-bottom:1px solid var(--gray-mid);}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:0.1em;color:var(--white);text-decoration:none;}
+  .logo span{color:var(--red);}
+  .nav-center{display:flex;gap:0;background:var(--gray);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+  .nav-pill{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:10px 22px;cursor:none;transition:all 0.2s;}
+  .nav-pill.active{background:var(--red);color:var(--white);}
+  .nav-pill:hover:not(.active){color:var(--white);}
+  .nav-right{display:flex;align-items:center;gap:20px;}
+  .nav-avatar{width:34px;height:34px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);cursor:none;}
+  .nav-notif{position:relative;cursor:none;}
+  .notif-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--black);}
+  .lang-switcher{display:flex;border:1px solid var(--gray-mid);clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);overflow:hidden;}
+  .lang-btn{background:transparent;color:var(--gray-light);border:none;font-family:'Montserrat',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:6px 12px;cursor:none;transition:all 0.2s;}
+  .lang-btn.active{background:var(--red);color:var(--white);}
+
+  /* LAYOUT */
+  .layout{display:grid;grid-template-columns:260px 1fr 300px;gap:0;padding-top:72px;min-height:100vh;}
+
+  /* LEFT SIDEBAR — FILTERS */
+  .filters-sidebar{padding:28px 24px;border-right:1px solid var(--gray-mid);position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto;display:flex;flex-direction:column;gap:24px;}
+  .fs-section-title{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;}
+  .filter-group{display:flex;flex-direction:column;gap:4px;}
+  .filter-btn{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:600;padding:9px 12px;text-align:left;cursor:none;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .filter-btn:hover{color:var(--white);background:rgba(255,255,255,0.04);}
+  .filter-btn.active{color:var(--white);background:rgba(232,38,11,0.1);border-left:2px solid var(--red);padding-left:10px;}
+  .filter-count{font-size:0.6rem;font-weight:700;color:var(--gray-light);background:var(--gray-mid);padding:2px 7px;border-radius:10px;}
+  .filter-btn.active .filter-count{background:rgba(232,38,11,0.2);color:var(--red);}
+
+  .filter-divider{height:1px;background:var(--gray-mid);}
+
+  .status-filters{display:flex;flex-direction:column;gap:4px;}
+  .status-toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;cursor:none;transition:background 0.2s;}
+  .status-toggle:hover{background:rgba(255,255,255,0.03);}
+  .st-label{font-size:0.72rem;font-weight:600;color:var(--white);}
+  .st-sub{font-size:0.6rem;color:var(--gray-light);}
+  .toggle-switch{width:36px;height:20px;background:var(--gray-mid);border-radius:10px;position:relative;transition:background 0.2s;flex-shrink:0;}
+  .toggle-switch.on{background:var(--green);}
+  .toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:var(--white);border-radius:50%;transition:transform 0.2s;}
+  .toggle-switch.on::after{transform:translateX(16px);}
+
+  .age-range{padding:4px 12px;}
+  .range-labels{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--gray-light);margin-bottom:8px;}
+  .range-track{height:4px;background:var(--gray-mid);border-radius:2px;position:relative;}
+  .range-fill{position:absolute;height:100%;background:var(--red);border-radius:2px;left:20%;right:30%;}
+
+  .my-cat-banner{background:rgba(232,38,11,0.08);border:1px solid rgba(232,38,11,0.15);padding:12px 14px;font-size:0.68rem;color:var(--gray-light);line-height:1.5;}
+  .my-cat-banner b{color:var(--white);}
+  .my-cat-banner .highlight{color:var(--red);font-weight:700;}
+
+  /* FEED */
+  .feed{padding:20px 28px;display:flex;flex-direction:column;gap:0;}
+
+  /* FEED HEADER */
+  .feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-mid);}
+  .feed-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.05em;}
+  .feed-sort{display:flex;gap:6px;}
+  .sort-btn{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:6px 14px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);cursor:none;transition:all 0.2s;}
+  .sort-btn.active,.sort-btn:hover{background:var(--red);border-color:var(--red);color:var(--white);}
+
+  /* RECORD CARD */
+  .record-card{border-bottom:1px solid var(--gray-mid);padding:24px 0;animation:fadeUp 0.4s ease both;}
+  .record-card:hover .rc-inner{background:rgba(255,255,255,0.01);}
+  .rc-inner{padding:0;transition:background 0.2s;}
+
+  /* CARD HEADER */
+  .rc-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .rc-avatar{width:40px;height:40px;background:var(--gray-mid);clip-path:polygon(5px 0%,100% 0%,100% calc(100% - 5px),calc(100% - 5px) 100%,0% 100%,0% 5px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red);flex-shrink:0;cursor:none;}
+  .rc-head-info{flex:1;}
+  .rc-author-row{display:flex;align-items:center;gap:8px;}
+  .rc-author{font-size:0.85rem;font-weight:700;cursor:none;transition:color 0.2s;}
+  .rc-author:hover{color:var(--red);}
+  .rc-author-badge{font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
+  .rc-author-badge.natural{background:rgba(61,220,132,0.12);color:var(--green);border:1px solid rgba(61,220,132,0.25);}
+  .rc-author-badge.pharma{background:rgba(232,38,11,0.12);color:var(--red);border:1px solid rgba(232,38,11,0.25);}
+  .rc-author-badge.authority{background:rgba(245,200,66,0.12);color:var(--gold);border:1px solid rgba(245,200,66,0.25);}
+  .rc-meta-row{display:flex;align-items:center;gap:10px;margin-top:3px;}
+  .rc-bio{font-size:0.65rem;color:var(--gray-light);}
+  .rc-time{font-size:0.62rem;color:var(--gray-light);}
+  .rc-exercise-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;background:var(--gray);color:var(--gray-light);border:1px solid var(--gray-mid);}
+
+  /* POST TEXT */
+  .rc-post-text { font-size:0.88rem; font-weight:400; line-height:1.7; color:var(--white); margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--gray-mid); }
+
+  /* VIDEO PREVIEW */
+  .rc-video-block{position:relative;background:var(--gray);aspect-ratio:16/9;margin-bottom:16px;overflow:hidden;cursor:none;}
+  .rc-video-thumb{width:100%;height:100%;object-fit:cover;opacity:0.6;}
+  .rc-video-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;}
+  .rc-play-btn{width:56px;height:56px;background:rgba(232,38,11,0.9);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:transform 0.2s;}
+  .rc-video-block:hover .rc-play-btn{transform:scale(1.1);}
+  .rc-video-source{font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);}
+  .rc-video-rank{position:absolute;top:12px;left:12px;background:rgba(8,8,8,0.85);padding:4px 12px;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;}
+  .rc-video-rank.gold{color:var(--gold);}
+  .rc-video-rank.silver{color:#c0c0c0;}
+  .rc-video-rank.top{color:var(--green);}
+
+  /* RESULT ROW */
+  .rc-result-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+  .rc-result-big{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--white);}
+  .rc-result-big span{font-family:'Montserrat',sans-serif;font-size:0.75rem;color:var(--gray-light);font-weight:400;}
+  .rc-result-meta{display:flex;flex-direction:column;gap:4px;}
+  .rc-rank-tag{font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:2px 10px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
+  .rc-rank-tag.gold{background:rgba(245,200,66,0.15);color:var(--gold);}
+  .rc-rank-tag.green{background:rgba(61,220,132,0.12);color:var(--green);}
+  .rc-rank-tag.gray{background:rgba(255,255,255,0.06);color:var(--gray-light);}
+  .rc-category-label{font-size:0.62rem;color:var(--gray-light);}
+
+  /* TECHNIQUE TAG */
+  .rc-technique{display:inline-flex;align-items:center;gap:6px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:14px;}
+  .rc-technique.clean{background:rgba(61,220,132,0.08);color:var(--green);border:1px solid rgba(61,220,132,0.2);}
+  .rc-technique.cheat{background:rgba(245,200,66,0.08);color:var(--gold);border:1px solid rgba(245,200,66,0.2);}
+
+  /* VOTE BAR */
+  .rc-vote-overview{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .rvo-bar{flex:1;height:5px;background:var(--gray-mid);border-radius:3px;overflow:hidden;display:flex;}
+  .rvo-trust{height:100%;background:var(--green);border-radius:3px 0 0 3px;transition:width 0.5s ease;}
+  .rvo-doubt{height:100%;background:var(--red);border-radius:0 3px 3px 0;}
+  .rvo-label{font-size:0.62rem;font-weight:700;}
+  .rvo-label.trust{color:var(--green);}
+  .rvo-label.doubt{color:var(--red);}
+  .rvo-count{font-size:0.6rem;color:var(--gray-light);}
+
+  /* ACTION BAR */
+  .rc-actions{display:flex;align-items:center;gap:0;margin-bottom:16px;}
+  .action-btn{background:transparent;border:none;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:10px 16px;cursor:none;transition:all 0.2s;display:flex;align-items:center;gap:7px;border-right:1px solid var(--gray-mid);}
+  .action-btn:last-child{border-right:none;}
+  .action-btn:hover{background:rgba(255,255,255,0.04);}
+  .action-btn.trust{color:var(--green);}
+  .action-btn.trust:hover,.action-btn.trust.voted{background:rgba(61,220,132,0.1);}
+  .action-btn.trust.voted{color:var(--green);}
+  .action-btn.doubt{color:var(--red);}
+  .action-btn.doubt:hover,.action-btn.doubt.voted{background:rgba(232,38,11,0.1);}
+  .action-btn.natural-vote{color:var(--green);}
+  .action-btn.natural-vote:hover,.action-btn.natural-vote.voted{background:rgba(61,220,132,0.08);}
+  .action-btn.pharma-vote{color:var(--red);}
+  .action-btn.pharma-vote:hover,.action-btn.pharma-vote.voted{background:rgba(232,38,11,0.08);}
+  .action-btn.comment-btn{color:var(--gray-light);}
+  .action-btn.comment-btn:hover{color:var(--white);}
+  .action-btn.challenge-btn{color:var(--gold);margin-left:auto;border-right:none;border-left:1px solid var(--gray-mid);}
+  .action-btn.challenge-btn:hover{background:rgba(245,200,66,0.08);}
+  .action-btn .btn-icon{font-size:1rem;}
+  .action-count{font-size:0.7rem;}
+
+  .action-divider{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;color:var(--gray-light);padding:10px 10px;border-right:1px solid var(--gray-mid);}
+
+  /* COMMENTS */
+  .rc-comments{display:flex;flex-direction:column;gap:10px;padding:14px 0 0 0;}
+  .comment{display:flex;gap:10px;}
+  .comment-avatar{width:28px;height:28px;background:var(--gray-mid);clip-path:polygon(3px 0%,100% 0%,100% calc(100% - 3px),calc(100% - 3px) 100%,0% 100%,0% 3px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;color:var(--gray-light);flex-shrink:0;}
+  .comment-body{flex:1;background:var(--gray);padding:10px 14px;}
+  .comment-author{font-size:0.7rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+  .comment-author-rep{font-size:0.55rem;color:var(--gold);}
+  .comment-text{font-size:0.75rem;color:var(--gray-light);line-height:1.5;}
+  .comment-time{font-size:0.58rem;color:var(--gray-light);margin-top:5px;}
+
+  .comment-input-row{display:flex;gap:8px;margin-top:12px;}
+  .comment-input{flex:1;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.78rem;padding:10px 14px;outline:none;transition:border-color 0.2s;cursor:none;}
+  .comment-input::placeholder{color:var(--gray-light);}
+  .comment-input:focus{border-color:var(--red);}
+  .comment-send{background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:10px 18px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);cursor:none;transition:background 0.2s;}
+  .comment-send:hover{background:var(--red-dark);}
+
+  .show-more-comments{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:8px 0;cursor:none;transition:color 0.2s;}
+  .show-more-comments:hover{color:var(--white);}
+
+  /* DISPUTED BANNER */
+  .disputed-banner{background:rgba(255,200,0,0.06);border:1px solid rgba(255,200,0,0.2);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .disputed-icon{font-size:1rem;}
+  .disputed-text{font-size:0.68rem;color:var(--gold);font-weight:600;}
+
+  /* RIGHT SIDEBAR */
+  .right-sidebar{padding:24px 20px;border-left:1px solid var(--gray-mid);display:flex;flex-direction:column;gap:24px;position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto;}
+  .rs-title{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+
+  /* MY CATEGORY WIDGET */
+  .my-category-widget{background:var(--gray);padding:18px;}
+  .mcw-label{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+  .mcw-cat{font-size:0.75rem;font-weight:700;color:var(--white);margin-bottom:14px;line-height:1.4;}
+  .mcw-rows{display:flex;flex-direction:column;gap:8px;}
+  .mcw-row{display:flex;align-items:center;gap:10px;}
+  .mcw-ex{font-size:0.68rem;flex:1;color:var(--gray-light);}
+  .mcw-rank{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;}
+  .mcw-rank.gold{color:var(--gold);}
+  .mcw-rank.green{color:var(--green);}
+  .mcw-rank.gray{color:var(--gray-light);}
+
+  /* TOP USERS */
+  .top-user-list{display:flex;flex-direction:column;gap:8px;}
+  .top-user{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--gray);transition:background 0.2s;cursor:none;}
+  .top-user:hover{background:var(--gray-mid);}
+  .tu-avatar{width:30px;height:30px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:var(--red);flex-shrink:0;}
+  .tu-info{flex:1;}
+  .tu-name{font-size:0.72rem;font-weight:700;}
+  .tu-meta{font-size:0.6rem;color:var(--gray-light);}
+  .tu-rep{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gold);}
+
+  /* HOT RECORD */
+  .hot-record{background:var(--gray);padding:16px;}
+  .hr-tag{font-size:0.58rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+  .hr-result{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--white);line-height:1;}
+  .hr-result span{font-family:'Montserrat',sans-serif;font-size:0.7rem;color:var(--gray-light);font-weight:400;}
+  .hr-author{font-size:0.7rem;color:var(--gray-light);margin-top:6px;}
+  .hr-votes{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:0.65rem;}
+  .hr-trust{color:var(--green);font-weight:700;}
+  .hr-doubt{color:var(--red);font-weight:700;}
+
+  /* LOAD MORE */
+  .load-more{text-align:center;padding:32px 0;}
+  .btn-load{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:14px 40px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:all 0.2s;}
+  .btn-load:hover{border-color:var(--red);color:var(--white);}
+
+
+  /* ===================== MOBILE BOTTOM NAV ===================== */
+  .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(8,8,8,0.98);border-top:1px solid var(--gray-mid);display:none;justify-content:space-around;padding:10px 0 max(10px, env(safe-area-inset-bottom));}
+  .mob-nav-btn{background:transparent;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 12px;transition:opacity 0.2s;}
+  .mob-icon{font-size:1.3rem;}
+  .mob-label{font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-light);}
+  .mob-nav-btn.active .mob-label{color:var(--red);}
+
+  /* MOBILE FILTER BAR */
+  .mobile-filter-bar{display:none;align-items:center;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+  .mfb-btn{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:7px 12px;white-space:nowrap;flex-shrink:0;}
+  .mfb-btn.active{background:rgba(232,38,11,0.12);border-color:var(--red);color:var(--white);}
+  .mfb-filter-icon{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-size:0.9rem;padding:7px 12px;flex-shrink:0;cursor:pointer;}
+
+  /* FILTER DRAWER */
+  .filter-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:600;}
+  .filter-drawer-overlay.open{display:block;}
+  .filter-drawer{position:fixed;bottom:0;left:0;right:0;background:var(--black);border-top:2px solid var(--red);z-index:601;max-height:80vh;overflow-y:auto;padding:20px 20px calc(20px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform 0.3s ease;}
+  .filter-drawer.open{transform:translateY(0);}
+  .filter-drawer-handle{width:40px;height:4px;background:var(--gray-mid);border-radius:2px;margin:0 auto 20px;}
+  .filter-drawer-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:16px;}
+  .drawer-section-title{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray-light);margin:16px 0 8px;}
+  .filter-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .filter-chip{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer;transition:all 0.2s;}
+  .filter-chip.active{background:rgba(232,38,11,0.12);border-color:var(--red);color:var(--white);}
+  .drawer-apply{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:14px;margin-top:20px;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+
+  /* ===== TABLET ===== */
+  @media(max-width:1024px){
+    nav{padding:14px 20px;}
+    .nav-center{display:none;}
+    .layout{grid-template-columns:1fr;}
+    .filters-sidebar,.right-sidebar{display:none;}
+    .feed{padding:16px 20px;}
+    .feed-header{flex-direction:column;align-items:flex-start;gap:12px;}
+    .feed-sort{overflow-x:auto;padding-bottom:4px;}
+    .sort-btn{white-space:nowrap;flex-shrink:0;}
+    .mobile-filter-bar{display:flex;}
+  }
+
+  /* ===== MOBILE ===== */
+  @media(max-width:768px){
+    body{cursor:auto;}
+    .cursor,.cursor-trail{display:none;}
+    nav{padding:12px 16px;}
+    .logo{font-size:1.8rem;}
+    .lang-switcher{display:none;}
+    .mobile-nav{display:flex;}
+    .layout{grid-template-columns:1fr;padding-top:60px;padding-bottom:76px;}
+    .feed{padding:12px 16px;}
+    .feed-header{flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:12px;padding-bottom:12px;}
+    .feed-title{font-size:1.4rem;}
+    .feed-sort{width:100%;overflow-x:auto;padding-bottom:2px;}
+    .sort-btn{font-size:0.6rem;padding:6px 12px;white-space:nowrap;flex-shrink:0;}
+    .record-card{padding:16px 0;}
+    .rc-head{gap:10px;margin-bottom:12px;}
+    .rc-avatar{width:34px;height:34px;font-size:0.9rem;}
+    .rc-author{font-size:0.8rem;}
+    .rc-author-badge{font-size:0.5rem;padding:2px 5px;}
+    .rc-bio,.rc-time{font-size:0.6rem;}
+    .rc-exercise-tag{font-size:0.55rem;}
+    .rc-post-text{font-size:0.82rem;line-height:1.6;margin-bottom:12px;padding-bottom:12px;}
+    .rc-play-btn{width:44px;height:44px;font-size:1rem;}
+    .rc-result-big{font-size:2.4rem;}
+    .rc-result-row{gap:10px;margin-bottom:10px;}
+    .rc-rank-tag{font-size:0.85rem;}
+    .rc-category-label{font-size:0.58rem;}
+    .rc-technique{font-size:0.58rem;padding:3px 8px;margin-bottom:10px;}
+    .rvo-label{font-size:0.6rem;}
+    .rvo-count{font-size:0.58rem;}
+    .rc-actions{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;gap:0;}
+    .action-btn{font-size:0.6rem;padding:10px 11px;white-space:nowrap;flex-shrink:0;}
+    .action-btn .btn-icon{font-size:0.85rem;}
+    .action-divider{font-size:0.58rem;padding:10px 7px;flex-shrink:0;}
+    .comment-avatar{width:24px;height:24px;font-size:0.62rem;}
+    .comment-body{padding:8px 10px;}
+    .comment-author{font-size:0.65rem;}
+    .comment-text{font-size:0.72rem;}
+    .comment-input{font-size:0.75rem;padding:9px 12px;}
+    .comment-send{font-size:0.6rem;padding:9px 14px;}
+    .btn-load{font-size:0.65rem;padding:12px 28px;}
+  }
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--black)}::-webkit-scrollbar-thumb{background:var(--red)}
+
+  /* VOTE ANIMATION */
+  @keyframes votePopTrust{0%{transform:scale(1)}50%{transform:scale(1.3);color:var(--green)}100%{transform:scale(1)}}
+  @keyframes votePopDoubt{0%{transform:scale(1)}50%{transform:scale(1.3);color:var(--red)}100%{transform:scale(1)}}
+  .vote-anim-trust{animation:votePopTrust 0.3s ease;}
+  .vote-anim-doubt{animation:votePopDoubt 0.3s ease;}
+</style>
+</head>
+<body>
+
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <button class="mob-nav-btn" onclick="location.href='fito.html'">
+    <span class="mob-icon">🏠</span>
+    <span class="mob-label t" data-ru="Главная" data-en="Home">Главная</span>
+  </button>
+  <button class="mob-nav-btn active">
+    <span class="mob-icon">📋</span>
+    <span class="mob-label t" data-ru="Лента" data-en="Feed">Лента</span>
+  </button>
+  <button class="mob-nav-btn">
+    <span class="mob-icon">🏆</span>
+    <span class="mob-label t" data-ru="Лидеры" data-en="Leaders">Лидеры</span>
+  </button>
+  <button class="mob-nav-btn">
+    <span class="mob-icon">🛒</span>
+    <span class="mob-label t" data-ru="Магазин" data-en="Market">Магазин</span>
+  </button>
+  <button class="mob-nav-btn" onclick="location.href='fito-profile.html'">
+    <span class="mob-icon">👤</span>
+    <span class="mob-label t" data-ru="Профиль" data-en="Profile">Профиль</span>
+  </button>
+</nav>
+
+<!-- FILTER DRAWER OVERLAY -->
+<div class="filter-drawer-overlay" id="filterOverlay" onclick="closeFilterDrawer()"></div>
+<div class="filter-drawer" id="filterDrawer">
+  <div class="filter-drawer-handle"></div>
+  <div class="filter-drawer-title t" data-ru="Фильтры" data-en="Filters">Фильтры</div>
+
+  <div class="drawer-section-title t" data-ru="Упражнение" data-en="Exercise">Упражнение</div>
+  <div class="filter-chips">
+    <div class="filter-chip active t" data-ru="Все" data-en="All" onclick="toggleChip(this)">Все</div>
+    <div class="filter-chip t" data-ru="Подтягивания" data-en="Pull-ups" onclick="toggleChip(this)">Подтягивания</div>
+    <div class="filter-chip t" data-ru="Жим лёжа" data-en="Bench Press" onclick="toggleChip(this)">Жим лёжа</div>
+    <div class="filter-chip t" data-ru="Приседания" data-en="Squats" onclick="toggleChip(this)">Приседания</div>
+    <div class="filter-chip t" data-ru="Становая" data-en="Deadlift" onclick="toggleChip(this)">Становая</div>
+    <div class="filter-chip t" data-ru="Брусья" data-en="Dips" onclick="toggleChip(this)">Брусья</div>
+  </div>
+
+  <div class="drawer-section-title t" data-ru="Статус" data-en="Status">Статус</div>
+  <div class="filter-chips">
+    <div class="filter-chip active t" data-ru="🌿 Натурал" data-en="🌿 Natural" onclick="toggleChip(this)">🌿 Натурал</div>
+    <div class="filter-chip active t" data-ru="💊 Фарма" data-en="💊 Enhanced" onclick="toggleChip(this)">💊 Фарма</div>
+    <div class="filter-chip t" data-ru="⚠ Под вопросом" data-en="⚠ Disputed" onclick="toggleChip(this)">⚠ Под вопросом</div>
+  </div>
+
+  <div class="drawer-section-title t" data-ru="Страна" data-en="Country">Страна</div>
+  <div class="filter-chips">
+    <div class="filter-chip active t" data-ru="🌍 Весь мир" data-en="🌍 Worldwide" onclick="toggleChip(this)">🌍 Весь мир</div>
+    <div class="filter-chip t" data-ru="Россия" data-en="Russia" onclick="toggleChip(this)">Россия</div>
+    <div class="filter-chip t" data-ru="США" data-en="USA" onclick="toggleChip(this)">США</div>
+    <div class="filter-chip t" data-ru="Европа" data-en="Europe" onclick="toggleChip(this)">Европа</div>
+  </div>
+
+  <button class="drawer-apply t" data-ru="Применить фильтры" data-en="Apply Filters" onclick="closeFilterDrawer()">Применить фильтры</button>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="fito.html" class="logo">FIT<span>O</span></a>
+  <div class="nav-center">
+    <button class="nav-pill t" data-ru="Главная" data-en="Home">Главная</button>
+    <button class="nav-pill active t" data-ru="Лента" data-en="Feed">Лента</button>
+    <button class="nav-pill t" data-ru="Лидеры" data-en="Leaders">Лидеры</button>
+    <button class="nav-pill t" data-ru="Магазин" data-en="Market">Магазин</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-notif">
+      <span style="font-size:1.2rem;color:var(--gray-light)">🔔</span>
+      <div class="notif-dot"></div>
+    </div>
+    <a href="fito-profile.html" class="nav-avatar">Z</a>
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-ru" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="filters-sidebar">
+
+    <div>
+      <div class="fs-section-title t" data-ru="Упражнение" data-en="Exercise">Упражнение</div>
+      <div class="filter-group">
+        <button class="filter-btn active t" data-ru="Все упражнения" data-en="All Exercises">Все упражнения <span class="filter-count">248</span></button>
+        <button class="filter-btn t" data-ru="Подтягивания" data-en="Pull-ups">Подтягивания <span class="filter-count">64</span></button>
+        <button class="filter-btn t" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа <span class="filter-count">58</span></button>
+        <button class="filter-btn t" data-ru="Приседания" data-en="Squats">Приседания <span class="filter-count">47</span></button>
+        <button class="filter-btn t" data-ru="Становая тяга" data-en="Deadlift">Становая тяга <span class="filter-count">41</span></button>
+        <button class="filter-btn t" data-ru="Брусья" data-en="Dips">Брусья <span class="filter-count">38</span></button>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <div>
+      <div class="fs-section-title t" data-ru="Возраст" data-en="Age">Возраст</div>
+      <div class="age-range">
+        <div class="range-labels"><span>18</span><span>60+</span></div>
+        <div class="range-track"><div class="range-fill"></div></div>
+        <div class="range-labels" style="margin-top:6px;"><span class="t" data-ru="от 28" data-en="from 28">от 28</span><span class="t" data-ru="до 50" data-en="to 50">до 50</span></div>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <div>
+      <div class="fs-section-title t" data-ru="Статус" data-en="Status">Статус</div>
+      <div class="status-filters">
+        <div class="status-toggle" onclick="toggleSwitch(this)">
+          <div><div class="st-label t" data-ru="Натуралы" data-en="Naturals">Натуралы</div><div class="st-sub t" data-ru="Без фармакологии" data-en="No PEDs">Без фармакологии</div></div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="status-toggle" onclick="toggleSwitch(this)">
+          <div><div class="st-label t" data-ru="Фарма" data-en="Enhanced">Фарма</div><div class="st-sub t" data-ru="Принимают препараты" data-en="Using PEDs">Принимают препараты</div></div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="status-toggle" onclick="toggleSwitch(this)">
+          <div><div class="st-label t" data-ru="Под вопросом" data-en="Disputed">Под вопросом</div><div class="st-sub t" data-ru="Требуют проверки" data-en="Need verification">Требуют проверки</div></div>
+          <div class="toggle-switch"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <div>
+      <div class="fs-section-title t" data-ru="Страна" data-en="Country">Страна</div>
+      <div class="filter-group">
+        <button class="filter-btn active t" data-ru="Весь мир" data-en="Worldwide">Весь мир</button>
+        <button class="filter-btn t" data-ru="Россия" data-en="Russia">Россия</button>
+        <button class="filter-btn t" data-ru="США" data-en="USA">США</button>
+        <button class="filter-btn t" data-ru="Европа" data-en="Europe">Европа</button>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <div class="my-cat-banner">
+      <b class="t" data-ru="Твоя категория:" data-en="Your category:">Твоя категория:</b><br>
+      <span class="highlight t" data-ru="Мужчины · 40–45 · 95–101 кг" data-en="Male · 40–45 · 95–101 kg">Мужчины · 40–45 · 95–101 кг</span><br>
+      <span class="t" data-ru="Показать только мою категорию →" data-en="Show my category only →">Показать только мою категорию →</span>
+    </div>
+
+  </aside>
+
+  <!-- FEED -->
+  <main class="feed">
+
+    <!-- MOBILE FILTER BAR -->
+    <div class="mobile-filter-bar">
+      <button class="mfb-filter-icon" onclick="openFilterDrawer()">⚙️</button>
+      <button class="mfb-btn active t" data-ru="Все" data-en="All">Все</button>
+      <button class="mfb-btn t" data-ru="Подтягивания" data-en="Pull-ups">Подтягивания</button>
+      <button class="mfb-btn t" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</button>
+      <button class="mfb-btn t" data-ru="🌿 Натурал" data-en="🌿 Natural">🌿 Натурал</button>
+      <button class="mfb-btn t" data-ru="💊 Фарма" data-en="💊 Enhanced">💊 Фарма</button>
+    </div>
+    <div class="feed-header">
+      <div class="feed-title t" data-ru="🔥 ОБСУЖДАЕМЫЕ" data-en="🔥 MOST DISCUSSED">🔥 ОБСУЖДАЕМЫЕ</div>
+      <div class="feed-sort">
+        <button class="sort-btn t" data-ru="Новые" data-en="New">Новые</button>
+        <button class="sort-btn active t" data-ru="🔥 Обсуждаемые" data-en="🔥 Most Discussed">🔥 Обсуждаемые</button>
+        <button class="sort-btn t" data-ru="Моя категория" data-en="My Category">Моя категория</button>
+      </div>
+    </div>
+
+    <!-- CARD 1 — 🔥 Самый обсуждаемый: Disputed (31 комментарий) -->
+    <div class="record-card" style="animation-delay:0s">
+      <div class="rc-inner">
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:0.58rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);border:1px solid rgba(232,38,11,0.25);padding:3px 10px;margin-bottom:12px;">
+          🔥 <span class="t" data-ru="Топ обсуждений · 31 комментарий" data-en="Top Discussion · 31 comments">Топ обсуждений · 31 комментарий</span>
+        </div>
+        <div class="rc-head">
+          <div class="rc-avatar">A</div>
+          <div class="rc-head-info">
+            <div class="rc-author-row">
+              <span class="rc-author">Aleksey K.</span>
+              <span class="rc-author-badge natural t" data-ru="Натурал ✓" data-en="Natural ✓">Натурал ✓</span>
+              <span class="rc-author-badge authority t" data-ru="⭐ Авторитет" data-en="⭐ Authority">⭐ Авторитет</span>
+            </div>
+            <div class="rc-meta-row">
+              <span class="rc-bio t" data-ru="40 лет · 98 кг · 178 см · Москва" data-en="40 y.o. · 98 kg · 178 cm · Moscow">40 лет · 98 кг · 178 см · Москва</span>
+              <span class="rc-time">· 2ч назад</span>
+              <span class="rc-exercise-tag t" data-ru="Подтягивания" data-en="Pull-ups">Подтягивания</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rc-post-text t" data-ru="3 года работы без химии, без читинга. Каждое утро в 6:00 — турник во дворе. Если я могу в 40, значит можешь и ты. Это не предел — это старт 🔥" data-en="3 years of work, no PEDs, no kipping. Every morning at 6am — pull-up bar in the yard. If I can do it at 40, so can you. This isn't the ceiling — it's the starting line 🔥">3 года работы без химии, без читинга. Каждое утро в 6:00 — турник во дворе. Если я могу в 40, значит можешь и ты. Это не предел — это старт 🔥</div>
+
+        <div class="rc-video-block">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#0d0d0d);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:4rem;opacity:0.15">🏋️</span>
+          </div>
+          <div class="rc-video-overlay">
+            <div class="rc-play-btn">▶</div>
+            <div class="rc-video-source">TikTok</div>
+          </div>
+          <div class="rc-video-rank gold">🥇 #1</div>
+        </div>
+
+        <div class="rc-result-row">
+          <div class="rc-result-big">18 <span class="t" data-ru="повт." data-en="reps">повт.</span></div>
+          <div class="rc-result-meta">
+            <span class="rc-rank-tag gold t" data-ru="🥇 #1 в категории" data-en="🥇 #1 in category">🥇 #1 в категории</span>
+            <span class="rc-category-label t" data-ru="Муж · 40–45 · 95–101 кг · 176–180 см" data-en="Male · 40–45 · 95–101 kg · 176–180 cm">Муж · 40–45 · 95–101 кг · 176–180 см</span>
+          </div>
+        </div>
+
+        <div class="rc-technique clean">✓ <span class="t" data-ru="Чистая техника" data-en="Clean form">Чистая техника</span></div>
+
+        <div class="rc-vote-overview">
+          <span class="rvo-label trust">92%</span>
+          <div class="rvo-bar"><div class="rvo-trust" style="width:92%"></div><div class="rvo-doubt" style="width:8%"></div></div>
+          <span class="rvo-label doubt">8%</span>
+          <span class="rvo-count t" data-ru="· 312 голосов" data-en="· 312 votes">· 312 голосов</span>
+        </div>
+
+        <div class="rc-actions">
+          <button class="action-btn trust voted" onclick="vote(this,'trust')">
+            <span class="btn-icon">✅</span>
+            <span class="t" data-ru="Верю" data-en="Trust">Верю</span>
+            <span class="action-count">287</span>
+          </button>
+          <button class="action-btn doubt" onclick="vote(this,'doubt')">
+            <span class="btn-icon">❌</span>
+            <span class="t" data-ru="Не верю" data-en="Doubt">Не верю</span>
+            <span class="action-count">25</span>
+          </button>
+          <div class="action-divider t" data-ru="Статус:" data-en="Status:">Статус:</div>
+          <button class="action-btn natural-vote voted" onclick="voteStatus(this,'natural')">
+            <span class="btn-icon">🌿</span>
+            <span class="t" data-ru="Натурал" data-en="Natural">Натурал</span>
+            <span class="action-count">278</span>
+          </button>
+          <button class="action-btn pharma-vote" onclick="voteStatus(this,'pharma')">
+            <span class="btn-icon">💊</span>
+            <span class="t" data-ru="Химик" data-en="Enhanced">Химик</span>
+            <span class="action-count">34</span>
+          </button>
+          <button class="action-btn comment-btn" onclick="toggleComments(this)">
+            <span class="btn-icon">💬</span>
+            <span class="action-count">18</span>
+          </button>
+          <button class="action-btn challenge-btn">
+            <span class="btn-icon">⚔️</span>
+            <span class="t" data-ru="Вызов" data-en="Challenge">Вызов</span>
+          </button>
+        </div>
+
+        <div class="rc-comments" style="display:none">
+          <div class="comment">
+            <div class="comment-avatar">D</div>
+            <div class="comment-body">
+              <div class="comment-author">Dmitry V. <span class="comment-author-rep">⭐ 612 REP</span></div>
+              <div class="comment-text t" data-ru="Красавчик! Техника идеальная, полная амплитуда. Заслуженный рекорд 🔥" data-en="Beast mode! Perfect form, full range of motion. Deserved record 🔥">Красавчик! Техника идеальная, полная амплитуда. Заслуженный рекорд 🔥</div>
+              <div class="comment-time">1ч назад</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-avatar">S</div>
+            <div class="comment-body">
+              <div class="comment-author">Sergey M.</div>
+              <div class="comment-text t" data-ru="Последние 2 повторения с небольшим читингом, но результат всё равно топовый для категории" data-en="Last 2 reps had slight kipping, but the result is still top for the category">Последние 2 повторения с небольшим читингом, но результат всё равно топовый для категории</div>
+              <div class="comment-time">45мин назад</div>
+            </div>
+          </div>
+          <button class="show-more-comments t" data-ru="Показать ещё 16 комментариев →" data-en="Show 16 more comments →">Показать ещё 16 комментариев →</button>
+          <div class="comment-input-row">
+            <input class="comment-input t" placeholder="Написать комментарий..." data-ru="Написать комментарий..." data-en="Write a comment...">
+            <button class="comment-send t" data-ru="→" data-en="→">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2 — Aleksey #1 (18 комментариев) -->
+    <div class="record-card" style="animation-delay:0.1s">
+      <div class="rc-inner">
+        <div class="rc-head">
+          <div class="rc-avatar" style="color:#888">S</div>
+          <div class="rc-head-info">
+            <div class="rc-author-row">
+              <span class="rc-author">Sergey M.</span>
+              <span class="rc-author-badge pharma t" data-ru="⚠ Под вопросом" data-en="⚠ Disputed">⚠ Под вопросом</span>
+            </div>
+            <div class="rc-meta-row">
+              <span class="rc-bio t" data-ru="39 лет · 97 кг · 177 см · СПб" data-en="39 y.o. · 97 kg · 177 cm · SPb">39 лет · 97 кг · 177 см · СПб</span>
+              <span class="rc-time">· 5ч назад</span>
+              <span class="rc-exercise-tag t" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="disputed-banner">
+          <div class="disputed-icon">⚠️</div>
+          <div class="disputed-text t" data-ru="Рекорд оспорен — 52% сомневаются в чистоте. Требуется верификация анализов." data-en="Record disputed — 52% doubt clean status. Lab test verification required.">Рекорд оспорен — 52% сомневаются в чистоте. Требуется верификация анализов.</div>
+        </div>
+
+        <div class="rc-post-text t" data-ru="Жму 165 кг в 39 лет и 97 кг веса. Да, я заявляю читинг — небольшой отбив от груди на последних повторах. Натурал, готов загрузить анализы. Устал от обвинений без доказательств." data-en="Benching 165 kg at 39 years old, 97 kg bodyweight. Yes, I declared touch-and-go on the last reps. Natural athlete, ready to upload lab results. Tired of accusations without proof.">Жму 165 кг в 39 лет и 97 кг веса. Да, я заявляю читинг — небольшой отбив от груди на последних повторах. Натурал, готов загрузить анализы. Устал от обвинений без доказательств.</div>
+
+        <div class="rc-video-block">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#0d0d0d);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:4rem;opacity:0.15">💪</span>
+          </div>
+          <div class="rc-video-overlay">
+            <div class="rc-play-btn">▶</div>
+            <div class="rc-video-source">YouTube</div>
+          </div>
+          <div class="rc-video-rank top t" data-ru="Топ 8%" data-en="Top 8%">Топ 8%</div>
+        </div>
+
+        <div class="rc-result-row">
+          <div class="rc-result-big">165 <span>кг</span></div>
+          <div class="rc-result-meta">
+            <span class="rc-rank-tag green t" data-ru="Топ 8% категории" data-en="Top 8% in category">Топ 8% категории</span>
+            <span class="rc-category-label t" data-ru="Муж · 38–42 · 95–101 кг · 176–180 см" data-en="Male · 38–42 · 95–101 kg · 176–180 cm">Муж · 38–42 · 95–101 кг · 176–180 см</span>
+          </div>
+        </div>
+
+        <div class="rc-technique cheat">⚡ <span class="t" data-ru="С читингом (заявлено автором)" data-en="With kipping (declared by author)">С читингом (заявлено автором)</span></div>
+
+        <div class="rc-vote-overview">
+          <span class="rvo-label trust">48%</span>
+          <div class="rvo-bar"><div class="rvo-trust" style="width:48%"></div><div class="rvo-doubt" style="width:52%"></div></div>
+          <span class="rvo-label doubt">52%</span>
+          <span class="rvo-count t" data-ru="· 87 голосов" data-en="· 87 votes">· 87 голосов</span>
+        </div>
+
+        <div class="rc-actions">
+          <button class="action-btn trust" onclick="vote(this,'trust')">
+            <span class="btn-icon">✅</span>
+            <span class="t" data-ru="Верю" data-en="Trust">Верю</span>
+            <span class="action-count">42</span>
+          </button>
+          <button class="action-btn doubt" onclick="vote(this,'doubt')">
+            <span class="btn-icon">❌</span>
+            <span class="t" data-ru="Не верю" data-en="Doubt">Не верю</span>
+            <span class="action-count">45</span>
+          </button>
+          <div class="action-divider t" data-ru="Статус:" data-en="Status:">Статус:</div>
+          <button class="action-btn natural-vote" onclick="voteStatus(this,'natural')">
+            <span class="btn-icon">🌿</span>
+            <span class="t" data-ru="Натурал" data-en="Natural">Натурал</span>
+            <span class="action-count">31</span>
+          </button>
+          <button class="action-btn pharma-vote voted" onclick="voteStatus(this,'pharma')">
+            <span class="btn-icon">💊</span>
+            <span class="t" data-ru="Химик" data-en="Enhanced">Химик</span>
+            <span class="action-count">56</span>
+          </button>
+          <button class="action-btn comment-btn" onclick="toggleComments(this)">
+            <span class="btn-icon">💬</span>
+            <span class="action-count">31</span>
+          </button>
+          <button class="action-btn challenge-btn">
+            <span class="btn-icon">⚔️</span>
+            <span class="t" data-ru="Вызов" data-en="Challenge">Вызов</span>
+          </button>
+        </div>
+
+        <div class="rc-comments" style="display:none">
+          <div class="comment">
+            <div class="comment-avatar">A</div>
+            <div class="comment-body">
+              <div class="comment-author">Aleksey K. <span class="comment-author-rep">⭐ 847 REP · Авторитет</span></div>
+              <div class="comment-text t" data-ru="Смотрю видео — явно не натурал. Дельтовидные слишком объёмные для такого веса тела." data-en="Watching the video — clearly not natural. Delts are way too thick for that bodyweight.">Смотрю видео — явно не натурал. Дельтовидные слишком объёмные для такого веса тела.</div>
+              <div class="comment-time">3ч назад</div>
+            </div>
+          </div>
+          <div class="comment-input-row">
+            <input class="comment-input" placeholder="Написать комментарий...">
+            <button class="comment-send">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3 — Mikhail новичок (4 комментария) -->
+    <div class="record-card" style="animation-delay:0.2s">
+      <div class="rc-inner">
+        <div class="rc-head">
+          <div class="rc-avatar" style="color:var(--green)">М</div>
+          <div class="rc-head-info">
+            <div class="rc-author-row">
+              <span class="rc-author">Mikhail R.</span>
+              <span class="rc-author-badge natural t" data-ru="Натурал" data-en="Natural">Натурал</span>
+              <span style="font-size:0.58rem;color:var(--gray-light);background:var(--gray);padding:2px 7px;border-radius:2px;" class="t" data-ru="🆕 Новый" data-en="🆕 New">🆕 Новый</span>
+            </div>
+            <div class="rc-meta-row">
+              <span class="rc-bio t" data-ru="43 года · 96 кг · 179 см · Екатеринбург" data-en="43 y.o. · 96 kg · 179 cm · Yekaterinburg">43 года · 96 кг · 179 см · Екатеринбург</span>
+              <span class="rc-time">· 8ч назад</span>
+              <span class="rc-exercise-tag t" data-ru="Приседания" data-en="Squats">Приседания</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rc-post-text t" data-ru="Первый рекорд на платформе. 43 года, начал заниматься год назад после того как врач сказал «надо двигаться». Это мой честный результат — буду расти. Жду обратную связь от сообщества 🙏" data-en="My first record on the platform. 43 years old, started training a year ago after my doctor said 'you need to move'. This is my honest result — I'll keep growing. Looking forward to community feedback 🙏">Первый рекорд на платформе. 43 года, начал заниматься год назад после того как врач сказал «надо двигаться». Это мой честный результат — буду расти. Жду обратную связь от сообщества 🙏</div>
+
+        <div class="rc-video-block">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#0d0d0d);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:4rem;opacity:0.15">🏃</span>
+          </div>
+          <div class="rc-video-overlay">
+            <div class="rc-play-btn">▶</div>
+            <div class="rc-video-source">Instagram</div>
+          </div>
+          <div class="rc-video-rank top t" data-ru="Топ 22%" data-en="Top 22%">Топ 22%</div>
+        </div>
+
+        <div class="rc-result-row">
+          <div class="rc-result-big">140 <span>кг</span></div>
+          <div class="rc-result-meta">
+            <span class="rc-rank-tag gray t" data-ru="Топ 22% категории" data-en="Top 22% in category">Топ 22% категории</span>
+            <span class="rc-category-label t" data-ru="Муж · 41–45 · 94–98 кг · 177–181 см" data-en="Male · 41–45 · 94–98 kg · 177–181 cm">Муж · 41–45 · 94–98 кг · 177–181 см</span>
+          </div>
+        </div>
+
+        <div class="rc-technique clean">✓ <span class="t" data-ru="Чистая техника" data-en="Clean form">Чистая техника</span></div>
+
+        <div class="rc-vote-overview">
+          <span class="rvo-label trust">76%</span>
+          <div class="rvo-bar"><div class="rvo-trust" style="width:76%"></div><div class="rvo-doubt" style="width:24%"></div></div>
+          <span class="rvo-label doubt">24%</span>
+          <span class="rvo-count t" data-ru="· 21 голос" data-en="· 21 votes">· 21 голос</span>
+        </div>
+
+        <div class="rc-actions">
+          <button class="action-btn trust" onclick="vote(this,'trust')">
+            <span class="btn-icon">✅</span>
+            <span class="t" data-ru="Верю" data-en="Trust">Верю</span>
+            <span class="action-count">16</span>
+          </button>
+          <button class="action-btn doubt" onclick="vote(this,'doubt')">
+            <span class="btn-icon">❌</span>
+            <span class="t" data-ru="Не верю" data-en="Doubt">Не верю</span>
+            <span class="action-count">5</span>
+          </button>
+          <div class="action-divider t" data-ru="Статус:" data-en="Status:">Статус:</div>
+          <button class="action-btn natural-vote" onclick="voteStatus(this,'natural')">
+            <span class="btn-icon">🌿</span>
+            <span class="t" data-ru="Натурал" data-en="Natural">Натурал</span>
+            <span class="action-count">14</span>
+          </button>
+          <button class="action-btn pharma-vote" onclick="voteStatus(this,'pharma')">
+            <span class="btn-icon">💊</span>
+            <span class="t" data-ru="Химик" data-en="Enhanced">Химик</span>
+            <span class="action-count">7</span>
+          </button>
+          <button class="action-btn comment-btn" onclick="toggleComments(this)">
+            <span class="btn-icon">💬</span>
+            <span class="action-count">4</span>
+          </button>
+          <button class="action-btn challenge-btn">
+            <span class="btn-icon">⚔️</span>
+            <span class="t" data-ru="Вызов" data-en="Challenge">Вызов</span>
+          </button>
+        </div>
+
+        <div class="rc-comments" style="display:none">
+          <div class="comment">
+            <div class="comment-avatar">I</div>
+            <div class="comment-body">
+              <div class="comment-author">Igor T.</div>
+              <div class="comment-text t" data-ru="Добро пожаловать на платформу! Хороший результат для старта 💪" data-en="Welcome to the platform! Solid result for a start 💪">Добро пожаловать на платформу! Хороший результат для старта 💪</div>
+              <div class="comment-time">6ч назад</div>
+            </div>
+          </div>
+          <div class="comment-input-row">
+            <input class="comment-input" placeholder="Написать комментарий...">
+            <button class="comment-send">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="load-more">
+      <button class="btn-load t" data-ru="Загрузить ещё рекорды" data-en="Load More Records">Загрузить ещё рекорды</button>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="right-sidebar">
+
+    <div>
+      <div class="rs-title t" data-ru="Моя позиция" data-en="My Position">Моя позиция</div>
+      <div class="my-category-widget">
+        <div class="mcw-label t" data-ru="Мои рекорды сейчас" data-en="My Records Now">Мои рекорды сейчас</div>
+        <div class="mcw-cat t" data-ru="Мужчины · 40–45 · 95–101 кг · 176–180 см" data-en="Male · 40–45 · 95–101 kg · 176–180 cm">Мужчины · 40–45 · 95–101 кг · 176–180 см</div>
+        <div class="mcw-rows">
+          <div class="mcw-row">
+            <span class="mcw-ex t" data-ru="Подтягивания" data-en="Pull-ups">Подтягивания</span>
+            <span class="mcw-rank gold">🥇 #1</span>
+          </div>
+          <div class="mcw-row">
+            <span class="mcw-ex t" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</span>
+            <span class="mcw-rank green">Топ 12%</span>
+          </div>
+          <div class="mcw-row">
+            <span class="mcw-ex t" data-ru="Приседания" data-en="Squats">Приседания</span>
+            <span class="mcw-rank gray">Топ 22%</span>
+          </div>
+          <div class="mcw-row">
+            <span class="mcw-ex t" data-ru="Становая" data-en="Deadlift">Становая</span>
+            <span class="mcw-rank gray">Топ 31%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rs-title t" data-ru="🔥 Рекорд дня" data-en="🔥 Record of the Day">🔥 Рекорд дня</div>
+      <div class="hot-record">
+        <div class="hr-tag t" data-ru="Становая тяга · Муж · 45–50 · 85–91 кг" data-en="Deadlift · Male · 45–50 · 85–91 kg">Становая тяга · Муж · 45–50 · 85–91 кг</div>
+        <div class="hr-result">220 <span>кг</span></div>
+        <div class="hr-author t" data-ru="Vladimir P., 47 лет · Натурал ✓" data-en="Vladimir P., 47 y.o. · Natural ✓">Vladimir P., 47 лет · Натурал ✓</div>
+        <div class="hr-votes">
+          <span class="hr-trust">✅ 94%</span>
+          <span class="hr-doubt">❌ 6%</span>
+          <span style="font-size:0.62rem;color:var(--gray-light)" class="t" data-ru="· 428 голосов" data-en="· 428 votes">· 428 голосов</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rs-title t" data-ru="Топ авторитетов" data-en="Top Authorities">Топ авторитетов</div>
+      <div class="top-user-list">
+        <div class="top-user">
+          <div class="tu-avatar">A</div>
+          <div class="tu-info">
+            <div class="tu-name">Aleksey K.</div>
+            <div class="tu-meta t" data-ru="40 лет · 5 рекордов" data-en="40 y.o. · 5 records">40 лет · 5 рекордов</div>
+          </div>
+          <div class="tu-rep">847</div>
+        </div>
+        <div class="top-user">
+          <div class="tu-avatar">V</div>
+          <div class="tu-info">
+            <div class="tu-name">Vladimir P.</div>
+            <div class="tu-meta t" data-ru="47 лет · 3 рекорда" data-en="47 y.o. · 3 records">47 лет · 3 рекорда</div>
+          </div>
+          <div class="tu-rep">731</div>
+        </div>
+        <div class="top-user">
+          <div class="tu-avatar">D</div>
+          <div class="tu-info">
+            <div class="tu-name">Dmitry V.</div>
+            <div class="tu-meta t" data-ru="41 год · 4 рекорда" data-en="41 y.o. · 4 records">41 год · 4 рекорда</div>
+          </div>
+          <div class="tu-rep">612</div>
+        </div>
+        <div class="top-user">
+          <div class="tu-avatar">M</div>
+          <div class="tu-info">
+            <div class="tu-name">Mikhail R.</div>
+            <div class="tu-meta t" data-ru="43 года · 1 рекорд" data-en="43 y.o. · 1 record">43 года · 1 рекорд</div>
+          </div>
+          <div class="tu-rep">42</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+  // Cursor
+  const cursor=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+  let mx=0,my=0,tx=0,ty=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx-6+'px';cursor.style.top=my-6+'px';});
+  (function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop)})();
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      btn.closest('.filter-group').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Sort buttons
+  document.querySelectorAll('.sort-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Nav pills
+  document.querySelectorAll('.nav-pill').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.nav-pill').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Toggle switch
+  function toggleSwitch(el) {
+    el.querySelector('.toggle-switch').classList.toggle('on');
+  }
+
+  // Vote: Trust / Doubt
+  function vote(btn, type) {
+    const card = btn.closest('.rc-actions');
+    const trustBtn = card.querySelector('.action-btn.trust');
+    const doubtBtn = card.querySelector('.action-btn.doubt');
+    const wasVoted = btn.classList.contains('voted');
+
+    // get counts
+    const tCount = parseInt(trustBtn.querySelector('.action-count').textContent);
+    const dCount = parseInt(doubtBtn.querySelector('.action-count').textContent);
+
+    if (type === 'trust') {
+      if (wasVoted) {
+        trustBtn.classList.remove('voted');
+        trustBtn.querySelector('.action-count').textContent = tCount - 1;
+      } else {
+        if (doubtBtn.classList.contains('voted')) {
+          doubtBtn.classList.remove('voted');
+          doubtBtn.querySelector('.action-count').textContent = dCount - 1;
+        }
+        trustBtn.classList.add('voted');
+        trustBtn.querySelector('.action-count').textContent = tCount + 1;
+        trustBtn.classList.add('vote-anim-trust');
+        setTimeout(()=>trustBtn.classList.remove('vote-anim-trust'),300);
+      }
+    } else {
+      if (wasVoted) {
+        doubtBtn.classList.remove('voted');
+        doubtBtn.querySelector('.action-count').textContent = dCount - 1;
+      } else {
+        if (trustBtn.classList.contains('voted')) {
+          trustBtn.classList.remove('voted');
+          trustBtn.querySelector('.action-count').textContent = tCount - 1;
+        }
+        doubtBtn.classList.add('voted');
+        doubtBtn.querySelector('.action-count').textContent = dCount + 1;
+        doubtBtn.classList.add('vote-anim-doubt');
+        setTimeout(()=>doubtBtn.classList.remove('vote-anim-doubt'),300);
+      }
+    }
+  }
+
+  // Vote: Natural / Pharma
+  function voteStatus(btn, type) {
+    const card = btn.closest('.rc-actions');
+    const natBtn = card.querySelector('.action-btn.natural-vote');
+    const pharBtn = card.querySelector('.action-btn.pharma-vote');
+    const wasVoted = btn.classList.contains('voted');
+    const nCount = parseInt(natBtn.querySelector('.action-count').textContent);
+    const pCount = parseInt(pharBtn.querySelector('.action-count').textContent);
+
+    if (type === 'natural') {
+      if (wasVoted) { natBtn.classList.remove('voted'); natBtn.querySelector('.action-count').textContent = nCount-1; }
+      else {
+        if(pharBtn.classList.contains('voted')){pharBtn.classList.remove('voted');pharBtn.querySelector('.action-count').textContent=pCount-1;}
+        natBtn.classList.add('voted');natBtn.querySelector('.action-count').textContent=nCount+1;
+      }
+    } else {
+      if (wasVoted) { pharBtn.classList.remove('voted'); pharBtn.querySelector('.action-count').textContent = pCount-1; }
+      else {
+        if(natBtn.classList.contains('voted')){natBtn.classList.remove('voted');natBtn.querySelector('.action-count').textContent=nCount-1;}
+        pharBtn.classList.add('voted');pharBtn.querySelector('.action-count').textContent=pCount+1;
+      }
+    }
+  }
+
+  // Toggle comments
+  function toggleComments(btn) {
+    const commentsBlock = btn.closest('.rc-inner').querySelector('.rc-comments');
+    const isOpen = commentsBlock.style.display !== 'none';
+    commentsBlock.style.display = isOpen ? 'none' : 'flex';
+  }
+
+
+  // Filter drawer
+  function openFilterDrawer() {
+    document.getElementById('filterDrawer').classList.add('open');
+    document.getElementById('filterOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeFilterDrawer() {
+    document.getElementById('filterDrawer').classList.remove('open');
+    document.getElementById('filterOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function toggleChip(el) {
+    el.classList.toggle('active');
+  }
+
+  // MFB buttons
+  document.querySelectorAll('.mfb-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mfb-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Lang
+  let lang='ru';
+  function setLang(l) {
+    lang=l;
+    document.getElementById('btn-ru').classList.toggle('active',l==='ru');
+    document.getElementById('btn-en').classList.toggle('active',l==='en');
+    document.documentElement.lang=l;
+    document.querySelectorAll('[data-ru][data-en]').forEach(el=>{
+      const val=el.getAttribute('data-'+l);
+      if(!val)return;
+      if(el.tagName==='INPUT'){el.placeholder=val;return;}
+      el.textContent=val;
+    });
+  }
+</script>
+</body>
+</html>
