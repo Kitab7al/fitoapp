@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Уведомления</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-links{display:flex;gap:24px;}
+.nav-link{color:var(--gray-light);font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:color .2s;cursor:none;position:relative;}
+.nav-link:hover,.nav-link.active{color:var(--white);}
+.nav-badge{position:absolute;top:-6px;right:-10px;width:16px;height:16px;background:var(--red);border-radius:50%;font-size:.5rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--white);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-avatar{width:32px;height:32px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--red);}
+
+/* LAYOUT */
+.page{display:grid;grid-template-columns:1fr 360px;min-height:100vh;padding-top:65px;position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+
+/* MAIN */
+main{border-right:1px solid var(--gray-mid);}
+
+/* HEADER */
+.notif-header{padding:28px 32px 0;border-bottom:1px solid var(--gray-mid);display:flex;flex-direction:column;gap:16px;}
+.nh-top{display:flex;align-items:center;justify-content:space-between;}
+.nh-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;}
+.nh-count{font-size:.65rem;color:var(--gray-light);}
+.nh-count b{color:var(--red);}
+.nh-actions{display:flex;gap:10px;}
+.nh-btn{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;cursor:none;transition:all .2s;}
+.nh-btn:hover{border-color:var(--gray-light);color:var(--white);}
+.nh-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
+
+/* FILTER TABS */
+.notif-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+.notif-tabs::-webkit-scrollbar{display:none;}
+.ntab{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;cursor:none;transition:all .2s;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.ntab:hover{color:var(--white);}
+.ntab.active{color:var(--white);border-bottom-color:var(--red);}
+.ntab-count{background:var(--gray-mid);color:var(--white);font-size:.5rem;font-weight:700;padding:2px 6px;border-radius:8px;}
+.ntab.active .ntab-count{background:var(--red);}
+
+/* NOTIFICATIONS LIST */
+.notif-list{display:flex;flex-direction:column;}
+
+/* DATE SEPARATOR */
+.date-sep{padding:10px 32px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--gray-mid);}
+.ds-text{font-size:.55rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);}
+
+/* NOTIFICATION ITEM */
+.notif-item{display:flex;gap:14px;padding:16px 32px;border-bottom:1px solid rgba(255,255,255,.04);cursor:none;transition:background .15s;position:relative;}
+.notif-item:hover{background:rgba(255,255,255,.02);}
+.notif-item.unread{background:rgba(232,38,11,.03);}
+.notif-item.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);}
+
+/* UNREAD DOT */
+.unread-dot{width:7px;height:7px;background:var(--red);border-radius:50%;flex-shrink:0;margin-top:6px;}
+.read-dot{width:7px;height:7px;flex-shrink:0;margin-top:6px;}
+
+/* ICON */
+.notif-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.ni-green{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.2);}
+.ni-red{background:rgba(232,38,11,.1);border:1px solid rgba(232,38,11,.2);}
+.ni-gold{background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);}
+.ni-blue{background:rgba(74,158,255,.1);border:1px solid rgba(74,158,255,.2);}
+.ni-gray{background:var(--gray);border:1px solid var(--gray-mid);}
+
+/* AVATAR ICON */
+.notif-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--white);flex-shrink:0;position:relative;}
+.avatar-type-badge{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.55rem;border:2px solid var(--black);}
+.atb-green{background:var(--green);}
+.atb-gold{background:var(--gold);}
+.atb-red{background:var(--red);}
+
+/* BODY */
+.notif-body{flex:1;min-width:0;}
+.nb-text{font-size:.78rem;line-height:1.5;margin-bottom:4px;}
+.nb-text b{font-weight:700;color:var(--white);}
+.nb-text .highlight-green{color:var(--green);font-weight:700;}
+.nb-text .highlight-gold{color:var(--gold);font-weight:700;}
+.nb-text .highlight-red{color:var(--red);font-weight:700;}
+.nb-record{background:var(--gray);padding:8px 12px;margin:8px 0;display:flex;align-items:center;gap:10px;border-left:2px solid var(--gray-mid);}
+.nb-record.green{border-left-color:var(--green);}
+.nb-record.red{border-left-color:var(--red);}
+.nb-record.gold{border-left-color:var(--gold);}
+.nbr-exercise{font-size:.62rem;color:var(--gray-light);}
+.nbr-result{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;line-height:1;}
+.nbr-rank{font-size:.58rem;color:var(--gray-light);margin-top:1px;}
+.nb-comment{background:var(--gray);padding:8px 12px;margin:8px 0;font-size:.7rem;color:var(--gray-light);line-height:1.5;border-left:2px solid var(--gray-mid);font-style:italic;}
+.nb-time{font-size:.58rem;color:var(--gray-light);}
+.nb-actions{display:flex;gap:8px;margin-top:8px;}
+.nb-action-btn{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;cursor:none;transition:all .2s;}
+.nb-action-btn:hover{border-color:var(--gray-light);color:var(--white);}
+.nb-action-btn.primary{background:var(--red);border-color:var(--red);color:var(--white);}
+.nb-action-btn.primary:hover{background:var(--red-dark);}
+.nb-action-btn.gold{background:rgba(245,200,66,.1);border-color:rgba(245,200,66,.3);color:var(--gold);}
+
+/* REP GAIN */
+.rep-gain{display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.15);padding:2px 8px;font-size:.58rem;font-weight:700;color:var(--gold);margin-left:6px;}
+
+/* SPECIAL NOTIFICATIONS */
+/* Achievement unlock */
+.notif-item.achievement{background:rgba(245,200,66,.03);}
+.notif-item.achievement.unread{background:rgba(245,200,66,.06);}
+.achievement-card{background:linear-gradient(135deg,rgba(245,200,66,.08),rgba(245,200,66,.02));border:1px solid rgba(245,200,66,.2);padding:14px 16px;margin:8px 0;display:flex;align-items:center;gap:14px;}
+.ac-icon{font-size:2rem;flex-shrink:0;}
+.ac-body{}
+.ac-title{font-size:.82rem;font-weight:700;color:var(--gold);margin-bottom:3px;}
+.ac-desc{font-size:.65rem;color:var(--gray-light);line-height:1.4;}
+.ac-rep{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);margin-left:auto;flex-shrink:0;}
+
+/* Streak */
+.streak-visual{display:flex;gap:4px;margin:8px 0;}
+.sv-day{width:28px;height:28px;background:var(--gray-mid);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:var(--gray-light);transition:all .2s;}
+.sv-day.done{background:rgba(232,38,11,.2);color:var(--red);border:1px solid rgba(232,38,11,.3);}
+.sv-day.today{background:var(--red);color:var(--white);}
+
+/* Birthday */
+.notif-item.birthday{background:rgba(61,220,132,.03);}
+.birthday-card{background:rgba(61,220,132,.06);border:1px solid rgba(61,220,132,.2);padding:14px 16px;margin:8px 0;}
+.bc-title{font-size:.8rem;font-weight:700;color:var(--green);margin-bottom:4px;}
+.bc-desc{font-size:.68rem;color:var(--gray-light);line-height:1.5;}
+
+/* PUSH SETTINGS */
+aside{padding:24px 20px;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;display:flex;flex-direction:column;gap:20px;}
+.settings-block{background:var(--gray);padding:16px;}
+.sb-title{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;}
+.setting-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-mid);}
+.setting-item:last-child{border-bottom:none;}
+.si-left{}
+.si-name{font-size:.72rem;font-weight:600;margin-bottom:2px;}
+.si-desc{font-size:.6rem;color:var(--gray-light);line-height:1.4;}
+.toggle{width:36px;height:20px;background:var(--gray-mid);border-radius:10px;position:relative;cursor:none;transition:background .2s;flex-shrink:0;margin-top:2px;}
+.toggle.on{background:var(--red);}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:var(--white);border-radius:50%;top:3px;left:3px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(16px);}
+
+.stats-block{background:var(--gray);padding:16px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-item{background:var(--black);padding:10px 12px;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;}
+.stat-val.red{color:var(--red);}
+.stat-val.gold{color:var(--gold);}
+.stat-val.green{color:var(--green);}
+.stat-label{font-size:.52rem;color:var(--gray-light);margin-top:2px;}
+
+/* MOBILE */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);z-index:400;padding:8px 0 12px;}
+.bn-items{display:flex;justify-content:space-around;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:none;color:var(--gray-light);text-decoration:none;transition:color .2s;font-size:.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;position:relative;}
+.bn-item.active,.bn-item:hover{color:var(--white);}
+.bn-icon{font-size:1.2rem;}
+.bn-badge{position:absolute;top:-2px;right:-4px;width:14px;height:14px;background:var(--red);border-radius:50%;font-size:.45rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--white);}
+
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.notif-item{animation:slideIn .25s ease both;}
+
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-trail{display:none;}
+  nav{padding:12px 16px;}
+  .nav-links{display:none;}
+  .page{grid-template-columns:1fr;}
+  aside{display:none;}
+  .notif-header{padding:20px 16px 0;}
+  .date-sep{padding:8px 16px;}
+  .notif-item{padding:14px 16px;}
+  .bottom-nav{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-links">
+    <a href="fitorank-feed.html" class="nav-link">Лента</a>
+    <a href="fitorank-leaderboard.html" class="nav-link">Лидеры</a>
+    <a href="#" class="nav-link">Программы</a>
+    <a href="fitorank-profile.html" class="nav-link">Профиль</a>
+    <a href="fitorank-notifications.html" class="nav-link active">
+      Уведомления
+      <span class="nav-badge">7</span>
+    </a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<div class="page">
+<main>
+
+  <div class="notif-header">
+    <div class="nh-top">
+      <div>
+        <div class="nh-title">УВЕДОМЛЕНИЯ</div>
+        <div class="nh-count"><b>7 непрочитанных</b> · 24 всего за неделю</div>
+      </div>
+      <div class="nh-actions">
+        <button class="nh-btn" onclick="markAllRead()">Прочитать все</button>
+        <button class="nh-btn active" onclick="location.href='#settings'">⚙ Настройки</button>
+      </div>
+    </div>
+
+    <div class="notif-tabs">
+      <button class="ntab active" onclick="setTab(this,'all')">
+        Все <span class="ntab-count">7</span>
+      </button>
+      <button class="ntab" onclick="setTab(this,'records')">
+        Мои рекорды <span class="ntab-count">3</span>
+      </button>
+      <button class="ntab" onclick="setTab(this,'trust')">
+        Голоса <span class="ntab-count">2</span>
+      </button>
+      <button class="ntab" onclick="setTab(this,'achievements')">
+        Достижения <span class="ntab-count">1</span>
+      </button>
+      <button class="ntab" onclick="setTab(this,'social')">
+        Социальное <span class="ntab-count">1</span>
+      </button>
+      <button class="ntab" onclick="setTab(this,'system')">
+        Система
+      </button>
+    </div>
+  </div>
+
+  <div class="notif-list" id="notifList">
+
+    <!-- TODAY -->
+    <div class="date-sep"><div class="ds-text">Сегодня</div></div>
+
+    <!-- 1. EXPERT CONFIRMED — высший приоритет -->
+    <div class="notif-item unread achievement" onclick="markRead(this)">
+      <div class="unread-dot"></div>
+      <div class="notif-avatar" style="background:linear-gradient(135deg,var(--gold),#805000)">
+        А
+        <div class="avatar-type-badge atb-gold">⭐</div>
+      </div>
+      <div class="notif-body">
+        <div class="nb-text"><b>Алексей К.</b> <span class="highlight-gold">подтвердил твой рекорд как эксперт</span> <span class="rep-gain">+15 REP</span></div>
+        <div class="nb-record green">
+          <div>
+            <div class="nbr-exercise">Жим лёжа · 1RM</div>
+            <div class="nbr-result">140 кг</div>
+            <div class="nbr-rank">Топ-1 жим · 1240 REP</div>
+          </div>
+        </div>
+        <div class="nb-comment">«Техника чистая, глубина хорошая. Заслуженный результат.»</div>
+        <div class="nb-time">2 часа назад</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn primary" onclick="location.href='fitorank-record.html'">Посмотреть рекорд</button>
+          <button class="nb-action-btn" onclick="location.href='fitorank-profile.html'">Профиль Алексея</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. RANK UP — вошёл в топ -->
+    <div class="notif-item unread achievement" onclick="markRead(this)">
+      <div class="unread-dot"></div>
+      <div class="notif-icon ni-gold">🏆</div>
+      <div class="notif-body">
+        <div class="nb-text">Твой рекорд вошёл в <span class="highlight-gold">Топ-10 категории</span> <span class="rep-gain">+50 REP</span></div>
+        <div class="achievement-card">
+          <div class="ac-icon">🏆</div>
+          <div class="ac-body">
+            <div class="ac-title">Топ-10 · Жим лёжа</div>
+            <div class="ac-desc">Муж · 40–44 · 90–100 кг · Любительская лига<br>Ты обогнал 85% участников своей категории</div>
+          </div>
+          <div class="ac-rep">+50</div>
+        </div>
+        <div class="nb-time">3 часа назад</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn primary" onclick="location.href='fitorank-leaderboard.html'">Таблица лидеров</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SOMEONE DOUBTS — оспорили -->
+    <div class="notif-item unread" onclick="markRead(this)">
+      <div class="unread-dot"></div>
+      <div class="notif-avatar" style="background:var(--gray-mid)">
+        И
+        <div class="avatar-type-badge atb-red">!</div>
+      </div>
+      <div class="notif-body">
+        <div class="nb-text"><b>Иван П.</b> и ещё <b>4 человека</b> проголосовали <span class="highlight-red">Не верю</span></div>
+        <div class="nb-record red">
+          <div>
+            <div class="nbr-exercise">Жим лёжа · 1RM</div>
+            <div class="nbr-result">140 кг</div>
+            <div class="nbr-rank">Доверие снизилось: 91% → 88%</div>
+          </div>
+        </div>
+        <div class="nb-comment">«Иван П.: Глубина нормальная? Мне кажется неполная амплитуда.»</div>
+        <div class="nb-time">4 часа назад</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn primary" onclick="location.href='fitorank-record.html'">Посмотреть комментарии</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. NEW ACHIEVEMENT UNLOCK -->
+    <div class="notif-item unread achievement" onclick="markRead(this)">
+      <div class="unread-dot"></div>
+      <div class="notif-icon ni-gold">🎯</div>
+      <div class="notif-body">
+        <div class="nb-text"><span class="highlight-gold">Новая возможность разблокирована!</span> <span class="rep-gain">Авторитет</span></div>
+        <div class="achievement-card">
+          <div class="ac-icon">⭐</div>
+          <div class="ac-body">
+            <div class="ac-title">Уровень Авторитет · 500+ REP</div>
+            <div class="ac-desc">Теперь ты можешь оценивать технику выполнения и инициировать арбитраж. Твой голос весит больше.</div>
+          </div>
+          <div class="ac-rep">500</div>
+        </div>
+        <div class="nb-time">5 часов назад</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn gold" onclick="location.href='fitorank-feed.html'">⚡ Оценить технику · 47 рекордов ждут</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. MANY VOTES -->
+    <div class="notif-item unread" onclick="markRead(this)">
+      <div class="unread-dot"></div>
+      <div class="notif-icon ni-green">✅</div>
+      <div class="notif-body">
+        <div class="nb-text"><span class="highlight-green">+47 голосов «Верю»</span> за последний час</div>
+        <div class="nb-record green">
+          <div>
+            <div class="nbr-exercise">Жим лёжа · 1RM</div>
+            <div class="nbr-result">140 кг</div>
+            <div class="nbr-rank">Доверие: 88% · 312 голосов</div>
+          </div>
+        </div>
+        <div class="nb-time">1 час назад</div>
+      </div>
+    </div>
+
+    <!-- YESTERDAY -->
+    <div class="date-sep"><div class="ds-text">Вчера</div></div>
+
+    <!-- 6. BEATEN RECORD — тебя обогнали -->
+    <div class="notif-item unread" onclick="markRead(this)">
+      <div class="unread-dot"></div>
+      <div class="notif-avatar" style="background:linear-gradient(135deg,var(--silver),#555)">
+        С
+        <div class="avatar-type-badge atb-red">↑</div>
+      </div>
+      <div class="notif-body">
+        <div class="nb-text"><b>Сергей М.</b> обогнал тебя — ты теперь <span class="highlight-red">#7</span> в категории</div>
+        <div class="nb-record red">
+          <div>
+            <div class="nbr-exercise">Жим лёжа · Новый рекорд</div>
+            <div class="nbr-result">165 кг</div>
+            <div class="nbr-rank">Сергей был #8, стал #2</div>
+          </div>
+        </div>
+        <div class="nb-time">Вчера · 18:42</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn primary" onclick="location.href='fitorank-add-record.html'">🔥 Обновить свой рекорд</button>
+          <button class="nb-action-btn" onclick="location.href='fitorank-record.html'">Смотреть рекорд Сергея</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. STREAK -->
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="read-dot"></div>
+      <div class="notif-icon ni-red">🔥</div>
+      <div class="notif-body">
+        <div class="nb-text">Стрик <span class="highlight-gold">7 дней подряд</span> — ты активен целую неделю <span class="rep-gain">+10 REP</span></div>
+        <div class="streak-visual">
+          <div class="sv-day done">Пн</div>
+          <div class="sv-day done">Вт</div>
+          <div class="sv-day done">Ср</div>
+          <div class="sv-day done">Чт</div>
+          <div class="sv-day done">Пт</div>
+          <div class="sv-day done">Сб</div>
+          <div class="sv-day today">Вс</div>
+        </div>
+        <div class="nb-time">Вчера · 23:59</div>
+      </div>
+    </div>
+
+    <!-- 8. NEW FOLLOWER -->
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="read-dot"></div>
+      <div class="notif-avatar" style="background:linear-gradient(135deg,#4a9eff,#1a3a6e)">Д</div>
+      <div class="notif-body">
+        <div class="nb-text"><b>Денис В.</b> начал следить за тобой</div>
+        <div class="nb-time">Вчера · 15:30</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn" onclick="location.href='fitorank-profile.html'">Профиль Дениса</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- THIS WEEK -->
+    <div class="date-sep"><div class="ds-text">На этой неделе</div></div>
+
+    <!-- 9. BIRTHDAY / AGE CATEGORY -->
+    <div class="notif-item birthday" onclick="markRead(this)">
+      <div class="read-dot"></div>
+      <div class="notif-icon ni-green">🎂</div>
+      <div class="notif-body">
+        <div class="nb-text">Тебе исполнился <span class="highlight-green">41 год</span> — поздравляем!</div>
+        <div class="birthday-card">
+          <div class="bc-title">Обнови свои рекорды</div>
+          <div class="bc-desc">Ты перешёл в возрастную категорию 40–44. Твои результаты теперь сравниваются с новой группой. Самое время установить свежие рекорды и занять место в новом рейтинге.</div>
+        </div>
+        <div class="nb-time">3 дня назад</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn primary" onclick="location.href='fitorank-add-record.html'">Добавить рекорд</button>
+          <button class="nb-action-btn" onclick="location.href='fitorank-leaderboard.html'">Моя новая категория</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. COMMENT ON RECORD -->
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="read-dot"></div>
+      <div class="notif-avatar" style="background:linear-gradient(135deg,var(--green),#1a5a30)">К</div>
+      <div class="notif-body">
+        <div class="nb-text"><b>Константин М.</b> ответил на твой комментарий</div>
+        <div class="nb-comment">«Захар, а какую программу используешь? Хочу попробовать что-то похожее.»</div>
+        <div class="nb-time">4 дня назад</div>
+        <div class="nb-actions">
+          <button class="nb-action-btn" onclick="location.href='fitorank-record.html'">Ответить</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- ASIDE — PUSH SETTINGS -->
+<aside id="settings">
+
+  <div class="stats-block">
+    <div class="sb-title">Активность за неделю</div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-val red">24</div>
+        <div class="stat-label">Уведомлений</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val gold">+87</div>
+        <div class="stat-label">REP заработано</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val green">312</div>
+        <div class="stat-label">Голосов за рекорд</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" style="color:var(--white)">7</div>
+        <div class="stat-label">Дней стрика</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-block">
+    <div class="sb-title">🔔 Пуш-уведомления</div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Мои рекорды</div>
+        <div class="si-desc">Голоса, экспертные оценки, комментарии</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Обогнали в рейтинге</div>
+        <div class="si-desc">Когда кто-то занял твоё место</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Достижения и уровни</div>
+        <div class="si-desc">REP, разблокировки, топ-рейтинги</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Напоминание обновить рекорды</div>
+        <div class="si-desc">День рождения, смена категории</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Стрик под угрозой</div>
+        <div class="si-desc">Если не заходил больше 6 дней</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Социальная активность</div>
+        <div class="si-desc">Подписки, ответы на комментарии</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Оценить технику</div>
+        <div class="si-desc">Новые рекорды в очереди на оценку</div>
+      </div>
+      <div class="toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Новости платформы</div>
+        <div class="si-desc">Обновления, новые функции</div>
+      </div>
+      <div class="toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+  </div>
+
+  <div class="settings-block">
+    <div class="sb-title">⏰ Тихие часы</div>
+    <div class="setting-item">
+      <div class="si-left">
+        <div class="si-name">Не беспокоить</div>
+        <div class="si-desc">С 23:00 до 08:00</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+  </div>
+
+</aside>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn-items">
+    <a href="fitorank.html" class="bn-item"><span class="bn-icon">🏠</span>Главная</a>
+    <a href="fitorank-feed.html" class="bn-item"><span class="bn-icon">📋</span>Лента</a>
+    <a href="fitorank-leaderboard.html" class="bn-item"><span class="bn-icon">🏆</span>Лидеры</a>
+    <a href="fitorank-notifications.html" class="bn-item active">
+      <span class="bn-icon">🔔</span>
+      <span class="bn-badge">7</span>
+      Уведомления
+    </a>
+    <a href="fitorank-profile.html" class="bn-item"><span class="bn-icon">👤</span>Профиль</a>
+  </div>
+</div>
+
+<script>
+const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-6+'px';cur.style.top=my-6+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+function markRead(item) {
+  item.classList.remove('unread');
+  const dot = item.querySelector('.unread-dot');
+  if(dot) dot.className = 'read-dot';
+  updateCount();
+}
+
+function markAllRead() {
+  document.querySelectorAll('.notif-item.unread').forEach(item => {
+    item.classList.remove('unread');
+    const dot = item.querySelector('.unread-dot');
+    if(dot) dot.className = 'read-dot';
+  });
+  updateCount();
+}
+
+function updateCount() {
+  const unread = document.querySelectorAll('.notif-item.unread').length;
+  document.querySelector('.nh-count b').textContent = unread + ' непрочитанных';
+  const badge = document.querySelector('.nav-badge');
+  if(badge) badge.textContent = unread > 0 ? unread : '';
+  if(badge && unread === 0) badge.style.display = 'none';
+  document.querySelector('.ntab.active .ntab-count').textContent = unread;
+}
+
+function setTab(btn, type) {
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

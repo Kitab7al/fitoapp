@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Жим лёжа 165 кг · Сергей М.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-center{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-center a{color:var(--gray-light);text-decoration:none;transition:color .2s;cursor:none;}
+.nav-center a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-avatar{width:32px;height:32px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--red);}
+
+/* LAYOUT */
+.page-wrap{padding-top:65px;display:grid;grid-template-columns:1fr 340px;gap:0;min-height:100vh;position:relative;z-index:1;}
+main{border-right:1px solid var(--gray-mid);}
+aside{padding:28px 24px;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;display:flex;flex-direction:column;gap:20px;}
+
+/* HERO */
+.record-hero{padding:36px 40px;border-bottom:1px solid var(--gray-mid);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;}
+.rh-left{}
+.rh-breadcrumb{display:flex;align-items:center;gap:8px;font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;}
+.rh-breadcrumb span{color:var(--red);}
+.rh-exercise{font-family:'Bebas Neue',sans-serif;font-size:3.8rem;line-height:.9;letter-spacing:.02em;margin-bottom:6px;}
+.rh-result{font-family:'Bebas Neue',sans-serif;font-size:6rem;line-height:1;color:var(--white);display:flex;align-items:baseline;gap:12px;}
+.rh-unit{font-size:2rem;color:var(--gray-light);}
+.rh-meta{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;}
+.rh-badge{font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
+.rh-badge.type-1rm{background:rgba(232,38,11,.12);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.rh-badge.natural{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.rh-badge.clean{background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2);}
+.rh-badge.amateur{background:rgba(74,158,255,.08);color:var(--blue);border:1px solid rgba(74,158,255,.15);}
+.rh-date{font-size:.62rem;color:var(--gray-light);}
+.rh-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
+.rh-rank{text-align:right;}
+.rh-rank-label{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.rh-rank-value{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--gold);line-height:1;}
+.rh-rank-pct{font-size:.65rem;color:var(--gray-light);margin-top:2px;}
+.rh-rank-pct b{color:var(--green);}
+.rh-share{display:flex;gap:8px;}
+.share-btn{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;cursor:none;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.share-btn:hover{border-color:var(--gray-light);color:var(--white);}
+
+/* AUTHOR */
+.author-bar{padding:20px 40px;border-bottom:1px solid var(--gray-mid);display:flex;align-items:center;justify-content:space-between;}
+.author-info{display:flex;align-items:center;gap:14px;}
+.author-avatar{width:48px;height:48px;background:linear-gradient(135deg,var(--red),var(--gray-mid));clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--white);flex-shrink:0;}
+.author-name{font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.author-handle{font-size:.65rem;color:var(--gray-light);}
+.author-badges{display:flex;gap:6px;margin-top:4px;}
+.ab{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
+.ab.natural{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.ab.verified{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.ab.authority{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.author-rep{text-align:right;}
+.rep-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);line-height:1;}
+.rep-label{font-size:.55rem;color:var(--gray-light);letter-spacing:.1em;text-transform:uppercase;}
+.follow-btn{background:transparent;border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;cursor:none;transition:all .2s;margin-left:16px;}
+.follow-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* VIDEO */
+.video-section{padding:28px 40px;border-bottom:1px solid var(--gray-mid);}
+.vs-label{font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.video-frame{background:var(--gray);aspect-ratio:16/9;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;max-width:560px;}
+.video-frame::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,38,11,.06),transparent);}
+.vf-play{width:64px;height:64px;background:rgba(232,38,11,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:none;transition:transform .2s,background .2s;position:relative;z-index:1;}
+.vf-play:hover{transform:scale(1.1);background:var(--red);}
+.vf-play::after{content:'';width:0;height:0;border-style:solid;border-width:10px 0 10px 20px;border-color:transparent transparent transparent var(--white);margin-left:4px;}
+.vf-platform{position:absolute;top:12px;right:12px;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(8,8,8,.8);padding:4px 8px;color:var(--red);}
+.vf-duration{position:absolute;bottom:12px;right:12px;font-size:.6rem;font-weight:700;background:rgba(8,8,8,.8);padding:3px 7px;color:var(--white);}
+.vf-bg{position:absolute;inset:0;background:linear-gradient(180deg,var(--gray-mid),var(--black));opacity:.5;}
+.video-url{margin-top:10px;font-size:.62rem;color:var(--gray-light);display:flex;align-items:center;gap:8px;}
+.video-url a{color:var(--blue);text-decoration:none;cursor:none;}
+.video-url a:hover{text-decoration:underline;}
+
+/* DESCRIPTION */
+.desc-section{padding:24px 40px;border-bottom:1px solid var(--gray-mid);}
+.desc-text{font-size:.82rem;line-height:1.8;color:var(--white);font-weight:300;}
+.desc-text b{font-weight:700;color:var(--white);}
+
+/* TRUST SCALE — главный элемент */
+.trust-section{padding:28px 40px;border-bottom:1px solid var(--gray-mid);}
+.ts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.ts-title{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);}
+.ts-votes{font-size:.65rem;color:var(--gray-light);}
+.ts-votes b{color:var(--white);}
+
+/* BIG TRUST BAR */
+.trust-bar-wrap{margin-bottom:20px;}
+.trust-numbers{display:flex;justify-content:space-between;margin-bottom:8px;}
+.tn-believe{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green);line-height:1;}
+.tn-doubt{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red);line-height:1;}
+.tn-blabel{font-size:.58rem;color:var(--gray-light);margin-top:2px;}
+.trust-bar{height:12px;background:var(--gray-mid);border-radius:0;overflow:hidden;position:relative;}
+.tb-fill{height:100%;background:linear-gradient(to right,var(--green),rgba(61,220,132,.6));transition:width .8s ease;border-radius:0;}
+.tb-pct{position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:.6rem;font-weight:700;color:var(--white);}
+.trust-status{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 16px;background:rgba(61,220,132,.06);border:1px solid rgba(61,220,132,.2);}
+.trust-status.disputed{background:rgba(232,38,11,.06);border-color:rgba(232,38,11,.2);}
+.ts-icon{font-size:1.1rem;}
+.ts-status-text{font-size:.7rem;font-weight:700;color:var(--green);}
+.trust-status.disputed .ts-status-text{color:var(--red);}
+.ts-status-sub{font-size:.6rem;color:var(--gray-light);margin-top:1px;}
+
+/* EXPERT MARKS */
+.expert-section{padding:24px 40px;border-bottom:1px solid var(--gray-mid);}
+.es-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.es-title{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);}
+.es-count{font-size:.62rem;color:var(--gray-light);}
+.expert-confirmed{background:rgba(61,220,132,.06);border:1px solid rgba(61,220,132,.2);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.ec-icon{font-size:1rem;}
+.ec-text{font-size:.7rem;font-weight:700;color:var(--green);}
+.ec-sub{font-size:.6rem;color:var(--gray-light);margin-top:1px;}
+.experts-list{display:flex;flex-direction:column;gap:10px;}
+.expert-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--gray);border:1px solid var(--gray-mid);cursor:none;transition:border-color .2s;text-decoration:none;color:inherit;}
+.expert-item:hover{border-color:var(--gold);}
+.ei-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gray-mid));clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--black);flex-shrink:0;}
+.ei-body{flex:1;}
+.ei-name{font-size:.78rem;font-weight:700;margin-bottom:2px;}
+.ei-creds{font-size:.6rem;color:var(--gray-light);}
+.ei-vote{display:flex;align-items:center;gap:6px;}
+.ei-vote-badge{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;}
+.ei-vote-badge.believe{background:rgba(61,220,132,.12);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.ei-vote-badge.doubt{background:rgba(232,38,11,.12);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.ei-comment{font-size:.65rem;color:var(--gray-light);margin-top:4px;font-style:italic;line-height:1.4;}
+.ei-rep{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--gold);}
+
+/* VOTE ACTIONS */
+.vote-section{padding:24px 40px;border-bottom:1px solid var(--gray-mid);}
+.vote-title{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;}
+.vote-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.vote-btn{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.vote-btn:hover{border-color:var(--gray-light);}
+.vote-btn.believe:hover,.vote-btn.believe.active{background:rgba(61,220,132,.1);border-color:var(--green);color:var(--green);}
+.vote-btn.doubt:hover,.vote-btn.doubt.active{background:rgba(232,38,11,.1);border-color:var(--red);color:var(--red);}
+.vote-btn.active{pointer-events:none;}
+.vote-weight{font-size:.6rem;color:var(--gray-light);text-align:center;}
+.vote-weight b{color:var(--gold);}
+
+/* EXPERT VOTE — only for Авторитет+ */
+.expert-vote-block{background:rgba(245,200,66,.04);border:1px solid rgba(245,200,66,.15);padding:16px;margin-top:12px;}
+.evb-title{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.evb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.evb-btn{background:transparent;border:1px solid rgba(245,200,66,.2);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:10px;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.evb-btn:hover{background:rgba(245,200,66,.08);border-color:var(--gold);}
+.evb-btn.active{background:rgba(245,200,66,.12);border-color:var(--gold);}
+.evb-comment{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:10px 12px;outline:none;resize:none;cursor:none;line-height:1.5;}
+.evb-comment::placeholder{color:var(--gray-light);}
+.evb-comment:focus{border-color:var(--gold);}
+.evb-submit{width:100%;background:var(--gold);color:var(--black);border:none;font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px;cursor:none;margin-top:8px;transition:opacity .2s;}
+.evb-submit:hover{opacity:.85;}
+
+/* CATEGORY CONTEXT */
+.category-section{padding:20px 40px;border-bottom:1px solid var(--gray-mid);}
+.cat-label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.cat-stat{background:var(--gray);padding:12px 14px;}
+.cs-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--white);line-height:1;}
+.cs-label{font-size:.55rem;color:var(--gray-light);margin-top:2px;}
+.cat-bar-wrap{margin-top:12px;}
+.cat-bar-label{display:flex;justify-content:space-between;font-size:.6rem;color:var(--gray-light);margin-bottom:6px;}
+.cat-bar{height:6px;background:var(--gray-mid);border-radius:3px;overflow:hidden;position:relative;}
+.cat-bar-fill{height:100%;background:linear-gradient(to right,var(--red),var(--gold));border-radius:3px;}
+.cat-marker{position:absolute;top:-4px;width:2px;height:14px;background:var(--white);}
+
+/* COMMENTS */
+.comments-section{padding:28px 40px;}
+.cs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.cs-title{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);}
+.cs-count{font-size:.65rem;color:var(--white);font-weight:700;}
+.comment-input-wrap{display:flex;gap:10px;margin-bottom:24px;}
+.ci-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--red),var(--gray-mid));clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--white);flex-shrink:0;}
+.ci-field{flex:1;}
+.ci-input{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.78rem;padding:11px 14px;outline:none;transition:border-color .2s;cursor:none;}
+.ci-input::placeholder{color:var(--gray-light);}
+.ci-input:focus{border-color:var(--red);}
+.ci-actions{display:flex;justify-content:flex-end;margin-top:6px;}
+.ci-submit{background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;cursor:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:background .2s;}
+.ci-submit:hover{background:var(--red-dark);}
+.comments-list{display:flex;flex-direction:column;gap:16px;}
+.comment{display:flex;gap:12px;}
+.com-avatar{width:36px;height:36px;flex-shrink:0;clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;}
+.com-body{flex:1;}
+.com-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.com-name{font-size:.75rem;font-weight:700;cursor:none;}
+.com-name:hover{color:var(--red);}
+.com-badge{font-size:.48rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;}
+.com-badge.expert{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.com-badge.natural{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.com-time{font-size:.58rem;color:var(--gray-light);margin-left:auto;}
+.com-text{font-size:.75rem;line-height:1.6;color:rgba(245,242,238,.85);}
+.com-actions{display:flex;align-items:center;gap:12px;margin-top:6px;}
+.com-like{background:none;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;cursor:none;transition:color .2s;display:flex;align-items:center;gap:4px;}
+.com-like:hover,.com-like.active{color:var(--green);}
+.com-reply{background:none;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;cursor:none;transition:color .2s;letter-spacing:.08em;text-transform:uppercase;}
+.com-reply:hover{color:var(--white);}
+.com-rep{font-size:.55rem;color:var(--gold);}
+
+/* ASIDE */
+.aside-cat{background:var(--gray);padding:16px;}
+.ac-label{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:8px;}
+.ac-value{font-family:'Bebas Neue',sans-serif;font-size:1rem;line-height:1.2;}
+.ac-league{display:inline-flex;font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;margin-top:6px;background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2);}
+
+.aside-related{background:var(--gray);padding:16px;}
+.ar-label{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.related-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-mid);cursor:none;transition:opacity .2s;}
+.related-item:last-child{border-bottom:none;}
+.related-item:hover{opacity:.8;}
+.ri-rank{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--gray-light);width:28px;flex-shrink:0;}
+.ri-rank.gold{color:var(--gold);}
+.ri-rank.silver{color:#aaa;}
+.ri-rank.bronze{color:#cd7f32;}
+.ri-body{flex:1;}
+.ri-name{font-size:.72rem;font-weight:700;margin-bottom:1px;}
+.ri-result{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--white);}
+.ri-badges{display:flex;gap:4px;margin-top:3px;}
+.ri-b{font-size:.45rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.15);}
+.ri-current{border:1px solid var(--red);padding:1px 5px;font-size:.45rem;font-weight:700;color:var(--red);}
+
+.aside-activity{background:var(--gray);padding:16px;}
+.aa-label{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.activity-item{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start;}
+.activity-item:last-child{margin-bottom:0;}
+.act-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.act-dot.green{background:var(--green);}
+.act-dot.red{background:var(--red);}
+.act-dot.gold{background:var(--gold);}
+.act-text{font-size:.65rem;color:var(--gray-light);line-height:1.5;}
+.act-text b{color:var(--white);}
+.act-time{font-size:.55rem;color:var(--gray-mid);margin-top:1px;}
+
+/* MOBILE */
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-trail{display:none;}
+  nav{padding:12px 16px;}
+  .nav-center{display:none;}
+  .page-wrap{grid-template-columns:1fr;}
+  aside{display:none;}
+  .record-hero{padding:20px 16px;grid-template-columns:1fr;gap:16px;}
+  .rh-result{font-size:4rem;}
+  .rh-exercise{font-size:2.8rem;}
+  .rh-right{align-items:flex-start;}
+  .author-bar{padding:16px;}
+  .video-section,.desc-section,.trust-section,.expert-section,.vote-section,.category-section,.comments-section{padding:20px 16px;}
+  .cat-grid{grid-template-columns:1fr 1fr;}
+  .vote-btns,.evb-btns{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-center">
+    <a href="fitorank-feed.html">Лента</a>
+    <span class="nav-sep">/</span>
+    <span>Жим лёжа</span>
+    <span class="nav-sep">/</span>
+    <span style="color:var(--white)">Сергей М. · 165 кг</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<main>
+
+  <!-- HERO -->
+  <div class="record-hero">
+    <div class="rh-left">
+      <div class="rh-breadcrumb">Жим лёжа <span>·</span> Одноповторный максимум <span>·</span> 1RM</div>
+      <div class="rh-exercise">Жим лёжа</div>
+      <div class="rh-result">165 <span class="rh-unit">кг</span></div>
+      <div class="rh-meta">
+        <span class="rh-badge type-1rm">1RM</span>
+        <span class="rh-badge natural">🌿 Натурал</span>
+        <span class="rh-badge clean">✅ Чистая техника</span>
+        <span class="rh-badge amateur">Любительская лига</span>
+        <span class="rh-date">3 марта 2026</span>
+      </div>
+    </div>
+    <div class="rh-right">
+      <div class="rh-rank">
+        <div class="rh-rank-label">Ранг в категории</div>
+        <div class="rh-rank-value">#2</div>
+        <div class="rh-rank-pct">Лучше чем <b>94%</b> участников</div>
+      </div>
+      <div class="rh-share">
+        <button class="share-btn" onclick="copyLink()">🔗 Скопировать</button>
+        <button class="share-btn">↗ Поделиться</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTHOR -->
+  <div class="author-bar">
+    <div class="author-info">
+      <div class="author-avatar">С</div>
+      <div>
+        <div class="author-name">Сергей М.</div>
+        <div class="author-handle">@sergey_m · Москва</div>
+        <div class="author-badges">
+          <span class="ab natural">Натурал</span>
+          <span class="ab verified">Верифицирован</span>
+          <span class="ab authority">Авторитет</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0">
+      <div class="author-rep">
+        <div class="rep-num">847</div>
+        <div class="rep-label">REP</div>
+      </div>
+      <button class="follow-btn" onclick="toggleFollow(this)">+ Следить</button>
+    </div>
+  </div>
+
+  <!-- VIDEO -->
+  <div class="video-section">
+    <div class="vs-label">Видео-подтверждение</div>
+    <div class="video-frame">
+      <div class="vf-bg"></div>
+      <div class="vf-play" onclick="this.innerHTML='⏸'; this.style.background='var(--gray-mid)'"></div>
+      <div class="vf-platform">TikTok</div>
+      <div class="vf-duration">0:23</div>
+    </div>
+    <div class="video-url">
+      🎵 Оригинал на TikTok:
+      <a href="#">@sergey_m · tiktok.com/...</a>
+    </div>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <div class="desc-section">
+    <div class="desc-text">
+      Три года шёл к этому результату. <b>Жал 140 кг когда пришёл на платформу</b>, сейчас 165. Программа — линейная периодизация 4 дня в неделю. Никакой магии, только объём и восстановление. Следующая цель — 175 кг до конца года.
+    </div>
+  </div>
+
+  <!-- TRUST SCALE -->
+  <div class="trust-section">
+    <div class="ts-header">
+      <div class="ts-title">Шкала доверия сообщества</div>
+      <div class="ts-votes">Проголосовало: <b>312 человек</b></div>
+    </div>
+    <div class="trust-bar-wrap">
+      <div class="trust-numbers">
+        <div>
+          <div class="tn-believe">267</div>
+          <div class="tn-blabel" style="color:var(--green)">Верю</div>
+        </div>
+        <div style="text-align:right">
+          <div class="tn-doubt" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;">45</div>
+          <div class="tn-blabel" style="color:var(--red)">Не верю</div>
+        </div>
+      </div>
+      <div class="trust-bar">
+        <div class="tb-fill" id="trustFill" style="width:0%"></div>
+        <div class="tb-pct">86%</div>
+      </div>
+    </div>
+    <div class="trust-status" id="trustStatus">
+      <div class="ts-icon">✅</div>
+      <div>
+        <div class="ts-status-text">Подтверждено экспертами</div>
+        <div class="ts-status-sub">3 эксперта в жиме лёжа проверили и подтвердили результат</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERT MARKS -->
+  <div class="expert-section">
+    <div class="es-header">
+      <div class="es-title">Экспертная оценка</div>
+      <div class="es-count">3 эксперта · 0 против</div>
+    </div>
+    <div class="expert-confirmed">
+      <div class="ec-icon">⭐</div>
+      <div>
+        <div class="ec-text">✅ Подтверждено 3 экспертами</div>
+        <div class="ec-sub">Для оспаривания требуется 5 голосов «Не верю» от экспертов</div>
+      </div>
+    </div>
+    <div class="experts-list">
+
+      <a href="fitorank-profile.html" class="expert-item">
+        <div class="ei-avatar" style="background:linear-gradient(135deg,var(--gold),#a07000)">З</div>
+        <div class="ei-body">
+          <div class="ei-name">Захар М.</div>
+          <div class="ei-creds">⭐ Авторитет · Топ-3 жим лёжа · 847 REP</div>
+          <div class="ei-comment">«Техника чистая, паузы на груди нет но по правилам любительской лиги — ок. Верю.»</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span class="ei-vote-badge believe">Верю</span>
+          <span class="ei-rep">847</span>
+        </div>
+      </a>
+
+      <a href="fitorank-profile.html" class="expert-item">
+        <div class="ei-avatar" style="background:linear-gradient(135deg,#4a9eff,#1a3a6e)">А</div>
+        <div class="ei-body">
+          <div class="ei-name">Алексей К.</div>
+          <div class="ei-creds">🏆 Эксперт · Топ-1 жим лёжа · 1240 REP</div>
+          <div class="ei-comment">«Видео чёткое, глубина нормальная. Хороший результат для любителя.»</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span class="ei-vote-badge believe">Верю</span>
+          <span class="ei-rep">1240</span>
+        </div>
+      </a>
+
+      <a href="fitorank-profile.html" class="expert-item">
+        <div class="ei-avatar" style="background:linear-gradient(135deg,var(--red),#6e1a1a)">М</div>
+        <div class="ei-body">
+          <div class="ei-name">Михаил Р.</div>
+          <div class="ei-creds">⭐ Авторитет · Топ-8 жим лёжа · 612 REP</div>
+          <div class="ei-comment">«Подтверждаю.»</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span class="ei-vote-badge believe">Верю</span>
+          <span class="ei-rep">612</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- VOTE ACTIONS -->
+  <div class="vote-section">
+    <div class="vote-title">Твой голос</div>
+    <div class="vote-btns">
+      <button class="vote-btn believe" id="voteBeliève" onclick="vote('believe')">✅ Верю</button>
+      <button class="vote-btn doubt" id="voteDoubt" onclick="vote('doubt')">❌ Не верю</button>
+    </div>
+    <div class="vote-weight">Вес твоего голоса: <b>1.0</b> · Прокачай REP чтобы увеличить влияние</div>
+
+    <!-- EXPERT VOTE — visible for Авторитет+ -->
+    <div class="expert-vote-block">
+      <div class="evb-title">⭐ Экспертная оценка — доступна тебе как Авторитету</div>
+      <div class="evb-btns">
+        <button class="evb-btn" onclick="expertVote(this,'believe')">✅ Подтверждаю как эксперт</button>
+        <button class="evb-btn" onclick="expertVote(this,'doubt')">❌ Оспариваю как эксперт</button>
+      </div>
+      <textarea class="evb-comment" rows="2" placeholder="Оставь экспертный комментарий (необязательно)..."></textarea>
+      <button class="evb-submit">Отправить экспертную оценку</button>
+    </div>
+  </div>
+
+  <!-- CATEGORY CONTEXT -->
+  <div class="category-section">
+    <div class="cat-label">Контекст категории · Муж · 35–39 · 90–100 кг · 175–179 см</div>
+    <div class="cat-grid">
+      <div class="cat-stat">
+        <div class="cs-val">#2</div>
+        <div class="cs-label">Место в категории</div>
+      </div>
+      <div class="cat-stat">
+        <div class="cs-val">89</div>
+        <div class="cs-label">Участников</div>
+      </div>
+      <div class="cat-stat">
+        <div class="cs-val">118</div>
+        <div class="cs-label">Среднее кг</div>
+      </div>
+      <div class="cat-stat">
+        <div class="cs-val">172</div>
+        <div class="cs-label">Лидер категории</div>
+      </div>
+    </div>
+    <div class="cat-bar-wrap">
+      <div class="cat-bar-label">
+        <span>Минимум · 60 кг</span>
+        <span>165 кг (этот рекорд)</span>
+        <span>Лидер · 172 кг</span>
+      </div>
+      <div class="cat-bar" style="position:relative;">
+        <div class="cat-bar-fill" style="width:93%"></div>
+        <div class="cat-marker" style="left:91%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMENTS -->
+  <div class="comments-section">
+    <div class="cs-header">
+      <div class="cs-title">Комментарии</div>
+      <div class="cs-count">18</div>
+    </div>
+
+    <div class="comment-input-wrap">
+      <div class="ci-avatar">Z</div>
+      <div class="ci-field">
+        <input class="ci-input" type="text" placeholder="Оставь комментарий..." id="commentInput">
+        <div class="ci-actions">
+          <button class="ci-submit" onclick="addComment()">Отправить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="comments-list" id="commentsList">
+
+      <div class="comment">
+        <div class="com-avatar" style="background:linear-gradient(135deg,var(--gold),#805000)">А</div>
+        <div class="com-body">
+          <div class="com-header">
+            <span class="com-name">Алексей К.</span>
+            <span class="com-badge expert">Эксперт</span>
+            <span class="com-badge natural">Натурал</span>
+            <span class="com-time">2 ч назад</span>
+          </div>
+          <div class="com-text">Серёга красавчик. Три года назад жал 130 — видел его прогресс вживую. Заслуженный результат.</div>
+          <div class="com-actions">
+            <button class="com-like" onclick="toggleLike(this)">👍 <span>14</span></button>
+            <button class="com-reply">Ответить</button>
+            <span class="com-rep">1240 REP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment">
+        <div class="com-avatar" style="background:linear-gradient(135deg,#4a9eff,#1a3a6e)">Д</div>
+        <div class="com-body">
+          <div class="com-header">
+            <span class="com-name">Денис В.</span>
+            <span class="com-time">5 ч назад</span>
+          </div>
+          <div class="com-text">Какая программа? Ты упомянул линейную периодизацию — интересно узнать детали. Сам застрял на 140 уже полгода.</div>
+          <div class="com-actions">
+            <button class="com-like" onclick="toggleLike(this)">👍 <span>7</span></button>
+            <button class="com-reply">Ответить</button>
+            <span class="com-rep">156 REP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment">
+        <div class="com-avatar" style="background:linear-gradient(135deg,var(--green),#1a5a30)">С</div>
+        <div class="com-body">
+          <div class="com-header">
+            <span class="com-name">Сергей М.</span>
+            <span class="com-badge natural">Натурал</span>
+            <span style="font-size:.48rem;color:var(--red);font-weight:700;padding:2px 6px;background:rgba(232,38,11,.1);border:1px solid rgba(232,38,11,.2)">Автор</span>
+            <span class="com-time">4 ч назад</span>
+          </div>
+          <div class="com-text">@Денис В. Опубликую программу на следующей неделе отдельным постом. Если коротко — 4 дня, волнообразная нагрузка, упор на технику а не на вес.</div>
+          <div class="com-actions">
+            <button class="com-like" onclick="toggleLike(this)">👍 <span>23</span></button>
+            <button class="com-reply">Ответить</button>
+            <span class="com-rep">634 REP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment">
+        <div class="com-avatar" style="background:var(--gray-mid)">И</div>
+        <div class="com-body">
+          <div class="com-header">
+            <span class="com-name">Иван П.</span>
+            <span class="com-time">8 ч назад</span>
+          </div>
+          <div class="com-text">Глубина нормальная? Мне кажется неполная амплитуда.</div>
+          <div class="com-actions">
+            <button class="com-like" onclick="toggleLike(this)">👍 <span>2</span></button>
+            <button class="com-reply">Ответить</button>
+            <span class="com-rep">48 REP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment" style="margin-left:48px;">
+        <div class="com-avatar" style="background:linear-gradient(135deg,var(--gold),#805000)">А</div>
+        <div class="com-body">
+          <div class="com-header">
+            <span class="com-name">Алексей К.</span>
+            <span class="com-badge expert">Эксперт</span>
+            <span class="com-time">7 ч назад</span>
+          </div>
+          <div class="com-text">@Иван П. В любительской лиге нет требования паузы. Амплитуда достаточная. Именно поэтому здесь нужны эксперты — чтобы не было таких ошибочных сомнений.</div>
+          <div class="com-actions">
+            <button class="com-like" onclick="toggleLike(this)">👍 <span>31</span></button>
+            <button class="com-reply">Ответить</button>
+            <span class="com-rep">1240 REP</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ASIDE -->
+<aside>
+
+  <div class="aside-cat">
+    <div class="ac-label">Категория рекорда</div>
+    <div class="ac-value">Муж · 35–39 лет<br>90–100 кг · 175–179 см</div>
+    <div class="ac-league">💪 Любительская лига</div>
+  </div>
+
+  <div class="aside-related">
+    <div class="ar-label">Топ категории · Жим лёжа</div>
+    <div class="related-item">
+      <div class="ri-rank gold">#1</div>
+      <div class="ri-body">
+        <div class="ri-name">Алексей К.</div>
+        <div class="ri-result">172 кг</div>
+        <div class="ri-badges"><span class="ri-b">Натурал</span></div>
+      </div>
+    </div>
+    <div class="related-item">
+      <div class="ri-rank silver">#2</div>
+      <div class="ri-body">
+        <div class="ri-name">Сергей М.</div>
+        <div class="ri-result">165 кг</div>
+        <div class="ri-badges">
+          <span class="ri-b">Натурал</span>
+          <span class="ri-current">этот рекорд</span>
+        </div>
+      </div>
+    </div>
+    <div class="related-item">
+      <div class="ri-rank bronze">#3</div>
+      <div class="ri-body">
+        <div class="ri-name">Владимир С.</div>
+        <div class="ri-result">158 кг</div>
+        <div class="ri-badges"><span class="ri-b">Натурал</span></div>
+      </div>
+    </div>
+    <div class="related-item">
+      <div class="ri-rank">#4</div>
+      <div class="ri-body">
+        <div class="ri-name">Роман Д.</div>
+        <div class="ri-result">152 кг</div>
+        <div class="ri-badges"></div>
+      </div>
+    </div>
+    <div class="related-item">
+      <div class="ri-rank">#5</div>
+      <div class="ri-body">
+        <div class="ri-name">Павел И.</div>
+        <div class="ri-result">147 кг</div>
+        <div class="ri-badges"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="aside-activity">
+    <div class="aa-label">Активность по рекорду</div>
+    <div class="activity-item">
+      <div class="act-dot green"></div>
+      <div>
+        <div class="act-text"><b>Захар М.</b> подтвердил как эксперт</div>
+        <div class="act-time">1 ч назад</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="act-dot green"></div>
+      <div>
+        <div class="act-text"><b>+47 голосов</b> «Верю» за последний час</div>
+        <div class="act-time">1 ч назад</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="act-dot gold"></div>
+      <div>
+        <div class="act-text"><b>Алексей К.</b> оставил экспертный комментарий</div>
+        <div class="act-time">2 ч назад</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="act-dot green"></div>
+      <div>
+        <div class="act-text">Рекорд вошёл в <b>Топ-3</b> категории</div>
+        <div class="act-time">3 ч назад</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="act-dot red"></div>
+      <div>
+        <div class="act-text"><b>Иван П.</b> усомнился в технике</div>
+        <div class="act-time">8 ч назад</div>
+      </div>
+    </div>
+  </div>
+
+</aside>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-6+'px';cur.style.top=my-6+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+// Animate trust bar on load
+setTimeout(()=>{document.getElementById('trustFill').style.width='86%';},300);
+
+// Vote
+let voted = null;
+function vote(type) {
+  if(voted === type) return;
+  voted = type;
+  document.getElementById('voteBeliève').classList.toggle('active', type==='believe');
+  document.getElementById('voteDoubt').classList.toggle('active', type==='doubt');
+}
+
+// Expert vote
+function expertVote(el, type) {
+  document.querySelectorAll('.evb-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Follow
+function toggleFollow(btn) {
+  const following = btn.textContent.includes('Отписаться');
+  btn.textContent = following ? '+ Следить' : '✓ Отписаться';
+  btn.style.borderColor = following ? '' : 'var(--green)';
+  btn.style.color = following ? '' : 'var(--green)';
+}
+
+// Like
+function toggleLike(btn) {
+  const active = btn.classList.toggle('active');
+  const span = btn.querySelector('span');
+  span.textContent = parseInt(span.textContent) + (active ? 1 : -1);
+}
+
+// Add comment
+function addComment() {
+  const input = document.getElementById('commentInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const list = document.getElementById('commentsList');
+  const div = document.createElement('div');
+  div.className = 'comment';
+  div.innerHTML = `
+    <div class="com-avatar" style="background:linear-gradient(135deg,var(--red),#6e1a1a)">Z</div>
+    <div class="com-body">
+      <div class="com-header">
+        <span class="com-name">Захар М.</span>
+        <span class="com-badge natural">Натурал</span>
+        <span class="com-time">только что</span>
+      </div>
+      <div class="com-text">${text}</div>
+      <div class="com-actions">
+        <button class="com-like" onclick="toggleLike(this)">👍 <span>0</span></button>
+        <button class="com-reply">Ответить</button>
+        <span class="com-rep">847 REP</span>
+      </div>
+    </div>`;
+  list.prepend(div);
+  input.value = '';
+}
+
+// Copy link
+function copyLink() {
+  navigator.clipboard?.writeText(window.location.href);
+}
+</script>
+</body>
+</html>

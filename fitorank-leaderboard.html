@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Таблица лидеров</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;--silver:#c0c0c0;--bronze:#cd7f32;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-links{display:flex;gap:24px;}
+.nav-link{color:var(--gray-light);font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:color .2s;cursor:none;}
+.nav-link:hover,.nav-link.active{color:var(--white);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-avatar{width:32px;height:32px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--red);}
+.nav-add{background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);cursor:none;transition:background .2s;text-decoration:none;}
+.nav-add:hover{background:var(--red-dark);}
+
+/* LAYOUT */
+.page{display:grid;grid-template-columns:260px 1fr 300px;min-height:100vh;padding-top:65px;position:relative;z-index:1;}
+
+/* LEFT FILTERS */
+.filters{padding:28px 20px;border-right:1px solid var(--gray-mid);position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;}
+.f-section{margin-bottom:28px;}
+.f-title{font-size:.55rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.f-title::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+
+/* EXERCISE FILTER */
+.ex-list{display:flex;flex-direction:column;gap:4px;}
+.ex-filter-btn{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;padding:8px 10px;cursor:none;transition:all .2s;text-align:left;display:flex;align-items:center;justify-content:space-between;width:100%;}
+.ex-filter-btn:hover{color:var(--white);background:var(--gray);}
+.ex-filter-btn.active{color:var(--white);background:rgba(232,38,11,.1);border-left:2px solid var(--red);padding-left:8px;}
+.ex-count{font-size:.58rem;color:var(--gray-light);}
+
+/* TOGGLE FILTERS */
+.toggle-group{display:flex;flex-direction:column;gap:6px;}
+.toggle-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;}
+.toggle-label{font-size:.68rem;color:var(--gray-light);}
+.toggle{width:36px;height:20px;background:var(--gray-mid);border-radius:10px;position:relative;cursor:none;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--red);}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:var(--white);border-radius:50%;top:3px;left:3px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(16px);}
+
+/* CATEGORY FILTER */
+.cat-selects{display:flex;flex-direction:column;gap:8px;}
+.cat-select{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:600;padding:9px 12px;outline:none;cursor:none;width:100%;transition:border-color .2s;}
+.cat-select:focus{border-color:var(--red);}
+.my-cat-btn{background:rgba(232,38,11,.08);border:1px solid rgba(232,38,11,.2);color:var(--red);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px;cursor:none;width:100%;transition:all .2s;margin-top:6px;}
+.my-cat-btn:hover{background:rgba(232,38,11,.15);}
+
+/* PR TYPE TOGGLE */
+.pr-toggle{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--gray-mid);}
+.pr-tog-btn{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:9px;cursor:none;transition:all .2s;}
+.pr-tog-btn.active{background:var(--red);color:var(--white);}
+
+/* MAIN CONTENT */
+.main{padding:0;}
+
+/* HERO BANNER */
+.lb-hero{padding:32px 32px 24px;border-bottom:1px solid var(--gray-mid);background:linear-gradient(135deg,rgba(232,38,11,.04),transparent);}
+.lb-tag{font-size:.55rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.lb-title{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;line-height:.95;margin-bottom:8px;}
+.lb-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.lb-stat{font-size:.65rem;color:var(--gray-light);}
+.lb-stat b{color:var(--white);}
+.lb-exercise-tabs{display:flex;gap:0;border-bottom:1px solid var(--gray-mid);overflow-x:auto;padding:0 32px;scrollbar-width:none;}
+.lb-exercise-tabs::-webkit-scrollbar{display:none;}
+.ex-tab{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 20px;cursor:none;transition:all .2s;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
+.ex-tab:hover{color:var(--white);}
+.ex-tab.active{color:var(--white);border-bottom-color:var(--red);}
+
+/* PODIUM — TOP 3 */
+.podium-section{padding:28px 32px;border-bottom:1px solid var(--gray-mid);}
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end;max-width:600px;margin:0 auto;}
+.podium-card{background:var(--gray);border:1px solid var(--gray-mid);padding:20px 16px;text-align:center;position:relative;transition:border-color .2s;cursor:none;}
+.podium-card:hover{border-color:var(--gray-light);}
+.podium-card.gold{border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.04);}
+.podium-card.silver{border-color:rgba(192,192,192,.2);}
+.podium-card.bronze{border-color:rgba(205,127,50,.2);}
+.podium-rank{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;margin-bottom:8px;}
+.podium-rank.gold{color:var(--gold);}
+.podium-rank.silver{color:var(--silver);}
+.podium-rank.bronze{color:var(--bronze);}
+.podium-avatar{width:52px;height:52px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--white);}
+.podium-avatar.gold{background:linear-gradient(135deg,var(--gold),#805000);}
+.podium-avatar.silver{background:linear-gradient(135deg,var(--silver),#555);}
+.podium-avatar.bronze{background:linear-gradient(135deg,var(--bronze),#6e3a00);}
+.podium-name{font-size:.78rem;font-weight:700;margin-bottom:2px;}
+.podium-result{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;margin-bottom:4px;}
+.podium-result.gold{color:var(--gold);}
+.podium-unit{font-size:.6rem;color:var(--gray-light);}
+.podium-badges{display:flex;gap:4px;justify-content:center;margin-top:6px;flex-wrap:wrap;}
+.pb{font-size:.45rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 5px;}
+.pb.nat{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.pb.expert{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.podium-trust{font-size:.58rem;color:var(--gray-light);margin-top:4px;}
+.podium-trust b{color:var(--green);}
+/* Gold card is bigger */
+.podium-wrap{display:contents;}
+.podium-card.gold{padding-top:28px;}
+
+/* TABLE */
+.table-section{padding:0 32px 32px;}
+.table-header{display:grid;grid-template-columns:48px 1fr 100px 80px 80px 100px;gap:0;padding:10px 0;border-bottom:1px solid var(--gray-mid);margin-bottom:0;}
+.th{font-size:.52rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);padding:0 8px;}
+.th:first-child{padding-left:0;}
+
+.table-row{display:grid;grid-template-columns:48px 1fr 100px 80px 80px 100px;gap:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:none;transition:background .15s;align-items:center;}
+.table-row:hover{background:rgba(255,255,255,.02);}
+.table-row.me{background:rgba(232,38,11,.04);border-left:2px solid var(--red);}
+.table-row.me:hover{background:rgba(232,38,11,.06);}
+
+.td{padding:0 8px;font-size:.75rem;}
+.td:first-child{padding-left:0;}
+
+/* RANK CELL */
+.td-rank{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--gray-light);text-align:center;}
+.td-rank.r1{color:var(--gold);}
+.td-rank.r2{color:var(--silver);}
+.td-rank.r3{color:var(--bronze);}
+.rank-change{font-size:.5rem;display:block;margin-top:1px;}
+.rank-change.up{color:var(--green);}
+.rank-change.down{color:var(--red);}
+.rank-change.same{color:var(--gray-light);}
+
+/* ATHLETE CELL */
+.td-athlete{display:flex;align-items:center;gap:10px;}
+.ta-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--white);flex-shrink:0;}
+.ta-name{font-size:.78rem;font-weight:700;margin-bottom:2px;}
+.ta-meta{display:flex;gap:4px;flex-wrap:wrap;}
+.ta-badge{font-size:.45rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;}
+.ta-badge.nat{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.15);}
+.ta-badge.exp{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.15);}
+.ta-badge.me{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.15);}
+
+/* RESULT CELL */
+.td-result{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--white);}
+.td-result span{font-size:.6rem;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-weight:400;}
+
+/* TRUST CELL */
+.td-trust{display:flex;align-items:center;gap:6px;}
+.trust-mini-bar{width:40px;height:4px;background:var(--gray-mid);border-radius:2px;overflow:hidden;}
+.tmb-fill{height:100%;background:var(--green);border-radius:2px;}
+.trust-pct{font-size:.62rem;font-weight:700;}
+.trust-pct.high{color:var(--green);}
+.trust-pct.mid{color:var(--gold);}
+.trust-pct.low{color:var(--red);}
+
+/* TECH CELL */
+.td-tech{font-size:.65rem;}
+.tech-star{color:var(--gold);}
+.tech-label{color:var(--gray-light);font-size:.55rem;display:block;margin-top:1px;}
+
+/* REP CELL */
+.td-rep{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gold);}
+
+/* MY POSITION BANNER */
+.my-position{margin:0 32px 0;padding:14px 16px;background:rgba(232,38,11,.06);border:1px solid rgba(232,38,11,.2);display:flex;align-items:center;justify-content:space-between;}
+.mp-left{display:flex;align-items:center;gap:12px;}
+.mp-rank{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red);line-height:1;}
+.mp-label{font-size:.62rem;color:var(--gray-light);}
+.mp-label b{color:var(--white);}
+.mp-right{font-size:.65rem;color:var(--gray-light);}
+.mp-right b{color:var(--green);}
+
+/* ASIDE */
+.sidebar{padding:24px 20px;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;display:flex;flex-direction:column;gap:20px;border-left:1px solid var(--gray-mid);}
+
+.sb-block{background:var(--gray);padding:16px;}
+.sb-label{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+
+/* MY STATS */
+.my-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ms-item{background:var(--black);padding:10px 12px;}
+.ms-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;}
+.ms-val.red{color:var(--red);}
+.ms-val.gold{color:var(--gold);}
+.ms-val.green{color:var(--green);}
+.ms-label{font-size:.52rem;color:var(--gray-light);margin-top:2px;}
+
+/* RISING */
+.rising-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-mid);}
+.rising-item:last-child{border-bottom:none;}
+.ri-pos{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gray-light);width:24px;flex-shrink:0;}
+.ri-info{flex:1;}
+.ri-name{font-size:.72rem;font-weight:700;}
+.ri-result{font-size:.62rem;color:var(--gray-light);}
+.ri-change{font-size:.65rem;font-weight:700;color:var(--green);}
+
+/* RECORDS HISTORY */
+.history-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-mid);}
+.history-item:last-child{border-bottom:none;}
+.hi-date{font-size:.55rem;color:var(--gray-light);width:40px;flex-shrink:0;}
+.hi-val{font-family:'Bebas Neue',sans-serif;font-size:1rem;flex:1;}
+.hi-delta{font-size:.6rem;font-weight:700;color:var(--green);}
+
+/* MOBILE BOTTOM NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);z-index:400;padding:8px 0 12px;}
+.bn-items{display:flex;justify-content:space-around;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:none;color:var(--gray-light);text-decoration:none;transition:color .2s;font-size:.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.bn-item.active,.bn-item:hover{color:var(--white);}
+.bn-icon{font-size:1.2rem;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.table-row{animation:fadeIn .3s ease both;}
+
+@media(max-width:1024px){
+  .page{grid-template-columns:0 1fr 0;}
+  .filters,.sidebar{display:none;}
+}
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-trail{display:none;}
+  nav{padding:12px 16px;}
+  .nav-links{display:none;}
+  .lb-hero{padding:20px 16px 16px;}
+  .lb-title{font-size:2.4rem;}
+  .lb-exercise-tabs{padding:0 16px;}
+  .podium-section{padding:20px 16px;}
+  .table-section{padding:0 16px 80px;}
+  .my-position{margin:0 16px 0;}
+  .table-header,.table-row{grid-template-columns:40px 1fr 80px 70px;}
+  .th:nth-child(5),.th:nth-child(6),.td:nth-child(5),.td:nth-child(6){display:none;}
+  .bottom-nav{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-links">
+    <a href="fitorank-feed.html" class="nav-link">Лента</a>
+    <a href="fitorank-leaderboard.html" class="nav-link active">Лидеры</a>
+    <a href="#" class="nav-link">Программы</a>
+    <a href="fitorank-profile.html" class="nav-link">Профиль</a>
+  </div>
+  <div class="nav-right">
+    <a href="fitorank-add-record.html" class="nav-add">+ Рекорд</a>
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- FILTERS -->
+<div class="filters">
+
+  <div class="f-section">
+    <div class="f-title">Упражнение</div>
+    <div class="ex-list">
+      <button class="ex-filter-btn active" onclick="setExercise(this)">Жим лёжа <span class="ex-count">1 240</span></button>
+      <button class="ex-filter-btn" onclick="setExercise(this)">Приседания <span class="ex-count">980</span></button>
+      <button class="ex-filter-btn" onclick="setExercise(this)">Становая тяга <span class="ex-count">876</span></button>
+      <button class="ex-filter-btn" onclick="setExercise(this)">Подтягивания <span class="ex-count">1 102</span></button>
+      <button class="ex-filter-btn" onclick="setExercise(this)">Брусья <span class="ex-count">534</span></button>
+      <button class="ex-filter-btn" onclick="setExercise(this)">Жим стоя <span class="ex-count">421</span></button>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-title">Тип рекорда</div>
+    <div class="pr-toggle">
+      <button class="pr-tog-btn active" onclick="setPRType(this)">1RM</button>
+      <button class="pr-tog-btn" onclick="setPRType(this)">Rep Max</button>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-title">Лига</div>
+    <div class="toggle-group">
+      <div class="toggle-item">
+        <span class="toggle-label">Любительская</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-item">
+        <span class="toggle-label">Про лига</span>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-title">Статус</div>
+    <div class="toggle-group">
+      <div class="toggle-item">
+        <span class="toggle-label">🌿 Натурал</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-item">
+        <span class="toggle-label">💊 Фарма</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-title">Техника</div>
+    <div class="toggle-group">
+      <div class="toggle-item">
+        <span class="toggle-label">✅ Чистая</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-item">
+        <span class="toggle-label">⚡ С читингом</span>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-title">Категория</div>
+    <div class="cat-selects">
+      <select class="cat-select" onchange="updateCategory()">
+        <option>Все возрасты</option>
+        <option>18–24</option>
+        <option>25–29</option>
+        <option>30–34</option>
+        <option>35–39</option>
+        <option selected>40–44</option>
+        <option>45–49</option>
+        <option>50–54</option>
+        <option>55–59</option>
+        <option>60+</option>
+      </select>
+      <select class="cat-select" onchange="updateCategory()">
+        <option>Все весовые</option>
+        <option>до 60 кг</option>
+        <option>60–67.5 кг</option>
+        <option>67.5–75 кг</option>
+        <option>75–82.5 кг</option>
+        <option>82.5–90 кг</option>
+        <option selected>90–100 кг</option>
+        <option>100–110 кг</option>
+        <option>110–125 кг</option>
+        <option>125+ кг</option>
+      </select>
+      <select class="cat-select" onchange="updateCategory()">
+        <option>Все пол</option>
+        <option selected>Мужчины</option>
+        <option>Женщины</option>
+      </select>
+    </div>
+    <button class="my-cat-btn" onclick="setMyCategory()">🎯 Моя категория</button>
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="lb-hero">
+    <div class="lb-tag">Таблица лидеров</div>
+    <div class="lb-title" id="lbTitle">Жим лёжа<br>1RM</div>
+    <div class="lb-meta">
+      <span class="lb-stat">Категория: <b id="lbCat">Муж · 40–44 · 90–100 кг</b></span>
+      <span class="lb-stat">Участников: <b>89</b></span>
+      <span class="lb-stat">Любительская лига</span>
+      <span class="lb-stat" style="color:var(--green)">🌿 Только натуралы</span>
+    </div>
+  </div>
+
+  <div class="lb-exercise-tabs">
+    <button class="ex-tab active" onclick="setTab(this)">Жим лёжа</button>
+    <button class="ex-tab" onclick="setTab(this)">Приседания</button>
+    <button class="ex-tab" onclick="setTab(this)">Становая</button>
+    <button class="ex-tab" onclick="setTab(this)">Подтягивания</button>
+    <button class="ex-tab" onclick="setTab(this)">Брусья</button>
+    <button class="ex-tab" onclick="setTab(this)">Жим стоя</button>
+  </div>
+
+  <!-- PODIUM -->
+  <div class="podium-section">
+    <div class="podium">
+
+      <!-- SILVER #2 -->
+      <div class="podium-card silver" onclick="location.href='fitorank-record.html'">
+        <div class="podium-rank silver">#2</div>
+        <div class="podium-avatar silver">С</div>
+        <div class="podium-name">Сергей М.</div>
+        <div class="podium-result" style="color:var(--silver)">165</div>
+        <div class="podium-unit">кг × 1</div>
+        <div class="podium-badges">
+          <span class="pb nat">Натурал</span>
+        </div>
+        <div class="podium-trust">Доверие <b>86%</b></div>
+      </div>
+
+      <!-- GOLD #1 -->
+      <div class="podium-card gold" onclick="location.href='fitorank-record.html'">
+        <div class="podium-rank gold">#1</div>
+        <div class="podium-avatar gold">А</div>
+        <div class="podium-name">Алексей К.</div>
+        <div class="podium-result gold">172</div>
+        <div class="podium-unit">кг × 1</div>
+        <div class="podium-badges">
+          <span class="pb nat">Натурал</span>
+          <span class="pb expert">Эксперт</span>
+        </div>
+        <div class="podium-trust">Доверие <b>98%</b></div>
+      </div>
+
+      <!-- BRONZE #3 -->
+      <div class="podium-card bronze" onclick="location.href='fitorank-record.html'">
+        <div class="podium-rank bronze">#3</div>
+        <div class="podium-avatar bronze">В</div>
+        <div class="podium-name">Владимир С.</div>
+        <div class="podium-result" style="color:var(--bronze)">158</div>
+        <div class="podium-unit">кг × 1</div>
+        <div class="podium-badges">
+          <span class="pb nat">Натурал</span>
+        </div>
+        <div class="podium-trust">Доверие <b>91%</b></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MY POSITION -->
+  <div class="my-position">
+    <div class="mp-left">
+      <div class="mp-rank">#7</div>
+      <div>
+        <div class="mp-label"><b>Захар М.</b> — твоя позиция</div>
+        <div class="mp-label">140 кг · До топ-3 нужно <b>+18 кг</b></div>
+      </div>
+    </div>
+    <div class="mp-right">Ты лучше чем <b>85%</b> в категории</div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="th" style="text-align:center">#</div>
+      <div class="th">Спортсмен</div>
+      <div class="th">Результат</div>
+      <div class="th">Доверие</div>
+      <div class="th">Техника</div>
+      <div class="th">REP</div>
+    </div>
+
+    <div id="tableBody">
+
+      <div class="table-row" style="animation-delay:.05s" onclick="location.href='fitorank-record.html'">
+        <div class="td"><div class="td-rank r1">1<span class="rank-change same">—</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:linear-gradient(135deg,var(--gold),#805000)">А</div>
+          <div>
+            <div class="ta-name">Алексей К.</div>
+            <div class="ta-meta"><span class="ta-badge nat">Натурал</span><span class="ta-badge exp">Эксперт</span></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">172 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:98%"></div></div>
+            <span class="trust-pct high">98%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★★★</span><span class="tech-label">Отлично</span></div></div>
+        <div class="td"><div class="td-rep">1240</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.1s" onclick="location.href='fitorank-record.html'">
+        <div class="td"><div class="td-rank r2">2<span class="rank-change up">↑1</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:linear-gradient(135deg,var(--silver),#555)">С</div>
+          <div>
+            <div class="ta-name">Сергей М.</div>
+            <div class="ta-meta"><span class="ta-badge nat">Натурал</span></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">165 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:86%"></div></div>
+            <span class="trust-pct high">86%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★★☆</span><span class="tech-label">Хорошо</span></div></div>
+        <div class="td"><div class="td-rep">634</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.15s" onclick="location.href='fitorank-record.html'">
+        <div class="td"><div class="td-rank r3">3<span class="rank-change down">↓1</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:linear-gradient(135deg,var(--bronze),#6e3a00)">В</div>
+          <div>
+            <div class="ta-name">Владимир С.</div>
+            <div class="ta-meta"><span class="ta-badge nat">Натурал</span></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">158 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:91%"></div></div>
+            <span class="trust-pct high">91%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★★☆</span><span class="tech-label">Хорошо</span></div></div>
+        <div class="td"><div class="td-rep">512</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.2s">
+        <div class="td"><div class="td-rank">4<span class="rank-change same">—</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:var(--gray-mid)">Р</div>
+          <div>
+            <div class="ta-name">Роман Д.</div>
+            <div class="ta-meta"><span class="ta-badge nat">Натурал</span></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">152 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:79%"></div></div>
+            <span class="trust-pct mid">79%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★☆☆</span><span class="tech-label">Норм</span></div></div>
+        <div class="td"><div class="td-rep">387</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.25s">
+        <div class="td"><div class="td-rank">5<span class="rank-change up">↑2</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:linear-gradient(135deg,#4a9eff,#1a3a6e)">П</div>
+          <div>
+            <div class="ta-name">Павел И.</div>
+            <div class="ta-meta"><span class="ta-badge nat">Натурал</span></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">147 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:94%"></div></div>
+            <span class="trust-pct high">94%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★★★</span><span class="tech-label">Отлично</span></div></div>
+        <div class="td"><div class="td-rep">298</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.3s">
+        <div class="td"><div class="td-rank">6<span class="rank-change down">↓1</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:linear-gradient(135deg,var(--green),#1a5a30)">Д</div>
+          <div>
+            <div class="ta-name">Денис В.</div>
+            <div class="ta-meta"></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">143 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:72%"></div></div>
+            <span class="trust-pct mid">72%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★☆☆</span><span class="tech-label">Норм</span></div></div>
+        <div class="td"><div class="td-rep">156</div></div>
+      </div>
+
+      <!-- ME -->
+      <div class="table-row me" style="animation-delay:.35s" onclick="location.href='fitorank-profile.html'">
+        <div class="td"><div class="td-rank">7<span class="rank-change up">↑1</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:linear-gradient(135deg,var(--red),#6e1a1a)">З</div>
+          <div>
+            <div class="ta-name">Захар М.</div>
+            <div class="ta-meta"><span class="ta-badge nat">Натурал</span><span class="ta-badge me">Ты</span></div>
+          </div>
+        </div>
+        <div class="td"><div class="td-result">140 <span>кг</span></div></div>
+        <div class="td">
+          <div class="td-trust">
+            <div class="trust-mini-bar"><div class="tmb-fill" style="width:88%"></div></div>
+            <span class="trust-pct high">88%</span>
+          </div>
+        </div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★★☆</span><span class="tech-label">Хорошо</span></div></div>
+        <div class="td"><div class="td-rep">847</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.4s">
+        <div class="td"><div class="td-rank">8<span class="rank-change same">—</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:var(--gray-mid)">И</div>
+          <div><div class="ta-name">Игорь Л.</div><div class="ta-meta"></div></div>
+        </div>
+        <div class="td"><div class="td-result">137 <span>кг</span></div></div>
+        <div class="td"><div class="td-trust"><div class="trust-mini-bar"><div class="tmb-fill" style="width:65%"></div></div><span class="trust-pct mid">65%</span></div></div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★☆☆</span><span class="tech-label">Норм</span></div></div>
+        <div class="td"><div class="td-rep">203</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.45s">
+        <div class="td"><div class="td-rank">9<span class="rank-change down">↓2</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:var(--gray-mid)">К</div>
+          <div><div class="ta-name">Константин М.</div><div class="ta-meta"><span class="ta-badge nat">Натурал</span></div></div>
+        </div>
+        <div class="td"><div class="td-result">135 <span>кг</span></div></div>
+        <div class="td"><div class="td-trust"><div class="trust-mini-bar"><div class="tmb-fill" style="width:83%"></div></div><span class="trust-pct high">83%</span></div></div>
+        <div class="td"><div class="td-tech"><span class="tech-star">★★★★☆</span><span class="tech-label">Хорошо</span></div></div>
+        <div class="td"><div class="td-rep">445</div></div>
+      </div>
+
+      <div class="table-row" style="animation-delay:.5s">
+        <div class="td"><div class="td-rank">10<span class="rank-change up">↑3</span></div></div>
+        <div class="td td-athlete">
+          <div class="ta-avatar" style="background:var(--gray-mid)">О</div>
+          <div><div class="ta-name">Олег Т.</div><div class="ta-meta"></div></div>
+        </div>
+        <div class="td"><div class="td-result">132 <span>кг</span></div></div>
+        <div class="td"><div class="td-trust"><div class="trust-mini-bar"><div class="tmb-fill" style="width:58%"></div></div><span class="trust-pct low">58%</span></div></div>
+        <div class="td"><div class="td-tech"><span class="tech-star" style="color:var(--gray-light)">★★☆☆☆</span><span class="tech-label">Спорно</span></div></div>
+        <div class="td"><div class="td-rep">89</div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <div class="sb-block">
+    <div class="sb-label">Моя статистика · Жим лёжа</div>
+    <div class="my-stats-grid">
+      <div class="ms-item">
+        <div class="ms-val red">#7</div>
+        <div class="ms-label">Моё место</div>
+      </div>
+      <div class="ms-item">
+        <div class="ms-val gold">140</div>
+        <div class="ms-label">кг · 1RM</div>
+      </div>
+      <div class="ms-item">
+        <div class="ms-val green">85%</div>
+        <div class="ms-label">Процентиль</div>
+      </div>
+      <div class="ms-item">
+        <div class="ms-val" style="color:var(--white)">+18</div>
+        <div class="ms-label">кг до топ-3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-block">
+    <div class="sb-label">🔥 Растут быстрее всех</div>
+    <div class="rising-item">
+      <div class="ri-pos">↑5</div>
+      <div class="ri-info">
+        <div class="ri-name">Павел И.</div>
+        <div class="ri-result">147 кг · был #10</div>
+      </div>
+      <div class="ri-change">+12 кг</div>
+    </div>
+    <div class="rising-item">
+      <div class="ri-pos">↑3</div>
+      <div class="ri-info">
+        <div class="ri-name">Олег Т.</div>
+        <div class="ri-result">132 кг · был #13</div>
+      </div>
+      <div class="ri-change">+8 кг</div>
+    </div>
+    <div class="rising-item">
+      <div class="ri-pos">↑2</div>
+      <div class="ri-info">
+        <div class="ri-name">Захар М.</div>
+        <div class="ri-result">140 кг · был #9</div>
+      </div>
+      <div class="ri-change">+5 кг</div>
+    </div>
+  </div>
+
+  <div class="sb-block">
+    <div class="sb-label">📈 История моих рекордов</div>
+    <div class="history-item">
+      <div class="hi-date">Мар 26</div>
+      <div class="hi-val">140 кг</div>
+      <div class="hi-delta">+5 кг</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-date">Янв 26</div>
+      <div class="hi-val">135 кг</div>
+      <div class="hi-delta">+7 кг</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-date">Окт 25</div>
+      <div class="hi-val">128 кг</div>
+      <div class="hi-delta">+8 кг</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-date">Июл 25</div>
+      <div class="hi-val">120 кг</div>
+      <div class="hi-delta">Старт</div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn-items">
+    <a href="fitorank.html" class="bn-item"><span class="bn-icon">🏠</span>Главная</a>
+    <a href="fitorank-feed.html" class="bn-item"><span class="bn-icon">📋</span>Лента</a>
+    <a href="fitorank-leaderboard.html" class="bn-item active"><span class="bn-icon">🏆</span>Лидеры</a>
+    <a href="#" class="bn-item"><span class="bn-icon">🛒</span>Магазин</a>
+    <a href="fitorank-profile.html" class="bn-item"><span class="bn-icon">👤</span>Профиль</a>
+  </div>
+</div>
+
+<script>
+const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-6+'px';cur.style.top=my-6+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+function setExercise(btn) {
+  document.querySelectorAll('.ex-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const name = btn.textContent.trim().replace(/\d|\s/g,'').trim();
+  document.getElementById('lbTitle').innerHTML = btn.textContent.trim().split(' ')[0] + '<br>1RM';
+}
+
+function setPRType(btn) {
+  document.querySelectorAll('.pr-tog-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setTab(btn) {
+  document.querySelectorAll('.ex-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setMyCategory() {
+  document.querySelectorAll('.cat-select')[0].value = '40–44';
+  document.querySelectorAll('.cat-select')[1].value = '90–100 кг';
+  document.querySelectorAll('.cat-select')[2].value = 'Мужчины';
+  document.getElementById('lbCat').textContent = 'Муж · 40–44 · 90–100 кг';
+}
+
+function updateCategory() {
+  const age = document.querySelectorAll('.cat-select')[0].value;
+  const weight = document.querySelectorAll('.cat-select')[1].value;
+  const gender = document.querySelectorAll('.cat-select')[2].value;
+  const g = gender === 'Мужчины' ? 'Муж' : gender === 'Женщины' ? 'Жен' : 'Все';
+  document.getElementById('lbCat').textContent = [g, age, weight].filter(v=>!v.startsWith('Все')).join(' · ') || 'Все категории';
+}
+</script>
+</body>
+</html>

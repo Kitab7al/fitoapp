@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Дневник · Жим 170+ кг за 6 месяцев</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-center{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-center a{color:var(--gray-light);text-decoration:none;transition:color .2s;cursor:none;}
+.nav-center a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-avatar{width:32px;height:32px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--red);}
+
+/* LAYOUT */
+.page{display:grid;grid-template-columns:280px 1fr 300px;min-height:100vh;padding-top:65px;position:relative;z-index:1;}
+
+/* ═══════════════════════════════════
+   LEFT — ПРОГРАММА / КАЛЕНДАРЬ
+═══════════════════════════════════ */
+.prog-sidebar{padding:24px 18px;border-right:1px solid var(--gray-mid);position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+
+/* Program info */
+.prog-info{background:var(--gray);padding:14px;}
+.pi-label{font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+.pi-name{font-size:.88rem;font-weight:700;line-height:1.3;margin-bottom:8px;}
+.pi-author{display:flex;align-items:center;gap:8px;}
+.pa-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#805000);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.7rem;color:var(--black);}
+.pa-name{font-size:.65rem;color:var(--gray-light);}
+.pa-name b{color:var(--gold);}
+
+/* Overall progress */
+.overall-progress{background:var(--gray);padding:14px;}
+.op-top{display:flex;justify-content:space-between;margin-bottom:8px;}
+.op-label{font-size:.52rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);}
+.op-pct{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--white);}
+.op-bar{height:6px;background:var(--gray-mid);border-radius:3px;overflow:hidden;margin-bottom:8px;}
+.op-fill{height:100%;background:linear-gradient(to right,var(--red),var(--gold));border-radius:3px;transition:width 1s ease;}
+.op-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
+.ops-item{background:var(--black);padding:6px 8px;text-align:center;}
+.ops-val{font-family:'Bebas Neue',sans-serif;font-size:1rem;line-height:1;}
+.ops-val.green{color:var(--green);}
+.ops-val.red{color:var(--red);}
+.ops-val.gold{color:var(--gold);}
+.ops-label{font-size:.45rem;color:var(--gray-light);margin-top:1px;}
+
+/* Week selector */
+.week-label{font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);}
+.weeks-grid{display:flex;flex-direction:column;gap:3px;}
+.week-row{display:flex;align-items:center;gap:6px;padding:6px 8px;cursor:none;transition:background .15s;border:1px solid transparent;}
+.week-row:hover{background:var(--gray);}
+.week-row.active{background:rgba(232,38,11,.08);border-color:rgba(232,38,11,.2);}
+.week-row.done{opacity:.6;}
+.wr-num{font-family:'Bebas Neue',sans-serif;font-size:.9rem;width:20px;color:var(--gray-light);}
+.wr-days{display:flex;gap:3px;flex:1;}
+.wd{width:16px;height:16px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.45rem;font-weight:700;}
+.wd.done{background:rgba(61,220,132,.2);color:var(--green);}
+.wd.today{background:var(--red);color:var(--white);}
+.wd.rest{background:var(--gray-mid);color:var(--gray-light);}
+.wd.future{background:rgba(255,255,255,.05);color:var(--gray-mid);}
+.wr-pct{font-size:.55rem;color:var(--gray-light);margin-left:auto;}
+
+/* Start record */
+.start-record{background:rgba(232,38,11,.06);border:1px solid rgba(232,38,11,.15);padding:12px;}
+.sr-label{font-size:.52rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+.sr-value{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;color:var(--white);}
+.sr-exercise{font-size:.6rem;color:var(--gray-light);}
+.sr-note{font-size:.58rem;color:var(--gray-light);margin-top:6px;line-height:1.4;}
+
+/* ═══════════════════════════════════
+   CENTER — ТРЕНИРОВКА
+═══════════════════════════════════ */
+.main{border-right:1px solid var(--gray-mid);}
+
+/* Training header */
+.training-header{padding:24px 28px;border-bottom:1px solid var(--gray-mid);background:linear-gradient(135deg,rgba(232,38,11,.05),transparent);}
+.th-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.th-meta{font-size:.55rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:4px;}
+.th-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;}
+.th-desc{font-size:.68rem;color:var(--gray-light);line-height:1.5;margin-top:4px;}
+.th-right{text-align:right;}
+.th-week{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:var(--gray-mid);}
+.th-week b{color:var(--red);}
+
+/* Training progress bar */
+.training-progress{padding:0 28px 16px;border-bottom:1px solid var(--gray-mid);}
+.tp-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.tp-label{font-size:.58rem;color:var(--gray-light);}
+.tp-count{font-size:.58rem;font-weight:700;color:var(--white);}
+.tp-bar{height:4px;background:var(--gray-mid);border-radius:2px;overflow:hidden;}
+.tp-fill{height:100%;background:var(--green);border-radius:2px;transition:width .5s ease;}
+
+/* EXERCISE BLOCKS */
+.exercises{padding:0;}
+
+.exercise-block{border-bottom:1px solid var(--gray-mid);}
+.eb-header{padding:16px 28px;display:flex;align-items:center;justify-content:space-between;cursor:none;transition:background .15s;}
+.eb-header:hover{background:rgba(255,255,255,.02);}
+.eb-left{display:flex;align-items:center;gap:12px;}
+.eb-done-icon{width:24px;height:24px;border:1.5px solid var(--gray-mid);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.eb-done-icon.done{background:var(--green);border-color:var(--green);}
+.eb-done-icon.done::after{content:'✓';font-size:.7rem;color:var(--black);font-weight:700;}
+.eb-name{font-size:.88rem;font-weight:700;}
+.eb-plan{font-size:.62rem;color:var(--gray-light);margin-top:2px;}
+.eb-plan b{color:var(--white);}
+.eb-right{display:flex;align-items:center;gap:8px;}
+.eb-status{font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;}
+.eb-status.done{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.eb-status.active{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.eb-status.pending{background:var(--gray);color:var(--gray-light);border:1px solid var(--gray-mid);}
+.eb-toggle{font-size:.7rem;color:var(--gray-light);transition:transform .2s;}
+.eb-toggle.open{transform:rotate(180deg);}
+
+/* SETS TABLE */
+.sets-wrap{padding:0 28px 16px;display:none;}
+.sets-wrap.open{display:block;}
+
+.sets-header{display:grid;grid-template-columns:32px 1fr 1fr 1fr 40px;gap:8px;padding:6px 0;margin-bottom:4px;}
+.sh{font-size:.5rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);text-align:center;}
+.sh:first-child{text-align:left;}
+
+.set-row{display:grid;grid-template-columns:32px 1fr 1fr 1fr 40px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.set-row.completed{opacity:.7;}
+.set-row.extra{background:rgba(245,200,66,.03);border-left:2px solid rgba(245,200,66,.2);padding-left:6px;}
+
+.set-num{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--gray-light);}
+.set-num.extra-label{font-size:.55rem;color:var(--gold);font-family:'Montserrat',sans-serif;font-weight:700;}
+
+.set-plan{font-size:.72rem;color:var(--gray-light);text-align:center;}
+.set-plan.exceeded{color:var(--green);}
+
+/* INPUT FIELDS */
+.set-input{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;padding:7px 10px;text-align:center;outline:none;transition:border-color .2s;width:100%;cursor:none;}
+.set-input:focus{border-color:var(--red);}
+.set-input.exceeded{border-color:var(--green);color:var(--green);}
+.set-input:disabled{opacity:.5;cursor:not-allowed;}
+
+/* SET CONFIRM BUTTON */
+.set-confirm{width:32px;height:32px;background:var(--gray-mid);border:none;color:var(--gray-light);font-size:.8rem;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+.set-confirm:hover{background:var(--red);color:var(--white);}
+.set-confirm.done{background:var(--green);color:var(--black);pointer-events:none;}
+
+/* ADD SET BUTTON */
+.add-set-btn{background:transparent;border:1px dashed rgba(245,200,66,.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px;cursor:none;width:100%;transition:all .2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.add-set-btn:hover{background:rgba(245,200,66,.06);border-color:var(--gold);}
+
+/* DEVIATION NOTE */
+.deviation-note{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:10px 12px;margin-top:8px;display:none;}
+.deviation-note.show{display:block;}
+.dn-label{font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.dn-select{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.68rem;padding:7px 10px;outline:none;width:100%;cursor:none;margin-bottom:6px;}
+.dn-input{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.7rem;padding:8px 10px;outline:none;width:100%;resize:none;cursor:none;}
+.dn-input::placeholder{color:var(--gray-light);}
+.dn-input:focus{border-color:var(--gold);}
+
+/* REST TIMER */
+.rest-timer{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.15);padding:12px 16px;margin-top:10px;display:none;align-items:center;justify-content:space-between;}
+.rest-timer.show{display:flex;}
+.rt-label{font-size:.58rem;color:var(--blue);}
+.rt-time{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--blue);line-height:1;}
+.rt-skip{background:transparent;border:1px solid rgba(74,158,255,.3);color:var(--blue);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;cursor:none;transition:all .2s;}
+.rt-skip:hover{background:rgba(74,158,255,.1);}
+
+/* COMPLETE TRAINING BUTTON */
+.complete-section{padding:20px 28px;border-top:1px solid var(--gray-mid);}
+
+/* FEELING BLOCK */
+.feeling-block{background:var(--gray);padding:16px;margin-bottom:16px;}
+.fb-label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.feeling-options{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.feeling-btn{background:var(--black);border:1px solid var(--gray-mid);padding:10px 8px;text-align:center;cursor:none;transition:all .2s;}
+.feeling-btn:hover{border-color:var(--gray-light);}
+.feeling-btn.active{border-color:var(--white);background:rgba(255,255,255,.05);}
+.fb-emoji{font-size:1.4rem;display:block;margin-bottom:4px;}
+.fb-text{font-size:.5rem;color:var(--gray-light);font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.feeling-btn.active .fb-text{color:var(--white);}
+
+.training-note{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.75rem;padding:10px 12px;outline:none;resize:none;cursor:none;margin-bottom:14px;line-height:1.5;}
+.training-note::placeholder{color:var(--gray-light);}
+.training-note:focus{border-color:var(--gray-light);}
+
+.complete-btn{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:16px;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);cursor:none;transition:background .2s;}
+.complete-btn:hover{background:var(--red-dark);}
+.complete-btn:disabled{background:var(--gray-mid);clip-path:none;opacity:.5;}
+
+/* ═══════════════════════════════════
+   RIGHT — ПРОГРЕСС / АНАЛИТИКА
+═══════════════════════════════════ */
+.stats-sidebar{padding:20px 16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;}
+
+.ss-block{background:var(--gray);padding:14px;}
+.ssb-label{font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;}
+
+/* Volume chart */
+.volume-bars{display:flex;align-items:flex-end;gap:4px;height:64px;margin-bottom:6px;}
+.vb-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.vb-bar{width:100%;border-radius:1px 1px 0 0;transition:background .2s;}
+.vb-bar:hover{filter:brightness(1.2);}
+.vb-label{font-size:.45rem;color:var(--gray-light);}
+.vb-bar.today{background:var(--red);}
+.vb-bar.done{background:rgba(61,220,132,.4);}
+.vb-bar.future{background:var(--gray-mid);}
+
+/* Record progress */
+.record-progress{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-mid);}
+.record-progress:last-child{border-bottom:none;}
+.rp-label{font-size:.6rem;color:var(--gray-light);flex:1;}
+.rp-before{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--gray-light);}
+.rp-arrow{font-size:.7rem;color:var(--gray-mid);}
+.rp-current{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--green);}
+.rp-delta{font-size:.6rem;font-weight:700;color:var(--green);}
+
+/* Dropout heatmap */
+.heatmap-weeks{display:flex;flex-direction:column;gap:3px;}
+.hm-row{display:flex;align-items:center;gap:6px;}
+.hm-label{font-size:.5rem;color:var(--gray-light);width:16px;flex-shrink:0;}
+.hm-bar{flex:1;height:14px;border-radius:2px;position:relative;overflow:hidden;}
+.hm-fill{height:100%;border-radius:2px;}
+.hm-pct{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:.48rem;font-weight:700;}
+.hm-feeling{font-size:.55rem;margin-left:2px;}
+
+/* Author message */
+.author-msg{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:12px;}
+.am-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.am-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#805000);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.7rem;color:var(--black);}
+.am-name{font-size:.65rem;font-weight:700;color:var(--gold);}
+.am-badge{font-size:.45rem;font-weight:700;padding:1px 5px;background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.am-text{font-size:.65rem;color:var(--gray-light);line-height:1.5;font-style:italic;}
+
+/* ═══════════════════════════════════
+   COMPLETION OVERLAY
+═══════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(8,8,8,.95);z-index:800;display:none;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.overlay-card{background:var(--gray);border:1px solid var(--gray-mid);padding:40px;max-width:480px;width:90%;text-align:center;}
+.oc-emoji{font-size:3rem;margin-bottom:16px;}
+.oc-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;margin-bottom:8px;}
+.oc-sub{font-size:.75rem;color:var(--gray-light);margin-bottom:24px;line-height:1.6;}
+.oc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px;}
+.ocs-item{background:var(--black);padding:12px;}
+.ocs-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;}
+.ocs-val.green{color:var(--green);}
+.ocs-val.gold{color:var(--gold);}
+.ocs-label{font-size:.5rem;color:var(--gray-light);margin-top:2px;}
+.oc-btn{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:14px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background .2s;margin-bottom:8px;}
+.oc-btn:hover{background:var(--red-dark);}
+.oc-btn.secondary{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);clip-path:none;}
+.oc-btn.secondary:hover{border-color:var(--gray-light);color:var(--white);}
+
+/* MOBILE */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);z-index:400;padding:8px 0 12px;}
+.bn-items{display:flex;justify-content:space-around;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:none;color:var(--gray-light);text-decoration:none;font-size:.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.bn-icon{font-size:1.2rem;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.exercise-block{animation:fadeIn .3s ease both;}
+
+@media(max-width:1100px){
+  .page{grid-template-columns:0 1fr 0;}
+  .prog-sidebar,.stats-sidebar{display:none;}
+}
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-trail{display:none;}
+  nav{padding:12px 16px;}
+  .nav-center{display:none;}
+  .main{padding-bottom:80px;}
+  .training-header{padding:16px;}
+  .training-progress,.exercises .exercise-block .sets-wrap{padding-left:16px;padding-right:16px;}
+  .eb-header{padding:14px 16px;}
+  .complete-section{padding:16px;}
+  .feeling-options{grid-template-columns:repeat(5,1fr);}
+  .bottom-nav{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-center">
+    <a href="fitorank-profile.html">Профиль</a>
+    <span class="nav-sep">/</span>
+    <a href="#">Программы</a>
+    <span class="nav-sep">/</span>
+    <span style="color:var(--white)">Дневник</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- LEFT SIDEBAR -->
+<div class="prog-sidebar">
+
+  <div class="prog-info">
+    <div class="pi-label">Программа</div>
+    <div class="pi-name">Жим лёжа 170+ кг за 6 месяцев</div>
+    <div class="pi-author">
+      <div class="pa-avatar">А</div>
+      <div class="pa-name">Автор: <b>Алексей К.</b></div>
+    </div>
+  </div>
+
+  <div class="overall-progress">
+    <div class="op-top">
+      <span class="op-label">Общий прогресс</span>
+      <span class="op-pct" id="overallPct">38%</span>
+    </div>
+    <div class="op-bar"><div class="op-fill" id="overallFill" style="width:0%"></div></div>
+    <div class="op-stats">
+      <div class="ops-item">
+        <div class="ops-val green">9</div>
+        <div class="ops-label">Тренировок</div>
+      </div>
+      <div class="ops-item">
+        <div class="ops-val red">3</div>
+        <div class="ops-label">Недель</div>
+      </div>
+      <div class="ops-item">
+        <div class="ops-val gold">24</div>
+        <div class="ops-label">Осталось</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="week-label">Недели программы</div>
+  <div class="weeks-grid">
+    <div class="week-row done" onclick="selectWeek(this,1)">
+      <div class="wr-num">1</div>
+      <div class="wr-days">
+        <div class="wd done">П</div>
+        <div class="wd rest">В</div>
+        <div class="wd done">Ч</div>
+        <div class="wd rest">П</div>
+        <div class="wd done">С</div>
+        <div class="wd rest">В</div>
+        <div class="wd rest">В</div>
+      </div>
+      <div class="wr-pct">100%</div>
+    </div>
+    <div class="week-row done" onclick="selectWeek(this,2)">
+      <div class="wr-num">2</div>
+      <div class="wr-days">
+        <div class="wd done">П</div>
+        <div class="wd rest">В</div>
+        <div class="wd done">Ч</div>
+        <div class="wd rest">П</div>
+        <div class="wd done">С</div>
+        <div class="wd rest">В</div>
+        <div class="wd rest">В</div>
+      </div>
+      <div class="wr-pct">100%</div>
+    </div>
+    <div class="week-row done" onclick="selectWeek(this,3)">
+      <div class="wr-num">3</div>
+      <div class="wr-days">
+        <div class="wd done">П</div>
+        <div class="wd rest">В</div>
+        <div class="wd done">Ч</div>
+        <div class="wd rest">В</div><!-- +1 день отдыха -->
+        <div class="wd future">С</div>
+        <div class="wd rest">В</div>
+        <div class="wd rest">В</div>
+      </div>
+      <div class="wr-pct" style="color:var(--gold)">67%⚡</div>
+    </div>
+    <div class="week-row active" onclick="selectWeek(this,4)">
+      <div class="wr-num" style="color:var(--red)">4</div>
+      <div class="wr-days">
+        <div class="wd done">П</div>
+        <div class="wd rest">В</div>
+        <div class="wd today">Ч</div>
+        <div class="wd future">П</div>
+        <div class="wd future">С</div>
+        <div class="wd rest">В</div>
+        <div class="wd rest">В</div>
+      </div>
+      <div class="wr-pct" style="color:var(--red)">сейчас</div>
+    </div>
+    <div class="week-row" onclick="selectWeek(this,5)">
+      <div class="wr-num">5</div>
+      <div class="wr-days">
+        <div class="wd future">П</div><div class="wd rest">В</div>
+        <div class="wd future">Ч</div><div class="wd rest">П</div>
+        <div class="wd future">С</div><div class="wd rest">В</div>
+        <div class="wd rest">В</div>
+      </div>
+      <div class="wr-pct">—</div>
+    </div>
+    <div class="week-row" onclick="selectWeek(this,6)">
+      <div class="wr-num">6</div>
+      <div class="wr-days">
+        <div class="wd future">П</div><div class="wd rest">В</div>
+        <div class="wd future">Ч</div><div class="wd rest">П</div>
+        <div class="wd future">С</div><div class="wd rest">В</div>
+        <div class="wd rest">В</div>
+      </div>
+      <div class="wr-pct">—</div>
+    </div>
+  </div>
+
+  <div class="start-record">
+    <div class="sr-label">Стартовый рекорд</div>
+    <div class="sr-value">120 кг</div>
+    <div class="sr-exercise">Жим лёжа · 1RM · 1 янв 2026</div>
+    <div class="sr-note">Финальный рекорд зафиксируешь по завершении программы с видео-подтверждением.</div>
+  </div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <div class="training-header">
+    <div class="th-top">
+      <div>
+        <div class="th-meta">Неделя 4 · Тренировка 2 из 3 · Сегодня</div>
+        <div class="th-title">День тяги и жима</div>
+        <div class="th-desc">Акцент на рабочих весах. Прогрессия +2.5 кг от прошлой недели. Отдых между подходами 3–4 мин.</div>
+      </div>
+      <div class="th-right">
+        <div class="th-week">Нед <b>4</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="training-progress">
+    <div class="tp-row">
+      <span class="tp-label">Выполнено упражнений</span>
+      <span class="tp-count" id="exDoneCount">0 / 4</span>
+    </div>
+    <div class="tp-bar"><div class="tp-fill" id="exProgressFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- ══ EXERCISE 1 — ЖИМ ЛЁЖА ══ -->
+  <div class="exercise-block" style="animation-delay:.05s">
+    <div class="eb-header" onclick="toggleExercise(this)">
+      <div class="eb-left">
+        <div class="eb-done-icon" id="done-ex1"></div>
+        <div>
+          <div class="eb-name">Жим лёжа</div>
+          <div class="eb-plan">По плану: <b>4 подхода × 5 повт × 107.5 кг</b></div>
+        </div>
+      </div>
+      <div class="eb-right">
+        <span class="eb-status active" id="status-ex1">В работе</span>
+        <span class="eb-toggle open" id="toggle-ex1">▼</span>
+      </div>
+    </div>
+
+    <div class="sets-wrap open" id="sets-ex1">
+      <div class="sets-header">
+        <div class="sh">Подход</div>
+        <div class="sh">По плану</div>
+        <div class="sh">Вес (кг)</div>
+        <div class="sh">Повторения</div>
+        <div class="sh"></div>
+      </div>
+
+      <div class="set-row completed" id="set-ex1-1">
+        <div class="set-num">1</div>
+        <div class="set-plan">107.5 × 5</div>
+        <input class="set-input" value="107.5" disabled>
+        <input class="set-input" value="5" disabled>
+        <div class="set-confirm done">✓</div>
+      </div>
+
+      <div class="set-row completed" id="set-ex1-2">
+        <div class="set-num">2</div>
+        <div class="set-plan">107.5 × 5</div>
+        <input class="set-input" value="107.5" disabled>
+        <input class="set-input" value="5" disabled>
+        <div class="set-confirm done">✓</div>
+      </div>
+
+      <div class="set-row completed" id="set-ex1-3">
+        <div class="set-num">3</div>
+        <div class="set-plan">107.5 × 5</div>
+        <input class="set-input exceeded" value="110" disabled>
+        <input class="set-input" value="5" disabled>
+        <div class="set-confirm done">✓</div>
+      </div>
+
+      <div class="set-row" id="set-ex1-4">
+        <div class="set-num">4</div>
+        <div class="set-plan">107.5 × 5</div>
+        <input class="set-input" id="weight-ex1-4" value="107.5" onfocus="this.select()" oninput="checkExceed(this, 107.5)">
+        <input class="set-input" id="reps-ex1-4" value="5" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex1',4,4)" title="Подтвердить">✓</div>
+      </div>
+
+      <!-- Rest timer -->
+      <div class="rest-timer" id="rest-ex1">
+        <div>
+          <div class="rt-label">Отдых между подходами</div>
+          <div class="rt-time" id="rest-time-ex1">3:00</div>
+        </div>
+        <button class="rt-skip" onclick="skipRest('ex1')">Пропустить</button>
+      </div>
+
+      <button class="add-set-btn" onclick="addSet('ex1', 107.5, 5)">⚡ Добавить подход (+REP за превышение плана)</button>
+
+      <!-- Deviation -->
+      <div class="deviation-note" id="dev-ex1">
+        <div class="dn-label">⚡ Ты адаптировал подход 3</div>
+        <select class="dn-select">
+          <option>Увеличил вес — чувствовал себя сильно</option>
+          <option>Снизил вес — не хватило сил</option>
+          <option>Другое</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EXERCISE 2 — ЖИМ ГАНТЕЛЕЙ ══ -->
+  <div class="exercise-block" style="animation-delay:.1s">
+    <div class="eb-header" onclick="toggleExercise(this)">
+      <div class="eb-left">
+        <div class="eb-done-icon" id="done-ex2"></div>
+        <div>
+          <div class="eb-name">Жим гантелей на наклонной</div>
+          <div class="eb-plan">По плану: <b>3 подхода × 8 повт × 40 кг</b></div>
+        </div>
+      </div>
+      <div class="eb-right">
+        <span class="eb-status pending" id="status-ex2">Ожидает</span>
+        <span class="eb-toggle" id="toggle-ex2">▼</span>
+      </div>
+    </div>
+    <div class="sets-wrap" id="sets-ex2">
+      <div class="sets-header">
+        <div class="sh">Подход</div><div class="sh">По плану</div>
+        <div class="sh">Вес (кг)</div><div class="sh">Повторения</div><div class="sh"></div>
+      </div>
+      <div class="set-row" id="set-ex2-1">
+        <div class="set-num">1</div><div class="set-plan">40 × 8</div>
+        <input class="set-input" value="40" onfocus="this.select()" oninput="checkExceed(this,40)">
+        <input class="set-input" value="8" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex2',1,3)">✓</div>
+      </div>
+      <div class="set-row" id="set-ex2-2">
+        <div class="set-num">2</div><div class="set-plan">40 × 8</div>
+        <input class="set-input" value="40" onfocus="this.select()" oninput="checkExceed(this,40)">
+        <input class="set-input" value="8" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex2',2,3)">✓</div>
+      </div>
+      <div class="set-row" id="set-ex2-3">
+        <div class="set-num">3</div><div class="set-plan">40 × 8</div>
+        <input class="set-input" value="40" onfocus="this.select()" oninput="checkExceed(this,40)">
+        <input class="set-input" value="8" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex2',3,3)">✓</div>
+      </div>
+      <button class="add-set-btn" onclick="addSet('ex2',40,8)">⚡ Добавить подход</button>
+    </div>
+  </div>
+
+  <!-- ══ EXERCISE 3 — ТРИЦЕПС ══ -->
+  <div class="exercise-block" style="animation-delay:.15s">
+    <div class="eb-header" onclick="toggleExercise(this)">
+      <div class="eb-left">
+        <div class="eb-done-icon" id="done-ex3"></div>
+        <div>
+          <div class="eb-name">Трицепс на блоке</div>
+          <div class="eb-plan">По плану: <b>3 подхода × 12 повт × 35 кг</b></div>
+        </div>
+      </div>
+      <div class="eb-right">
+        <span class="eb-status pending" id="status-ex3">Ожидает</span>
+        <span class="eb-toggle" id="toggle-ex3">▼</span>
+      </div>
+    </div>
+    <div class="sets-wrap" id="sets-ex3">
+      <div class="sets-header">
+        <div class="sh">Подход</div><div class="sh">По плану</div>
+        <div class="sh">Вес (кг)</div><div class="sh">Повторения</div><div class="sh"></div>
+      </div>
+      <div class="set-row" id="set-ex3-1">
+        <div class="set-num">1</div><div class="set-plan">35 × 12</div>
+        <input class="set-input" value="35" onfocus="this.select()" oninput="checkExceed(this,35)">
+        <input class="set-input" value="12" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex3',1,3)">✓</div>
+      </div>
+      <div class="set-row" id="set-ex3-2">
+        <div class="set-num">2</div><div class="set-plan">35 × 12</div>
+        <input class="set-input" value="35" onfocus="this.select()" oninput="checkExceed(this,35)">
+        <input class="set-input" value="12" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex3',2,3)">✓</div>
+      </div>
+      <div class="set-row" id="set-ex3-3">
+        <div class="set-num">3</div><div class="set-plan">35 × 12</div>
+        <input class="set-input" value="35" onfocus="this.select()" oninput="checkExceed(this,35)">
+        <input class="set-input" value="12" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex3',3,3)">✓</div>
+      </div>
+      <button class="add-set-btn" onclick="addSet('ex3',35,12)">⚡ Добавить подход</button>
+    </div>
+  </div>
+
+  <!-- ══ EXERCISE 4 — ПЕРЕДНИЕ ДЕЛЬТЫ ══ -->
+  <div class="exercise-block" style="animation-delay:.2s">
+    <div class="eb-header" onclick="toggleExercise(this)">
+      <div class="eb-left">
+        <div class="eb-done-icon" id="done-ex4"></div>
+        <div>
+          <div class="eb-name">Передние дельты (гантели)</div>
+          <div class="eb-plan">По плану: <b>3 подхода × 12 повт × 14 кг</b></div>
+        </div>
+      </div>
+      <div class="eb-right">
+        <span class="eb-status pending" id="status-ex4">Ожидает</span>
+        <span class="eb-toggle" id="toggle-ex4">▼</span>
+      </div>
+    </div>
+    <div class="sets-wrap" id="sets-ex4">
+      <div class="sets-header">
+        <div class="sh">Подход</div><div class="sh">По плану</div>
+        <div class="sh">Вес (кг)</div><div class="sh">Повторения</div><div class="sh"></div>
+      </div>
+      <div class="set-row" id="set-ex4-1">
+        <div class="set-num">1</div><div class="set-plan">14 × 12</div>
+        <input class="set-input" value="14" onfocus="this.select()" oninput="checkExceed(this,14)">
+        <input class="set-input" value="12" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex4',1,3)">✓</div>
+      </div>
+      <div class="set-row" id="set-ex4-2">
+        <div class="set-num">2</div><div class="set-plan">14 × 12</div>
+        <input class="set-input" value="14" onfocus="this.select()" oninput="checkExceed(this,14)">
+        <input class="set-input" value="12" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex4',2,3)">✓</div>
+      </div>
+      <div class="set-row" id="set-ex4-3">
+        <div class="set-num">3</div><div class="set-plan">14 × 12</div>
+        <input class="set-input" value="14" onfocus="this.select()" oninput="checkExceed(this,14)">
+        <input class="set-input" value="12" onfocus="this.select()">
+        <div class="set-confirm" onclick="confirmSet('ex4',3,3)">✓</div>
+      </div>
+      <button class="add-set-btn" onclick="addSet('ex4',14,12)">⚡ Добавить подход</button>
+    </div>
+  </div>
+
+  <!-- COMPLETE SECTION -->
+  <div class="complete-section">
+
+    <div class="feeling-block">
+      <div class="fb-label">Как себя чувствуешь после тренировки?</div>
+      <div class="feeling-options">
+        <div class="feeling-btn" onclick="setFeeling(this,'exhausted')">
+          <span class="fb-emoji">😵</span>
+          <span class="fb-text">Убит</span>
+        </div>
+        <div class="feeling-btn" onclick="setFeeling(this,'tired')">
+          <span class="fb-emoji">😴</span>
+          <span class="fb-text">Устал</span>
+        </div>
+        <div class="feeling-btn active" onclick="setFeeling(this,'ok')">
+          <span class="fb-emoji">😐</span>
+          <span class="fb-text">Норм</span>
+        </div>
+        <div class="feeling-btn" onclick="setFeeling(this,'good')">
+          <span class="fb-emoji">💪</span>
+          <span class="fb-text">Хорошо</span>
+        </div>
+        <div class="feeling-btn" onclick="setFeeling(this,'great')">
+          <span class="fb-emoji">🔥</span>
+          <span class="fb-text">Огонь</span>
+        </div>
+      </div>
+    </div>
+
+    <textarea class="training-note" rows="2" placeholder="Заметка к тренировке (необязательно)..."></textarea>
+
+    <button class="complete-btn" id="completeBtn" onclick="completeTraining()">
+      Завершить тренировку
+    </button>
+
+  </div>
+
+</div>
+
+<!-- RIGHT SIDEBAR -->
+<div class="stats-sidebar">
+
+  <div class="ss-block">
+    <div class="ssb-label">📈 Рост рабочих весов · Жим</div>
+    <div class="volume-bars" id="volumeBars">
+      <div class="vb-wrap"><div class="vb-bar done" style="height:55%"></div><div class="vb-label">Н1</div></div>
+      <div class="vb-wrap"><div class="vb-bar done" style="height:65%"></div><div class="vb-label">Н2</div></div>
+      <div class="vb-wrap"><div class="vb-bar done" style="height:72%"></div><div class="vb-label">Н3</div></div>
+      <div class="vb-wrap"><div class="vb-bar today" style="height:80%"></div><div class="vb-label">Н4</div></div>
+      <div class="vb-wrap"><div class="vb-bar future" style="height:87%"></div><div class="vb-label">Н5</div></div>
+      <div class="vb-wrap"><div class="vb-bar future" style="height:93%"></div><div class="vb-label">Н6</div></div>
+    </div>
+    <div style="font-size:.6rem;color:var(--gray-light);display:flex;justify-content:space-between;">
+      <span>100 кг (старт)</span>
+      <span style="color:var(--green)">107.5 кг (сейчас)</span>
+    </div>
+  </div>
+
+  <div class="ss-block">
+    <div class="ssb-label">🎯 Прогресс по упражнениям</div>
+    <div class="record-progress">
+      <div class="rp-label">Жим лёжа</div>
+      <div class="rp-before">100</div>
+      <div class="rp-arrow">→</div>
+      <div class="rp-current">107.5</div>
+      <div class="rp-delta">+7.5</div>
+    </div>
+    <div class="record-progress">
+      <div class="rp-label">Жим гантелей</div>
+      <div class="rp-before">36</div>
+      <div class="rp-arrow">→</div>
+      <div class="rp-current">40</div>
+      <div class="rp-delta">+4</div>
+    </div>
+    <div class="record-progress">
+      <div class="rp-label">Трицепс</div>
+      <div class="rp-before">30</div>
+      <div class="rp-arrow">→</div>
+      <div class="rp-current">35</div>
+      <div class="rp-delta">+5</div>
+    </div>
+  </div>
+
+  <div class="ss-block">
+    <div class="ssb-label">👥 Удержание участников</div>
+    <div class="heatmap-weeks">
+      <div class="hm-row">
+        <div class="hm-label">Н1</div>
+        <div class="hm-bar"><div class="hm-fill" style="width:98%;background:var(--green)"></div><div class="hm-pct">98%</div></div>
+        <div class="hm-feeling">😐</div>
+      </div>
+      <div class="hm-row">
+        <div class="hm-label">Н2</div>
+        <div class="hm-bar"><div class="hm-fill" style="width:94%;background:var(--green)"></div><div class="hm-pct">94%</div></div>
+        <div class="hm-feeling">💪</div>
+      </div>
+      <div class="hm-row">
+        <div class="hm-label">Н3</div>
+        <div class="hm-bar"><div class="hm-fill" style="width:91%;background:rgba(61,220,132,.6)"></div><div class="hm-pct">91%</div></div>
+        <div class="hm-feeling">😐</div>
+      </div>
+      <div class="hm-row">
+        <div class="hm-label">Н4</div>
+        <div class="hm-bar"><div class="hm-fill" style="width:87%;background:var(--gold)"></div><div class="hm-pct">87%</div></div>
+        <div class="hm-feeling">😴</div>
+      </div>
+      <div class="hm-row" style="opacity:.4">
+        <div class="hm-label">Н5</div>
+        <div class="hm-bar"><div class="hm-fill" style="width:30%;background:var(--gray-mid)"></div><div class="hm-pct" style="color:var(--gray-light)">—</div></div>
+        <div class="hm-feeling">?</div>
+      </div>
+    </div>
+    <div style="font-size:.58rem;color:var(--gold);margin-top:8px;line-height:1.4;">⚠️ Заметный спад самочувствия на неделе 4 — автор программы уже уведомлён</div>
+  </div>
+
+  <div class="author-msg">
+    <div class="am-header">
+      <div class="am-avatar">А</div>
+      <div>
+        <div class="am-name">Алексей К.</div>
+      </div>
+      <span class="am-badge">Автор · Живая</span>
+    </div>
+    <div class="am-text">«Ребята, вижу что неделя 4 даётся тяжелее. Это нормально — пиковая нагрузка. Если чувствуете что веса не идут — снизьте на 5% и продолжайте. Лучше меньший вес с правильной техникой, чем застрять. На следующей неделе будет разгрузка.»</div>
+  </div>
+
+</div>
+</div>
+
+<!-- COMPLETION OVERLAY -->
+<div class="overlay" id="completionOverlay">
+  <div class="overlay-card">
+    <div class="oc-emoji">💪</div>
+    <div class="oc-title">Тренировка завершена!</div>
+    <div class="oc-sub">Неделя 4 · День 2 · 4 упражнения выполнено<br>Адаптация на подходе 3 жима зафиксирована</div>
+    <div class="oc-stats">
+      <div class="ocs-item">
+        <div class="ocs-val green">4/4</div>
+        <div class="ocs-label">Упражнений</div>
+      </div>
+      <div class="ocs-item">
+        <div class="ocs-val gold">+2 REP</div>
+        <div class="ocs-label">За тренировку</div>
+      </div>
+      <div class="ocs-item">
+        <div class="ocs-val" style="color:var(--white)">38%</div>
+        <div class="ocs-label">Программы</div>
+      </div>
+    </div>
+    <button class="oc-btn" onclick="closeOverlay()">Отлично, продолжаем!</button>
+    <button class="oc-btn secondary" onclick="closeOverlay()">Посмотреть статистику</button>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn-items">
+    <a href="fitorank.html" class="bn-item"><span class="bn-icon">🏠</span>Главная</a>
+    <a href="fitorank-feed.html" class="bn-item"><span class="bn-icon">📋</span>Лента</a>
+    <a href="fitorank-leaderboard.html" class="bn-item"><span class="bn-icon">🏆</span>Лидеры</a>
+    <a href="fitorank-notifications.html" class="bn-item"><span class="bn-icon">🔔</span>Уведомления</a>
+    <a href="fitorank-profile.html" class="bn-item"><span class="bn-icon">👤</span>Профиль</a>
+  </div>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-6+'px';cur.style.top=my-6+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+// Animate progress on load
+setTimeout(()=>{document.getElementById('overallFill').style.width='38%';},400);
+
+// Exercise state
+const exState = {ex1:{done:3,total:4},ex2:{done:0,total:3},ex3:{done:0,total:3},ex4:{done:0,total:3}};
+let exCompleted = {ex1:false,ex2:false,ex3:false,ex4:false};
+const totalEx = 4;
+
+// Toggle exercise open/close
+function toggleExercise(header) {
+  const exId = header.parentElement.querySelector('.sets-wrap').id.replace('sets-','');
+  const sets = document.getElementById('sets-'+exId);
+  const toggle = document.getElementById('toggle-'+exId);
+  sets.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// Confirm set
+let restTimers = {};
+function confirmSet(exId, setNum, totalSets) {
+  const row = document.getElementById('set-'+exId+'-'+setNum);
+  row.classList.add('completed');
+  const btn = row.querySelector('.set-confirm');
+  btn.classList.add('done');
+  btn.textContent = '✓';
+  row.querySelectorAll('.set-input').forEach(i=>i.disabled=true);
+
+  exState[exId].done++;
+
+  // Show rest timer if not last set
+  if(setNum < totalSets) {
+    showRest(exId);
+  }
+
+  // Check if all sets done
+  if(exState[exId].done >= exState[exId].total) {
+    markExDone(exId);
+  }
+
+  updateTrainingProgress();
+}
+
+function markExDone(exId) {
+  exCompleted[exId] = true;
+  document.getElementById('done-'+exId).classList.add('done');
+  const status = document.getElementById('status-'+exId);
+  status.className = 'eb-status done';
+  status.textContent = '✓ Готово';
+  updateTrainingProgress();
+}
+
+function updateTrainingProgress() {
+  const done = Object.values(exCompleted).filter(Boolean).length;
+  document.getElementById('exDoneCount').textContent = done + ' / ' + totalEx;
+  document.getElementById('exProgressFill').style.width = (done/totalEx*100)+'%';
+}
+
+// Rest timer
+function showRest(exId) {
+  const timer = document.getElementById('rest-'+exId);
+  if(!timer) return;
+  timer.classList.add('show');
+  let secs = 180;
+  clearInterval(restTimers[exId]);
+  restTimers[exId] = setInterval(()=>{
+    secs--;
+    const m = Math.floor(secs/60);
+    const s = secs%60;
+    document.getElementById('rest-time-'+exId).textContent = m+':'+(s<10?'0':'')+s;
+    if(secs<=0){clearInterval(restTimers[exId]);skipRest(exId);}
+  },1000);
+}
+function skipRest(exId) {
+  clearInterval(restTimers[exId]);
+  const timer = document.getElementById('rest-'+exId);
+  if(timer) timer.classList.remove('show');
+}
+
+// Check exceed plan
+function checkExceed(input, planVal) {
+  const val = parseFloat(input.value);
+  const planRow = input.closest('.set-row').querySelector('.set-plan');
+  if(val > planVal) {
+    input.classList.add('exceeded');
+    planRow.classList.add('exceeded');
+    document.getElementById('dev-ex1') && (document.getElementById('dev-ex1').classList.add('show'));
+  } else {
+    input.classList.remove('exceeded');
+    planRow.classList.remove('exceeded');
+  }
+}
+
+// Add extra set
+function addSet(exId, planWeight, planReps) {
+  const setsWrap = document.getElementById('sets-'+exId);
+  const setCount = setsWrap.querySelectorAll('.set-row').length + 1;
+  const div = document.createElement('div');
+  div.className = 'set-row extra';
+  div.id = 'set-'+exId+'-'+setCount;
+  div.innerHTML = `
+    <div class="set-num extra-label">+${setCount}</div>
+    <div class="set-plan" style="color:var(--gold);font-size:.6rem">⚡ доп</div>
+    <input class="set-input" value="${planWeight}" onfocus="this.select()" oninput="checkExceed(this,${planWeight})">
+    <input class="set-input" value="${planReps}" onfocus="this.select()">
+    <div class="set-confirm" onclick="confirmExtraSet('${exId}',this)">✓</div>`;
+  setsWrap.querySelector('.add-set-btn').before(div);
+  exState[exId].total++;
+}
+
+function confirmExtraSet(exId, btn) {
+  const row = btn.closest('.set-row');
+  row.classList.add('completed');
+  btn.classList.add('done');
+  btn.textContent = '✓';
+  row.querySelectorAll('.set-input').forEach(i=>i.disabled=true);
+  exState[exId].done++;
+  checkExerciseDone(exId);
+}
+
+function checkExerciseDone(exId) {
+  if(exState[exId].done >= exState[exId].total) markExDone(exId);
+}
+
+// Feeling
+function setFeeling(btn) {
+  document.querySelectorAll('.feeling-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Select week
+function selectWeek(el) {
+  document.querySelectorAll('.week-row').forEach(w=>w.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Complete training
+function completeTraining() {
+  document.getElementById('completionOverlay').classList.add('show');
+}
+function closeOverlay() {
+  document.getElementById('completionOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
