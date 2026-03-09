@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitoRank — Концепт-документ v1.0</title>
+<title>FitoRank — Концепт-документ v1.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
@@ -192,7 +192,7 @@ p strong{font-weight:700;color:var(--gold);}
 <!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="sb-logo">FITO<span>RANK</span></div>
-  <div class="sb-version">Концепт-документ · v1.0 · Март 2026</div>
+  <div class="sb-version">Концепт-документ · v1.1 · Март 2026</div>
 
   <div class="sb-section">
     <div class="sb-section-title">Продукт</div>
@@ -214,6 +214,16 @@ p strong{font-weight:700;color:var(--gold);}
     <a class="sb-link" onclick="scrollTo('tech-eval')"><span class="dot dot-done"></span>Оценка техники</a>
     <a class="sb-link" onclick="scrollTo('programs')"><span class="dot dot-done"></span>Программы</a>
     <a class="sb-link" onclick="scrollTo('diary')"><span class="dot dot-done"></span>Дневник тренировок</a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">Новое в v1.1</div>
+    <a class="sb-link" onclick="scrollTo('exercises')"><span class="dot dot-done"></span>Система упражнений</a>
+    <a class="sb-link" onclick="scrollTo('circus')"><span class="dot dot-done"></span>🎪 Цирк силы</a>
+    <a class="sb-link" onclick="scrollTo('rep-ceiling')"><span class="dot dot-done"></span>REP без потолка</a>
+    <a class="sb-link" onclick="scrollTo('dynamic-thresholds')"><span class="dot dot-done"></span>Динамические пороги</a>
+    <a class="sb-link" onclick="scrollTo('grace-period')"><span class="dot dot-done"></span>Grace Period</a>
+    <a class="sb-link" onclick="scrollTo('checklist')"><span class="dot dot-done"></span>Чек-лист корректировок</a>
   </div>
 
   <div class="sb-section">
@@ -414,6 +424,8 @@ p strong{font-weight:700;color:var(--gold);}
 
     <p>Уровень определяется суммой REP. Рост необратим — REP не теряется. Разблокировки накапливаются: каждый следующий уровень включает все возможности предыдущего.</p>
     <p><b>Важное правило:</b> только активность без рекордов → потолок 499 REP (Участник). Пробить выше можно только через спортивные результаты.</p>
+    <p><b>REP не имеет потолка.</b> Нет максимального уровня, нет конечной точки. Всегда есть следующая цифра к которой стремишься — это принципиальное отличие от платформ где люди достигают максимума и теряют мотивацию.</p>
+    <p><b>Пороги уровней динамические.</b> На старте — фиксированные числа. По мере роста аудитории пороги смещаются вверх администратором. Пользователи получают grace period 90 дней при пересмотре порогов.</p>
 
     <table class="levels-table">
       <thead>
@@ -459,6 +471,21 @@ p strong{font-weight:700;color:var(--gold);}
     </table>
 
     <p style="font-size:.65rem;color:var(--gray-light);">Шкала открытая сверху — нет максимума REP. Нет штрафных механик снятия REP за обычные действия.</p>
+
+    <h3 style="margin-top:20px;">Два режима порогов</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--gray);padding:16px;border-top:2px solid var(--green);">
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:8px;">Режим 1 — Абсолютный · Старт</div>
+        <div style="font-size:.7rem;color:rgba(245,242,238,.8);line-height:1.7;">Фиксированные числа: Авторитет 500, Эксперт 1000, Легенда 2500. Просто и понятно на старте платформы.</div>
+      </div>
+      <div style="background:var(--gray);padding:16px;border-top:2px solid var(--gold);">
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Режим 2 — Относительный · Масштаб</div>
+        <div style="font-size:.7rem;color:rgba(245,242,238,.8);line-height:1.7;">Пороги привязаны к перцентилям активной аудитории за 90 дней. Авторитет = Топ 30%, Эксперт = Топ 10%, Легенда = Топ 2%.</div>
+      </div>
+    </div>
+    <div style="background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:12px 16px;font-size:.68rem;color:rgba(245,242,238,.8);line-height:1.6;">
+      ⚠️ При пересмотре порогов пользователь получает <b style="color:var(--gold)">grace period 90 дней</b> чтобы набрать нужный REP. Понижение уровня без предупреждения невозможно. Переключение между режимами — вручную через админку.
+    </div>
   </section>
 
   <!-- ═══════════ REP MATH ═══════════ -->
@@ -996,7 +1023,7 @@ p strong{font-weight:700;color:var(--gold);}
 
     <h3 style="margin-bottom:10px;">⚙️ Математика и бэкенд (Этап 3)</h3>
     <div>
-      <div class="update-item"><div><div class="ui-page">REP Engine</div><div class="ui-desc">Расчёт репутации, антиинфляция, потолки</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">REP Engine</div><div class="ui-desc">Расчёт репутации · Антиинфляция · Без потолка · Динамические пороги уровней</div></div><span class="badge-done gray">Этап 3</span></div>
       <div class="update-item"><div><div class="ui-page">Trust Score Engine</div><div class="ui-desc">Взвешенные голоса, расчёт % доверия</div></div><span class="badge-done gray">Этап 3</span></div>
       <div class="update-item"><div><div class="ui-page">Feed Algorithm</div><div class="ui-desc">Горячее (Reddit score) / Спорные / Персонализация</div></div><span class="badge-done gray">Этап 3</span></div>
       <div class="update-item"><div><div class="ui-page">Пуш-уведомления</div><div class="ui-desc">Real-time через Supabase</div></div><span class="badge-done gray">Этап 3</span></div>
@@ -1005,8 +1032,413 @@ p strong{font-weight:700;color:var(--gold);}
     </div>
   </section>
 
+  <!-- ═══════════ EXERCISES ═══════════ -->
+  <section id="exercises">
+    <div class="doc-tag">Новое в v1.1</div>
+    <h2>Система упражнений</h2>
+
+    <p>Все упражнения на платформе унифицированы — нельзя добавить рекорд с произвольным названием. Это критично для лидербордов, статистики и сравнения категорий.</p>
+    <p><b>Структура:</b> Категория → Движение → Вариация. Например: Силовые → Жим → Жим лёжа классика.</p>
+
+    <h3>Четыре уровня упражнений</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+
+      <div style="background:var(--gray);padding:16px 20px;border-left:3px solid var(--gold);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:.82rem;font-weight:700;">🏆 Уровень 1 — Золотой стандарт</div>
+          <span style="font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);">Администратор</span>
+        </div>
+        <div style="font-size:.68rem;color:rgba(245,242,238,.7);line-height:1.6;margin-bottom:8px;">Классические соревновательные движения с чёткими правилами техники. Идут в основные лидерборды и сравнение категорий. Строгий чеклист техники.</div>
+        <div style="font-size:.65rem;color:var(--gray-light);">Жим лёжа · Приседания · Становая классика · Становая сумо · Подтягивания · Толчок · Рывок</div>
+      </div>
+
+      <div style="background:var(--gray);padding:16px 20px;border-left:3px solid var(--blue);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:.82rem;font-weight:700;">⭐ Уровень 2 — Признанные</div>
+          <span style="font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2);">Администратор</span>
+        </div>
+        <div style="font-size:.68rem;color:rgba(245,242,238,.7);line-height:1.6;margin-bottom:8px;">Широко известные движения с устоявшейся техникой. Отдельные лидерборды, полноценная верификация.</div>
+        <div style="font-size:.65rem;color:var(--gray-light);">Жим стоя · Фронтальные приседания · Румынская тяга · Отжимания на брусьях · Стритлифтинг базовые</div>
+      </div>
+
+      <div style="background:var(--gray);padding:16px 20px;border-left:3px solid var(--green);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:.82rem;font-weight:700;">🔬 Уровень 3 — Авторские / Нишевые</div>
+          <span style="font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);">Любой → Эксперт одобряет</span>
+        </div>
+        <div style="font-size:.68rem;color:rgba(245,242,238,.7);line-height:1.6;margin-bottom:8px;">Движения предложенные сообществом и одобренные Экспертом+. Своя лидерборда, метка «нишевое».</div>
+        <div style="font-size:.65rem;color:var(--gray-light);">Подтягивания из-за головы · Отжимания на кулаках · Необычные хваты · Элементы стритлифтинга</div>
+      </div>
+
+      <div style="background:var(--gray);padding:16px 20px;border-left:3px solid var(--red);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:.82rem;font-weight:700;">🎪 Уровень 4 — Цирк силы</div>
+          <span style="font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);">Любой добавляет</span>
+        </div>
+        <div style="font-size:.68rem;color:rgba(245,242,238,.7);line-height:1.6;margin-bottom:8px;">Экзотические и юмористические движения. Отдельная лента и лидерборды. Вирусный механизм платформы. Не участвуют в основном рейтинге — отдельная REP-система.</div>
+        <div style="font-size:.65rem;color:var(--gray-light);">Отжимания на 3 пальцах · Подтягивания на 2 пальцах · Жим мизинцем · Всё что за гранью</div>
+      </div>
+    </div>
+
+    <h3>Влияние на страницы</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-add-record.html</span><span style="color:var(--gray-light);">Поиск упражнения из базы, выбор уровня, подсказки техники</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-feed.html</span><span style="color:var(--gray-light);">Фильтр по уровню упражнения, вкладка «🎪 Цирк силы»</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-leaderboard.html</span><span style="color:var(--gray-light);">Переключатель: Основной / Цирк силы, раздельные лидерборды</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-record.html</span><span style="color:var(--gray-light);">Метка уровня упражнения, чеклист техники зависит от уровня</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-profile.html</span><span style="color:var(--gray-light);">Две секции: основные рекорды + Цирк силы, бейдж «Фрик-чемпион»</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-program.html</span><span style="color:var(--gray-light);">Упражнение выбирается только из базы унифицированных названий</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-programs.html</span><span style="color:var(--gray-light);">Отдельная категория «Цирк силы» в каталоге программ</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CIRCUS ═══════════ -->
+  <section id="circus">
+    <div class="doc-tag">Новое в v1.1</div>
+    <h2>🎪 Цирк силы</h2>
+
+    <p>Отдельная лига для экзотических движений. Вирусный механизм платформы — люди делятся такими рекордами просто ради смеха и удивления. Органический охват который не купишь.</p>
+
+    <h3>REP за фрик-рекорды — система карантина</h3>
+    <p>Фрик-рекорд не даёт REP сразу. Он должен выдержать проверку временем — значит это реальное достижение.</p>
+
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;">
+        <div style="font-size:.65rem;color:var(--gray-light);">День 0–7</div>
+        <div style="font-size:.7rem;">Рекорд висит, голосование идёт. REP не начисляется.</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gray-light);">+0</div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;">
+        <div style="font-size:.65rem;color:var(--gray-light);">День 7–30</div>
+        <div style="font-size:.7rem;">Рекорд держится — никто не побил за неделю</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--green);">+5 REP</div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;">
+        <div style="font-size:.65rem;color:var(--gray-light);">День 30–90</div>
+        <div style="font-size:.7rem;">Стабильный рекорд — никто не побил за месяц</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--green);">+15 REP</div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;">
+        <div style="font-size:.65rem;color:var(--gray-light);">День 90+</div>
+        <div style="font-size:.7rem;">Рекорд в Топ-3 своего движения более 3 месяцев</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gold);">+30 REP</div>
+      </div>
+      <div style="background:rgba(61,220,132,.04);border:1px solid rgba(61,220,132,.15);padding:12px 16px;display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;">
+        <div style="font-size:.65rem;color:var(--green);">Вирусный бонус</div>
+        <div style="font-size:.7rem;">Рекорд набрал 100+ голосов «Верю» за первую неделю</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--green);">+10 REP</div>
+      </div>
+    </div>
+
+    <h3>Квесты Цирка силы</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;">
+        <div><div style="font-size:.72rem;font-weight:700;margin-bottom:2px;">🎪 Первый шаг во фрик</div><div style="font-size:.62rem;color:var(--gray-light);">Поставь рекорд в любом движении Цирка силы</div></div>
+        <div style="text-align:right;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--green);">+20 REP</div><div style="font-size:.52rem;color:var(--gray-light);">+ бейдж</div></div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;">
+        <div><div style="font-size:.72rem;font-weight:700;margin-bottom:2px;">🏆 Фрик-чемпион</div><div style="font-size:.62rem;color:var(--gray-light);">Займи Топ-3 в любом движении Цирка силы</div></div>
+        <div style="text-align:right;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gold);">+50 REP</div><div style="font-size:.52rem;color:var(--gray-light);">+ именной бейдж</div></div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;">
+        <div><div style="font-size:.72rem;font-weight:700;margin-bottom:2px;">🧪 Основатель движения</div><div style="font-size:.62rem;color:var(--gray-light);">Добавь своё движение и набери 10 рекордов от разных людей</div></div>
+        <div style="text-align:right;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);">+100 REP</div><div style="font-size:.52rem;color:var(--gray-light);">+ именной бейдж</div></div>
+      </div>
+    </div>
+
+    <h3>Вирусное уведомление для Про-атлетов</h3>
+    <div style="background:var(--gray);padding:14px 16px;border-left:3px solid var(--red);font-size:.72rem;line-height:1.6;">
+      «Денис из твоей категории только что установил рекорд в жиме на 3 пальцах 👀 Слабо?»
+      <div style="font-size:.6rem;color:var(--gray-light);margin-top:6px;">Срабатывает когда кто-то из той же весовой категории ставит первый фрик-рекорд.</div>
+    </div>
+
+    <h3 style="margin-top:20px;">Программы для Цирка силы</h3>
+    <p>Отдельная категория в каталоге. Писать такие программы может только Легенда с бейджем «Фрик-чемпион» — нельзя учить тому чего сам не достиг. Вирусный потенциал: программа «Отжимания на одном пальце за 90 дней» — продукт который продаёт себя сам.</p>
+
+    <h3>Профиль атлета из Про который фрикует</h3>
+    <p>Никакого конфликта — два раздела в одном профиле. REP и репутация не страдают. Наоборот — показывает что человек не только силён но и с юмором.</p>
+    <div style="background:var(--gray);padding:16px 20px;">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">⭐ Основные рекорды · Про лига</div>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px;">
+        <div style="font-size:.7rem;display:flex;justify-content:space-between;"><span>Жим лёжа</span><span style="color:var(--gold);font-family:'Bebas Neue',sans-serif;">172 кг · #1 категория</span></div>
+        <div style="font-size:.7rem;display:flex;justify-content:space-between;"><span>Приседания</span><span style="color:var(--gold);font-family:'Bebas Neue',sans-serif;">210 кг · #3 категория</span></div>
+      </div>
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:10px;">🎪 Цирк силы</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:.7rem;display:flex;justify-content:space-between;"><span>Жим на 3 пальцах</span><span style="color:var(--red);font-family:'Bebas Neue',sans-serif;">47 кг · 84 голоса «Верю»</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ REP CEILING ═══════════ -->
+  <section id="rep-ceiling">
+    <div class="doc-tag">Новое в v1.1</div>
+    <h2>REP без потолка</h2>
+
+    <p><b>Принцип:</b> REP бесконечен. Нет максимального уровня, нет конечной точки. Человек с 50 000 REP всё ещё стремится к 51 000. Это принципиальное отличие от платформ где люди достигают максимума и теряют мотивацию.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:16px;border-top:2px solid var(--red);">
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Как у всех — с потолком</div>
+        <div style="font-size:.7rem;color:rgba(245,242,238,.7);line-height:1.7;">Достиг максимума → потерял мотивацию → ушёл с платформы. Это убивает долгосрочное удержание.</div>
+      </div>
+      <div style="background:var(--gray);padding:16px;border-top:2px solid var(--green);">
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:8px;">FitoRank — без потолка</div>
+        <div style="font-size:.7rem;color:rgba(245,242,238,.7);line-height:1.7;">Всегда есть следующая цифра. Легенда с 2500 REP смотрит на Легенду с 10 000 REP и понимает что расти есть куда.</div>
+      </div>
+    </div>
+
+    <h3>Что меняется на страницах</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-profile.html</span><span style="color:var(--gray-light);">Убрать любые ограничители REP. Прогресс-бар показывает расстояние до следующей круглой цифры, не до «максимума»</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-public-profile.html</span><span style="color:var(--gray-light);">REP отображается полным числом без капа</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-leaderboard.html</span><span style="color:var(--gray-light);">Колонка REP без верхней границы, сортировка по убыванию</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-concept.html</span><span style="color:var(--gray-light);">Убрать упоминание «потолков» — заменено на динамические пороги уровней</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ DYNAMIC THRESHOLDS ═══════════ -->
+  <section id="dynamic-thresholds">
+    <div class="doc-tag">Новое в v1.1</div>
+    <h2>Динамические пороги уровней</h2>
+
+    <p>Текущие пороги REP — это пороги <b>запуска</b>, не постоянные. По мере роста платформы планка поднимается чтобы уровни оставались значимыми.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:16px;">
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;">Пороги запуска (сейчас)</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>🌱 Новичок</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gray-light);">0–249</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>💪 Участник</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gray-light);">250–499</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>⭐ Авторитет</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gold);">500–999</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>🏆 Эксперт</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gold);">1000–2499</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;">
+            <span>🔥 Легенда</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--red);">2500+</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--gray);padding:16px;">
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;">Пример после пересмотра</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>🌱 Новичок</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gray-light);">0–499</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>💪 Участник</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gray-light);">500–999</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>⭐ Авторитет</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gold);">1000–1999</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+            <span>🏆 Эксперт</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--gold);">2000–4999</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;padding:5px 0;">
+            <span>🔥 Легенда</span><span style="font-family:'Bebas Neue',sans-serif;color:var(--red);">5000+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Правила пересмотра порогов</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:12px 16px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-size:1rem;flex-shrink:0;">📅</div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;">Не чаще раза в 12 месяцев</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Стабильность для пользователей — нельзя менять пороги хаотично. Одно плановое обновление в год.</div>
+        </div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-size:1rem;flex-shrink:0;">📢</div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;">Публичный анонс за 30 дней</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Все пользователи получают уведомление об изменении. За 7 дней — персональное предупреждение тем кто попадает в зону риска.</div>
+        </div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-size:1rem;flex-shrink:0;">💸</div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;">Программы не блокируются</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">При понижении уровня опубликованные программы остаются активными. Меняется только комиссия — к уровню нового статуса.</div>
+        </div>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-size:1rem;flex-shrink:0;">⬆️</div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;">Повышение порога — Grace Period</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">При повышении порогов действует Grace Period 90 дней. При снижении порогов — уровень повышается мгновенно, Grace Period не нужен.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ GRACE PERIOD ═══════════ -->
+  <section id="grace-period">
+    <div class="doc-tag">Новое в v1.1</div>
+    <h2>Grace Period</h2>
+
+    <p>Механика защиты пользователей при повышении порогов уровней. Человек честно заработал Легенду — платформа обязана дать ему время адаптироваться.</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;margin-bottom:24px;">
+
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:0;position:relative;">
+        <div style="padding:14px 16px 14px 0;border-right:1px solid var(--gray-mid);text-align:right;">
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);">День 0</div>
+        </div>
+        <div style="padding:14px 0 14px 20px;border-bottom:1px solid rgba(255,255,255,.04);">
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;">Пороги обновлены</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Платформа поднимает порог Легенды: 2500 → 3000. Автоматическое уведомление всем кто попадает в зону риска. Grace Period активирован.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:0;position:relative;">
+        <div style="padding:14px 16px 14px 0;border-right:1px solid var(--gray-mid);text-align:right;">
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);">День 1–90</div>
+        </div>
+        <div style="padding:14px 0 14px 20px;border-bottom:1px solid rgba(255,255,255,.04);">
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;color:var(--gold);">Grace Period активен</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Все права и возможности уровня сохраняются в полном объёме. В профиле появляется таймер и прогресс-бар до нового порога.</div>
+          <div style="margin-top:8px;background:var(--black);padding:10px 14px;border-left:2px solid var(--gold);">
+            <div style="font-size:.65rem;font-weight:700;color:var(--gold);">🔥 Легенда · Grace Period · 47 дней осталось</div>
+            <div style="margin-top:6px;height:6px;background:var(--gray-mid);border-radius:3px;overflow:hidden;">
+              <div style="height:100%;width:63%;background:linear-gradient(90deg,var(--gold),var(--red));border-radius:3px;"></div>
+            </div>
+            <div style="font-size:.58rem;color:var(--gray-light);margin-top:4px;">2500 / 3000 REP · Нужно ещё 500</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:0;position:relative;">
+        <div style="padding:14px 16px 14px 0;border-right:1px solid var(--gray-mid);text-align:right;">
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);">Любой день</div>
+        </div>
+        <div style="padding:14px 0 14px 20px;border-bottom:1px solid rgba(255,255,255,.04);">
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;color:var(--green);">Досрочное закрытие</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Набрал 3000 REP до истечения 90 дней — Grace Period закрывается немедленно. Уведомление: «🔥 Легенда подтверждена! Ты достиг нового порога досрочно».</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:0;position:relative;">
+        <div style="padding:14px 16px 14px 0;border-right:1px solid var(--gray-mid);text-align:right;">
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);">День 91</div>
+        </div>
+        <div style="padding:14px 0 14px 20px;">
+          <div style="font-size:.75rem;font-weight:700;margin-bottom:3px;color:var(--red);">Grace Period истёк</div>
+          <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Не добрал — уровень снижается до Эксперта. Права Эксперта. Программы остаются активными, комиссия меняется с 15% → 20%. Уведомление с объяснением и конкретным путём возврата к Легенде.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3>Уведомления Grace Period</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;">📢 Публичный анонс платформы</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«Пороги уровней обновятся через 30 дней. Подробности →»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(136,136,136,.1);color:var(--gray-light);border:1px solid rgba(136,136,136,.2);white-space:nowrap;">За 30 дней</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;">⚠️ Персональное предупреждение</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«Твой уровень Легенда может измениться. Нужно ещё 500 REP. Через 7 дней»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);white-space:nowrap;">За 7 дней</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;">🟡 Grace Period активирован</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«У тебя 90 дней чтобы набрать 500 REP и сохранить Легенду»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);white-space:nowrap;">День 0</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;">⏰ Напоминание на середине</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«45 дней прошло. Осталось 45. Ты набрал 200 из 500 REP»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(136,136,136,.1);color:var(--gray-light);border:1px solid rgba(136,136,136,.2);white-space:nowrap;">День 45</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;">🚨 Финальное предупреждение</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«Осталось 7 дней. Нужно ещё 300 REP чтобы сохранить Легенду»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);white-space:nowrap;">День 83</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;color:var(--green);">✅ Легенда подтверждена</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«Ты набрал 3000 REP досрочно. Легенда подтверждена 🔥»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);white-space:nowrap;">Успех</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;color:var(--red);">📉 Grace Period истёк</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:2px;">«Уровень изменён: Легенда → Эксперт. До Легенды осталось 300 REP. Твои программы активны»</div>
+        </div>
+        <span style="font-size:.52rem;font-weight:700;padding:2px 7px;background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);white-space:nowrap;">День 91</span>
+      </div>
+    </div>
+
+    <h3>Влияние на страницы</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-profile.html</span><span style="color:var(--gray-light);">Таймер Grace Period + прогресс-бар до нового порога если активен</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">fitorank-notifications.html</span><span style="color:var(--gray-light);">6 новых типов уведомлений Grace Period (см. выше)</span></div>
+      <div style="background:var(--gray);padding:10px 14px;display:grid;grid-template-columns:200px 1fr;gap:12px;font-size:.68rem;"><span style="color:var(--blue);font-family:monospace;">Dynamic Thresholds (Этап 3)</span><span style="color:var(--gray-light);">Логика Grace Period в бэкенде · Автоматические триггеры уведомлений · Правило: не чаще раза в 12 мес</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CHECKLIST ═══════════ -->
+  <section id="checklist">
+    <div class="doc-tag">Новое в v1.1</div>
+    <h2>Чек-лист корректировок</h2>
+
+    <p>Все изменения которые нужно внести в существующие страницы по итогам брейншторма v2.0.</p>
+
+    <h3 style="margin-bottom:10px;">🔴 Критичные — влияют на архитектуру</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div class="update-item"><div><div class="ui-page">fitorank-add-record.html</div><div class="ui-desc">Поиск упражнения из унифицированной базы вместо свободного ввода · Выбор уровня упражнения · Подсказки техники по уровню</div></div><span class="badge-done" style="background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);">Критично</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-feed.html</div><div class="ui-desc">Фильтр по уровню упражнения · Вкладка «🎪 Цирк силы» · Экспертные метки в карточках · Три режима ленты</div></div><span class="badge-done" style="background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);">Критично</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-leaderboard.html</div><div class="ui-desc">Переключатель Основной / Цирк силы · Раздельные лидерборды · REP без верхней границы</div></div><span class="badge-done" style="background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);">Критично</span></div>
+    </div>
+
+    <h3 style="margin-bottom:10px;">🟡 Важные — профиль и рекорды</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div class="update-item"><div><div class="ui-page">fitorank-profile.html</div><div class="ui-desc">Две секции рекордов: основные + Цирк силы · REP без потолка · Динамический прогресс-бар · Бейдж «Фрик-чемпион»</div></div><span class="badge-done gold">Важно</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-public-profile.html</div><div class="ui-desc">Те же изменения что и в своём профиле</div></div><span class="badge-done gold">Важно</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-record.html</div><div class="ui-desc">Метка уровня упражнения · Чеклист техники зависит от уровня (строгий для Золотого, упрощённый для Цирка)</div></div><span class="badge-done gold">Важно</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-notifications.html</div><div class="ui-desc">Новый тип: «Твой фрик-рекорд вирусится 👀» · Вирусное уведомление-вызов для Про-атлетов · 6 типов Grace Period уведомлений</div></div><span class="badge-done gold">Важно</span></div>
+    </div>
+
+    <h3 style="margin-bottom:10px;">⚪ Обычные — онбординг и программы</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div class="update-item"><div><div class="ui-page">fitorank-onboarding.html</div><div class="ui-desc">Кнопки Facebook и TikTok авторизации · Дата рождения вместо возраста</div></div><span class="badge-done gray">Обычное</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-program.html</div><div class="ui-desc">CTA под ценой «Хочешь зарабатывать? → Написать программу» · Упражнение только из базы · Убрать комиссию с публичной страницы</div></div><span class="badge-done gray">Обычное</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-programs.html</div><div class="ui-desc">Категория «🎪 Цирк силы» в каталоге · Программы фрик-движений только от Легенды с бейджем</div></div><span class="badge-done gray">Обычное</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-diary.html</div><div class="ui-desc">Названия упражнений из унифицированной базы</div></div><span class="badge-done gray">Обычное</span></div>
+    </div>
+
+    <h3 style="margin-bottom:10px;">⚙️ Бэкенд (Этап 3) — новые задачи</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="update-item"><div><div class="ui-page">Exercise Database</div><div class="ui-desc">База унифицированных упражнений · 4 уровня · Модерация пользовательских заявок</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Freak REP Engine</div><div class="ui-desc">Система карантина фрик-рекордов · Таймеры начисления REP · Вирусный бонус</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Dynamic Thresholds + Grace Period</div><div class="ui-desc">Переключение порогов уровней · Grace Period 90 дней · Автотриггеры уведомлений · Правило не чаще раза в 12 месяцев</div></div><span class="badge-done gray">Этап 3</span></div>
+    </div>
+  </section>
+
   <div style="padding:40px 0;border-top:1px solid var(--gray-mid);font-size:.62rem;color:var(--gray-light);display:flex;justify-content:space-between;">
-    <span>FitoRank Concept Document · v1.0</span>
+    <span>FitoRank Concept Document · v1.1</span>
     <span>Март 2026 · Конфиденциально</span>
   </div>
 

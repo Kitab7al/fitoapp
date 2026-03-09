@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Создать программу</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:10px;height:10px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:32px;height:32px;border:1px solid rgba(232,38,11,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .14s ease;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;cursor:none;}
+.logo span{color:var(--red);}
+.nav-bc{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-bc a{color:var(--gray-light);text-decoration:none;cursor:none;transition:color .2s;}
+.nav-bc a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+
+.step-bar{position:fixed;top:65px;left:0;right:0;z-index:400;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.step-bar-inner{display:flex;align-items:stretch;height:48px;max-width:920px;margin:0 auto;padding:0 40px;}
+.step{display:flex;align-items:center;gap:9px;padding:0 18px 0 0;position:relative;cursor:none;flex:1;}
+.step:not(:last-child)::after{content:'›';position:absolute;right:4px;color:var(--gray-mid);font-size:1rem;}
+.step-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.52rem;font-weight:700;flex-shrink:0;border:1px solid var(--gray-mid);color:var(--gray-light);transition:all .3s;}
+.step-label{font-size:.58rem;font-weight:600;color:var(--gray-light);transition:color .3s;white-space:nowrap;}
+.step.active .step-num{background:var(--red);border-color:var(--red);color:var(--white);}
+.step.active .step-label{color:var(--white);}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:var(--black);font-size:.7rem;}
+.step.done .step-label{color:var(--green);}
+.step-progress{height:2px;background:var(--gray-mid);}
+.step-progress-fill{height:100%;background:var(--red);transition:width .4s ease;}
+
+.mode-row{position:fixed;top:113px;left:0;right:0;z-index:399;background:rgba(8,8,8,.95);border-bottom:1px solid var(--gray-mid);padding:8px 40px;}
+.mode-inner{max-width:920px;margin:0 auto;display:flex;gap:6px;}
+.ms-btn{flex:1;padding:9px 14px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--gray-mid);background:transparent;color:var(--gray-light);cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ms-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
+.ms-req{font-size:.48rem;font-weight:400;letter-spacing:.04em;opacity:.7;}
+
+.app{padding-top:163px;min-height:100vh;}
+.content-area{max-width:920px;margin:0 auto;padding:28px 40px 120px;}
+
+.form-section{margin-bottom:28px;}
+.fs-tag{font-size:.5rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:4px;}
+.fs-title{font-size:1.05rem;font-weight:700;margin-bottom:6px;}
+.fs-desc{font-size:.67rem;color:var(--gray-light);font-weight:300;line-height:1.55;}
+
+.field{margin-bottom:14px;}
+.field-label{font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:5px;display:flex;align-items:center;gap:7px;}
+.field-label .req{color:var(--red);}
+.field-label .tip{font-size:.5rem;font-weight:400;letter-spacing:.04em;text-transform:none;background:var(--gray-mid);padding:1px 6px;color:var(--gray-light);}
+.field-hint{font-size:.58rem;color:var(--gray-light);margin-top:4px;line-height:1.5;font-style:italic;}
+
+input[type=text],input[type=number],textarea,select{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.73rem;padding:11px 13px;outline:none;transition:border-color .2s;-webkit-appearance:none;cursor:none;}
+input[type=text]:focus,input[type=number]:focus,textarea:focus,select:focus{border-color:var(--red);}
+input[type=text]::placeholder,textarea::placeholder{color:var(--gray-light);font-style:italic;}
+textarea{resize:vertical;min-height:85px;line-height:1.6;}
+select{background:var(--gray);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+select option{background:var(--gray);}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+.pill-group{display:flex;flex-wrap:wrap;gap:5px;}
+.pill{padding:6px 13px;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--gray-mid);color:var(--gray-light);cursor:none;transition:all .2s;background:transparent;}
+.pill:hover{border-color:var(--gray-light);color:var(--white);}
+.pill.sel{background:var(--red);border-color:var(--red);color:var(--white);}
+.pill.sel-green{background:var(--green);border-color:var(--green);color:var(--black);}
+.pill.sel-gold{background:var(--gold);border-color:var(--gold);color:var(--black);}
+
+.type-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.type-card{background:var(--gray);border:1px solid var(--gray-mid);padding:14px;cursor:none;transition:all .2s;position:relative;}
+.type-card:hover{border-color:var(--gray-light);}
+.type-card.sel{border-color:var(--red);background:rgba(232,38,11,.05);}
+.type-card.sel::after{content:'✓';position:absolute;top:8px;right:10px;font-size:.65rem;color:var(--red);font-weight:700;}
+.tc-icon{font-size:1.3rem;margin-bottom:6px;}
+.tc-name{font-size:.72rem;font-weight:700;margin-bottom:3px;}
+.tc-desc{font-size:.58rem;color:var(--gray-light);line-height:1.4;}
+
+.divider{height:1px;background:var(--gray-mid);margin:24px 0;}
+
+.inline-alert{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:9px 13px;font-size:.63rem;color:var(--gold);line-height:1.5;margin-bottom:14px;display:flex;gap:9px;}
+
+.cat-table{width:100%;border-collapse:collapse;margin-bottom:8px;}
+.cat-table th{background:var(--gray-mid);font-size:.5rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);padding:8px 12px;text-align:left;}
+.cat-table td{padding:0;border-bottom:1px solid rgba(255,255,255,.04);}
+.cat-table td input{background:transparent;border:none;border-right:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:9px 12px;width:100%;outline:none;}
+.cat-table td input:focus{background:rgba(232,38,11,.05);}
+.cat-table td.ex-cell{font-size:.62rem;color:var(--gray-light);padding:9px 12px;}
+.cat-table td.ex-cell b{color:var(--gold);}
+.cat-table tr:last-child td{border-bottom:none;}
+.add-row-btn{background:transparent;border:1px dashed var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:9px;width:100%;cursor:none;transition:all .2s;margin-bottom:16px;}
+.add-row-btn:hover{border-color:var(--gray-light);color:var(--white);}
+
+.weeks-list{display:flex;flex-direction:column;gap:5px;}
+.week-card{background:var(--gray);border:1px solid var(--gray-mid);overflow:hidden;}
+.week-card.open{border-color:rgba(232,38,11,.25);}
+.week-card.deload-card{border-color:rgba(74,158,255,.15);background:rgba(74,158,255,.02);}
+.wc-head{padding:11px 15px;display:grid;grid-template-columns:72px 1fr auto auto;gap:12px;align-items:center;cursor:none;transition:background .15s;}
+.wc-head:hover{background:rgba(255,255,255,.02);}
+.wc-n{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--gray-light);}
+.wc-ti input{background:transparent;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;width:100%;outline:none;cursor:none;}
+.wc-ti input::placeholder{color:var(--gray-light);font-weight:400;font-style:italic;}
+.wc-badge{font-size:.48rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;white-space:nowrap;}
+.wc-badge.normal{background:rgba(245,200,66,.08);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.wc-badge.deload{background:rgba(74,158,255,.08);color:var(--blue);border:1px solid rgba(74,158,255,.2);}
+.wc-arr{font-size:.65rem;color:var(--gray-light);padding:3px 6px;transition:transform .2s;}
+.wc-arr.open{transform:rotate(180deg);}
+.wc-body{display:none;padding:0 15px 14px;border-top:1px solid rgba(255,255,255,.06);}
+.wc-body.open{display:block;}
+.days-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:11px 0;}
+.day-slot{background:var(--black);padding:11px;border:1px solid var(--gray-mid);min-height:76px;}
+.day-slot.rest-slot{opacity:.45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+.day-lbl{font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:7px;}
+.day-exs{display:flex;flex-direction:column;gap:3px;}
+.day-ex{display:flex;align-items:center;gap:5px;font-size:.6rem;padding:3px 6px;background:var(--gray);border:1px solid var(--gray-mid);}
+.dex-name{flex:1;}
+.dex-sets{color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:.78rem;}
+.dex-rm{color:var(--gray-light);font-size:.55rem;cursor:none;background:none;border:none;transition:color .2s;padding:0 2px;}
+.dex-rm:hover{color:var(--red);}
+.add-ex{width:100%;background:transparent;border:1px dashed var(--gray-mid);color:var(--gray-light);font-size:.52rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:5px;cursor:none;transition:all .2s;margin-top:3px;}
+.add-ex:hover{border-color:var(--gray-light);color:var(--white);}
+.toggle-rest{width:100%;background:transparent;border:none;color:var(--gray-light);font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:3px;cursor:none;transition:color .2s;margin-top:2px;}
+.toggle-rest:hover{color:var(--white);}
+.wc-actions{display:flex;gap:6px;margin-top:9px;}
+.wca-btn{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.52rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 11px;cursor:none;transition:all .2s;}
+.wca-btn:hover{border-color:var(--white);color:var(--white);}
+.wca-btn.danger{border-color:rgba(232,38,11,.2);color:rgba(232,38,11,.6);}
+.wca-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+.rule-block{background:var(--gray);padding:17px;margin-bottom:10px;}
+.rb-head{font-size:.57rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:13px;}
+.rb-head.red{color:var(--red);}
+.rb-head.gold{color:var(--gold);}
+.rb-head.blue{color:var(--blue);}
+.rb-head.green{color:var(--green);}
+.rule-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.rule-row:last-child{border-bottom:none;}
+.rr-txt{font-size:.67rem;color:rgba(245,242,238,.8);}
+.rr-txt small{font-size:.57rem;color:var(--gray-light);display:block;margin-top:1px;}
+.rr-inputs{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.rr-inputs input{width:48px;background:var(--black);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:5px 7px;outline:none;text-align:center;}
+.rr-inputs input:focus{border-color:var(--red);}
+.rr-inputs span{font-size:.6rem;color:var(--gray-light);white-space:nowrap;}
+
+.price-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.price-opt{background:var(--gray);border:1px solid var(--gray-mid);padding:13px 15px;cursor:none;transition:all .2s;}
+.price-opt:hover{border-color:var(--gray-light);}
+.price-opt.sel{border-color:var(--green);}
+.po-name{font-size:.72rem;font-weight:700;margin-bottom:3px;}
+.po-desc{font-size:.58rem;color:var(--gray-light);}
+.commission-box{background:var(--black);padding:11px 15px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;border:1px solid var(--gray-mid);}
+.cb-label{font-size:.6rem;color:var(--gray-light);}
+.cb-vals{display:flex;gap:20px;}
+.cb-item{text-align:center;}
+.cb-val{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;}
+.cb-val.green{color:var(--green);}
+.cb-sub{font-size:.46rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.08em;}
+
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);padding:12px 40px;z-index:400;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.bb-left{display:flex;align-items:center;gap:10px;}
+.bb-draft{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;padding:9px 16px;cursor:none;transition:all .2s;}
+.bb-draft:hover{border-color:var(--white);color:var(--white);}
+.bb-autosave{font-size:.57rem;color:var(--green);display:flex;align-items:center;gap:5px;}
+.bb-right{display:flex;gap:7px;}
+.btn-prev{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;padding:11px 18px;cursor:none;transition:all .2s;clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);}
+.btn-prev:hover{border-color:var(--white);color:var(--white);}
+.btn-next{background:var(--red);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;padding:11px 24px;cursor:none;transition:background .2s;clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);}
+.btn-next:hover{background:var(--red-dark);}
+.btn-preview{background:transparent;border:1px solid var(--blue);color:var(--blue);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;padding:10px 16px;cursor:none;transition:all .2s;}
+.btn-preview:hover{background:rgba(74,158,255,.1);}
+.btn-publish{background:var(--green);color:var(--black);}
+.btn-publish:hover{background:#2ab868;}
+
+/* FREE MODE */
+.passport-mini{background:rgba(232,38,11,.04);border:1px solid rgba(232,38,11,.15);padding:15px 18px;margin-bottom:18px;}
+.pm-label{font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+.pm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.pm-f label{font-size:.46rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);display:block;margin-bottom:3px;}
+.fme-wrap{background:var(--gray);border:1px solid var(--gray-mid);margin-bottom:14px;}
+.fme-toolbar{display:flex;gap:5px;padding:10px 12px;border-bottom:1px solid var(--gray-mid);flex-wrap:wrap;}
+.fme-t{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.56rem;font-weight:700;letter-spacing:.05em;padding:4px 9px;cursor:none;transition:all .2s;}
+.fme-t:hover{border-color:var(--white);color:var(--white);}
+.fme-area{background:var(--black);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:15px;width:100%;min-height:280px;outline:none;resize:vertical;line-height:1.8;}
+
+/* PREVIEW */
+.preview-overlay{position:fixed;inset:0;background:var(--black);z-index:600;overflow-y:auto;display:none;}
+.preview-overlay.vis{display:block;}
+.preview-bar{position:sticky;top:0;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);padding:11px 32px;display:flex;align-items:center;justify-content:space-between;z-index:10;}
+.pb-lbl{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
+.pb-lbl span{color:var(--gray-light);font-weight:400;}
+.pb-close{background:var(--red);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;padding:7px 16px;cursor:none;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
+.prev-content{max-width:800px;margin:0 auto;padding:30px 40px 80px;}
+
+/* EXERCISE MODAL */
+.ex-modal{position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:700;display:none;align-items:center;justify-content:center;}
+.ex-modal.vis{display:flex;}
+.ex-inner{background:var(--gray);width:500px;max-height:68vh;display:flex;flex-direction:column;border:1px solid var(--gray-mid);}
+.em-head{padding:18px;border-bottom:1px solid var(--gray-mid);}
+.em-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.em-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.em-close{background:transparent;border:none;color:var(--gray-light);font-size:1.1rem;cursor:none;transition:color .2s;}
+.em-close:hover{color:var(--white);}
+.em-search{width:100%;background:var(--black);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:9px 13px;outline:none;}
+.em-search:focus{border-color:var(--red);}
+.em-filters{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.em-f{font-size:.5rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border:1px solid var(--gray-mid);color:var(--gray-light);cursor:none;background:transparent;transition:all .2s;}
+.em-f.active{background:var(--red);border-color:var(--red);color:var(--white);}
+.em-list{overflow-y:auto;padding:6px;}
+.em-item{padding:9px 13px;cursor:none;transition:background .13s;display:flex;align-items:center;justify-content:space-between;border-radius:1px;}
+.em-item:hover{background:var(--black);}
+.em-item-name{font-size:.7rem;font-weight:700;}
+.em-item-meta{font-size:.56rem;color:var(--gray-light);margin-top:1px;}
+.em-lvl{font-size:.48rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;white-space:nowrap;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .32s ease both;}
+
+@media(max-width:768px){
+  body{cursor:auto;}.cursor,.cursor-trail{display:none;}
+  nav,.step-bar,.mode-row,.bottom-bar{padding-left:16px;padding-right:16px;}
+  .step-label{display:none;}.content-area{padding:16px 16px 100px;}
+  .type-cards,.row2,.row3,.price-opts,.pm-grid{grid-template-columns:1fr;}
+  .days-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-bc">
+    <a href="fitorank-profile.html">Мои программы</a>
+    <span class="nav-sep">/</span>
+    <span style="color:var(--white)">Новая программа</span>
+  </div>
+  <div style="font-size:.6rem;color:var(--gray-light);">🔥 Легенда · <span style="color:var(--gold)">1240 REP</span></div>
+</nav>
+
+<div class="step-bar">
+  <div class="step-bar-inner">
+    <div class="step active" id="s1"><div class="step-num">1</div><div class="step-label">Основное</div></div>
+    <div class="step" id="s2"><div class="step-num">2</div><div class="step-label">Категории</div></div>
+    <div class="step" id="s3"><div class="step-num">3</div><div class="step-label">Структура</div></div>
+    <div class="step" id="s4"><div class="step-num">4</div><div class="step-label">Правила</div></div>
+    <div class="step" id="s5"><div class="step-num">5</div><div class="step-label">Цена</div></div>
+    <div class="step" id="s6"><div class="step-num">👁</div><div class="step-label">Публикация</div></div>
+  </div>
+  <div class="step-progress"><div class="step-progress-fill" id="spf" style="width:17%"></div></div>
+</div>
+
+<div class="mode-row">
+  <div class="mode-inner">
+    <button class="ms-btn active" id="btnStructured" onclick="setMode('s')">📋 Структурированный <span class="ms-req">· Шаблон · Авторитет+</span></button>
+    <button class="ms-btn" id="btnFree" onclick="setMode('f')">✏️ Свободный <span class="ms-req">· Полная свобода · Эксперт+</span></button>
+  </div>
+</div>
+
+<div class="app">
+<div class="content-area">
+
+<!-- ══ SCREEN 1 ══ -->
+<div id="sc1" class="fade-up">
+
+  <!-- STRUCTURED -->
+  <div id="modeS">
+    <div class="form-section">
+      <div class="fs-tag">Шаг 1 из 5</div>
+      <div class="fs-title">Основная информация</div>
+      <div class="fs-desc">Паспорт программы — виден покупателю на карточке и странице.</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Название <span class="req">*</span></div>
+      <input type="text" id="fTitle" placeholder="Жим 170+ кг за 6 месяцев" oninput="syncPreview()">
+      <div class="field-hint">Конкретика продаёт. Цифра в названии = +40% конверсии.</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Питч — одна строка <span class="req">*</span> <span class="tip">Видна в каталоге</span></div>
+      <input type="text" id="fPitch" placeholder="Линейная периодизация для натуралов. Проверено на себе." oninput="syncPreview()">
+    </div>
+    <div class="field">
+      <div class="field-label">Описание <span class="req">*</span></div>
+      <textarea id="fDesc" placeholder="Расскажи о программе, методологии, своём опыте..."></textarea>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="form-section">
+      <div class="fs-title">Тип программы</div>
+      <div class="fs-desc">Живая + Верифицированная — самая сильная комбинация.</div>
+    </div>
+    <div class="type-cards">
+      <div class="type-card" onclick="this.classList.toggle('sel')"><div class="tc-icon">📋</div><div class="tc-name">Стандартная</div><div class="tc-desc">Шаблон + дневник тренировок</div></div>
+      <div class="type-card sel" onclick="this.classList.toggle('sel')"><div class="tc-icon">✅</div><div class="tc-name">Верифицированная</div><div class="tc-desc">Автоотзывы с рекордами участников</div></div>
+      <div class="type-card" onclick="this.classList.toggle('sel');toggleLiveAlert(this)"><div class="tc-icon">🔴</div><div class="tc-name">Живая</div><div class="tc-desc">Сопровождение автора · 48ч</div></div>
+    </div>
+    <div class="inline-alert" id="liveAlert" style="display:none">⚠️ Живая программа: обязан отвечать в течение 48 ч. При нарушении — покупатель может запросить возврат.</div>
+
+    <div class="divider"></div>
+
+    <div class="form-section">
+      <div class="fs-title">Упражнение и параметры</div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <div class="field-label">Упражнение <span class="req">*</span></div>
+        <input type="text" id="fExercise" value="Жим лёжа" onclick="openExModal()" readonly>
+        <div class="field-hint">Только из базы FitoRank</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Методология <span class="req">*</span></div>
+        <select id="fMethod">
+          <option value="linear" selected>Линейная периодизация</option>
+          <option value="wave">Линейно-волновая</option>
+          <option value="block">Блоковая периодизация</option>
+          <option value="conjugate">Сопряжённый метод</option>
+          <option value="free">Авторская методология</option>
+        </select>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field">
+        <div class="field-label">Старт от (кг) <span class="req">*</span></div>
+        <input type="number" value="100" id="fFrom">
+        <div class="field-hint">Мин. порог входа</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Цель (кг) <span class="req">*</span></div>
+        <input type="number" value="170" id="fGoal" oninput="syncPreview()">
+      </div>
+      <div class="field">
+        <div class="field-label">Длительность <span class="req">*</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><input type="number" value="24" id="fWeeks" oninput="syncPreview();refreshWeeks()" style="width:60px;"><span style="font-size:.65rem;color:var(--gray-light);">нед</span></div>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field">
+        <div class="field-label">Тренировок в неделю <span class="req">*</span></div>
+        <div class="pill-group" id="pgDays">
+          <button class="pill" onclick="selDays(this)">2</button>
+          <button class="pill sel" onclick="selDays(this)">3</button>
+          <button class="pill" onclick="selDays(this)">4</button>
+          <button class="pill" onclick="selDays(this)">5</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Стаж атлета <span class="req">*</span></div>
+        <select><option>1–2 года</option><option>3–5 лет</option><option selected>5+ лет</option></select>
+      </div>
+      <div class="field">
+        <div class="field-label">Натурал / Фарма</div>
+        <div class="pill-group">
+          <button class="pill sel-green sel" onclick="tPill(this)">🌿 Натурал</button>
+          <button class="pill" onclick="tPill(this)">⚗️ Открытая</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREE MODE -->
+  <div id="modeF" style="display:none">
+    <div class="inline-alert">✏️ Свободный режим — Эксперт+ (1000+ REP). Полная свобода. Паспорт обязателен — без него невозможно построить дневник и собрать статистику.</div>
+    <div class="passport-mini">
+      <div class="pm-label">⚡ Паспорт — обязательно</div>
+      <div class="pm-grid">
+        <div class="pm-f"><label>Упражнение *</label><input type="text" placeholder="Жим лёжа" style="width:100%;font-size:.7rem;"></div>
+        <div class="pm-f"><label>Цель (кг) *</label><input type="number" placeholder="170" style="width:100%;font-size:.7rem;"></div>
+        <div class="pm-f"><label>Недели *</label><input type="number" placeholder="24" style="width:100%;font-size:.7rem;"></div>
+        <div class="pm-f"><label>Старт мин (кг) *</label><input type="number" placeholder="100" style="width:100%;font-size:.7rem;"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="fs-title">Содержание программы</div>
+      <div class="fs-desc">Пиши в свободной форме. Структура — на твоё усмотрение.</div>
+    </div>
+    <div class="fme-wrap">
+      <div class="fme-toolbar">
+        <button class="fme-t" onclick="ins('**','**')"><b>Б</b></button>
+        <button class="fme-t" onclick="ins('*','*')"><i>К</i></button>
+        <button class="fme-t" onclick="ins('## ','')">H2</button>
+        <button class="fme-t" onclick="ins('### ','')">H3</button>
+        <button class="fme-t" onclick="ins('- ','')">Список</button>
+        <button class="fme-t" onclick="ins('| Нед | Упражнение | Подходы | % 1RM |\n|---|---|---|---|\n| 1 | Жим лёжа | 4×5 | 65% |\n','')">Таблица</button>
+        <button class="fme-t" onclick="ins('> ','')">Цитата</button>
+        <button class="fme-t" onclick="ins('---\n','')">Разделитель</button>
+      </div>
+      <textarea class="fme-area" id="fFreeEditor" placeholder="## Блок 1 — Накопление объёма&#10;Недели 1–4&#10;&#10;- Жим лёжа: 4×5 · 65–70% от 1RM&#10;- Жим гантелей: 3×8&#10;&#10;## Правила прогрессии&#10;Добавляем 2.5 кг каждую неделю..."></textarea>
+    </div>
+    <div class="form-section">
+      <div class="fs-title">Весовые категории</div>
+    </div>
+    <table class="cat-table" id="ctFree">
+      <thead><tr><th>Категория</th><th>Старт %</th><th>Шаг кг/нед</th><th>Пример при 1RM 110 кг</th></tr></thead>
+      <tbody>
+        <tr><td><input type="text" value="Муж 80–90 кг"></td><td><input type="number" value="65" style="width:60px;"></td><td><input type="number" value="2.5" step="0.5" style="width:60px;"></td><td class="ex-cell">→ нед.1 <b>71.5 кг</b></td></tr>
+        <tr><td><input type="text" value="Муж 90–100 кг"></td><td><input type="number" value="67" style="width:60px;"></td><td><input type="number" value="2.5" step="0.5" style="width:60px;"></td><td class="ex-cell">→ нед.1 <b>73.7 кг</b></td></tr>
+      </tbody>
+    </table>
+    <button class="add-row-btn" onclick="addCatRow('ctFree')">+ Добавить категорию</button>
+  </div>
+
+</div>
+
+<!-- ══ SCREEN 2 ══ -->
+<div id="sc2" style="display:none" class="fade-up">
+  <div class="form-section">
+    <div class="fs-tag">Шаг 2 из 5</div>
+    <div class="fs-title">Весовые категории</div>
+    <div class="fs-desc">Задай стартовый % и шаг прогрессии для каждой категории. Дневник автоматически рассчитает рабочие веса под каждого покупателя.</div>
+  </div>
+  <div class="inline-alert">💡 Точная адаптация под категорию → выше результаты → больше отзывов → больше продаж.</div>
+  <table class="cat-table" id="ctMain">
+    <thead><tr><th>Категория</th><th>Старт %</th><th>Шаг кг/нед</th><th>Пример при 1RM 110 кг</th></tr></thead>
+    <tbody>
+      <tr><td><input type="text" value="Муж 80–90 кг"></td><td><input type="number" value="65" style="width:60px;"></td><td><input type="number" value="2.5" step="0.5" style="width:60px;"></td><td class="ex-cell">→ нед.1 <b>71.5 кг</b></td></tr>
+      <tr style="background:rgba(61,220,132,.03)"><td><input type="text" value="Муж 90–100 кг ✓"></td><td><input type="number" value="67" style="width:60px;"></td><td><input type="number" value="2.5" step="0.5" style="width:60px;"></td><td class="ex-cell">→ нед.1 <b>73.7 кг</b></td></tr>
+      <tr><td><input type="text" value="Муж 100+ кг"></td><td><input type="number" value="70" style="width:60px;"></td><td><input type="number" value="2.5" step="0.5" style="width:60px;"></td><td class="ex-cell">→ нед.1 <b>77 кг</b></td></tr>
+    </tbody>
+  </table>
+  <button class="add-row-btn" onclick="addCatRow('ctMain')">+ Добавить категорию</button>
+  <div class="divider"></div>
+  <div class="form-section">
+    <div class="fs-title">Тестовая неделя</div>
+    <div class="fs-desc">Первая неделя для определения реального 1RM покупателя.</div>
+  </div>
+  <div class="pill-group" style="margin-bottom:8px;">
+    <button class="pill sel" onclick="tPill(this)">✅ Включить тестовую неделю</button>
+    <button class="pill" onclick="tPill(this)">Покупатель знает свой 1RM</button>
+  </div>
+  <div class="field-hint">При включении дневник начнётся с протокола определения 1RM.</div>
+</div>
+
+<!-- ══ SCREEN 3 ══ -->
+<div id="sc3" style="display:none" class="fade-up">
+  <div class="form-section">
+    <div class="fs-tag">Шаг 3 из 5</div>
+    <div class="fs-title">Структура по неделям</div>
+    <div class="fs-desc">Заполни структуру каждой недели. Дни разворачиваются по клику. Разгрузочные недели — отмечай отдельно.</div>
+  </div>
+  <div class="inline-alert">💡 Заполни первую неделю подробно → скопируй → отредактируй следующие.</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div style="font-size:.63rem;color:var(--gray-light);"><b style="color:var(--white)" id="wkTotal">24</b> недели · <b style="color:var(--blue)" id="wkDeloads">4</b> разгрузочных</div>
+    <button class="wca-btn" onclick="addWeek()">+ Неделя</button>
+  </div>
+  <div class="weeks-list" id="wkList"></div>
+</div>
+
+<!-- ══ SCREEN 4 ══ -->
+<div id="sc4" style="display:none" class="fade-up">
+  <div class="form-section">
+    <div class="fs-tag">Шаг 4 из 5</div>
+    <div class="fs-title">Правила коррекции весов</div>
+    <div class="fs-desc">Дневник применяет эти правила автоматически. Это то что делает программу умной.</div>
+  </div>
+  <div class="rule-block"><div class="rb-head red">⛔ Вес не пошёл</div>
+    <div class="rule-row"><div class="rr-txt">Не выполнил план<small>тренировок подряд → повтори неделю</small></div><div class="rr-inputs"><input type="number" value="2"><span>трен.</span></div></div>
+    <div class="rule-row"><div class="rr-txt">Не пошло недель подряд<small>→ откат на % и начни блок заново</small></div><div class="rr-inputs"><input type="number" value="3"><span>нед</span></div><div class="rr-inputs"><input type="number" value="10"><span>%</span></div></div>
+    <div class="rule-row"><div class="rr-txt">Критерий провала подхода<small>выполнил менее X из Y повторений</small></div><div class="rr-inputs"><input type="number" value="4"><span>из</span><input type="number" value="5"><span>повт.</span></div></div>
+  </div>
+  <div class="rule-block"><div class="rb-head gold">📅 Пропуск тренировки</div>
+    <div class="rule-row"><div class="rr-txt">Пропустил 1 тренировку<small>→ продолжай по плану</small></div><div style="font-size:.6rem;color:var(--green);font-weight:700;">Авто</div></div>
+    <div class="rule-row"><div class="rr-txt">Пропустил подряд тренировок<small>→ повтори предыдущую неделю</small></div><div class="rr-inputs"><input type="number" value="2"><span>трен.</span></div></div>
+    <div class="rule-row"><div class="rr-txt">Перерыв дней и более<small>→ откат на % от текущих весов</small></div><div class="rr-inputs"><input type="number" value="7"><span>дней</span></div><div class="rr-inputs"><input type="number" value="15"><span>%</span></div></div>
+  </div>
+  <div class="rule-block"><div class="rb-head blue">💤 Разгрузочные недели</div>
+    <div class="rule-row"><div class="rr-txt">Разгрузка каждые<small>недель</small></div><div class="rr-inputs"><input type="number" value="4"><span>нед</span></div></div>
+    <div class="rule-row"><div class="rr-txt">Снижение объёма<small>% от рабочих подходов</small></div><div class="rr-inputs"><input type="number" value="50"><span>%</span></div></div>
+    <div class="rule-row"><div class="rr-txt">Снижение интенсивности<small>% от рабочего веса</small></div><div class="rr-inputs"><input type="number" value="15"><span>%</span></div></div>
+  </div>
+  <div class="rule-block"><div class="rb-head green">⬆️ Атлет опережает план</div>
+    <div class="rule-row"><div class="rr-txt">Выполнил все повторения с запасом<small>→ разрешить добавить вес досрочно</small></div>
+    <div class="pill-group"><button class="pill sel-green sel" onclick="tPill(this)">Разрешить</button><button class="pill" onclick="tPill(this)">Строго по плану</button></div></div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5 ══ -->
+<div id="sc5" style="display:none" class="fade-up">
+  <div class="form-section">
+    <div class="fs-tag">Шаг 5 из 5</div>
+    <div class="fs-title">Цена и публикация</div>
+  </div>
+  <div class="price-opts">
+    <div class="price-opt" onclick="setPM(this,'free')"><div class="po-name">🆓 Бесплатно</div><div class="po-desc">Привлечь аудиторию и набрать первые отзывы</div></div>
+    <div class="price-opt sel" onclick="setPM(this,'paid')"><div class="po-name">💰 Платная</div><div class="po-desc">Единоразовый платёж · Доступ навсегда</div></div>
+  </div>
+  <div id="priceBlock">
+    <div class="field">
+      <div class="field-label">Цена (USD) <span class="req">*</span></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gray-light);">$</span>
+        <input type="number" id="fPrice" value="29" min="1" oninput="updComm()" style="width:80px;font-size:1.1rem;font-family:'Bebas Neue',sans-serif;padding:9px 12px;">
+      </div>
+      <div class="field-hint">Средняя цена программ на FitoRank: $15–49. Верифицированные продаются дороже.</div>
+    </div>
+    <div class="commission-box">
+      <div class="cb-label">Твой уровень 🔥 Легенда — комиссия FitoRank 15%</div>
+      <div class="cb-vals">
+        <div class="cb-item"><div class="cb-val green" id="cbAuthor">$24.65</div><div class="cb-sub">Тебе (85%)</div></div>
+        <div class="cb-item"><div class="cb-val" style="color:var(--gray-light)" id="cbPlatform">$4.35</div><div class="cb-sub">FitoRank</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="form-section">
+    <div class="fs-title">Дополнительно</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="background:var(--gray);padding:12px 15px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:.7rem;font-weight:700;">📄 PDF для скачивания</div><div style="font-size:.58rem;color:var(--gray-light);margin-top:1px;">Генерируется автоматически из дневника. Всегда актуален.</div></div>
+      <div class="pill-group"><button class="pill sel-green sel" onclick="tPill(this)">Включить</button><button class="pill" onclick="tPill(this)">Нет</button></div>
+    </div>
+    <div style="background:var(--gray);padding:12px 15px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:.7rem;font-weight:700;">👥 Лимит участников (Живая)</div><div style="font-size:.58rem;color:var(--gray-light);margin-top:1px;">Ограничь чтобы успевать отвечать каждому</div></div>
+      <div style="display:flex;align-items:center;gap:8px;"><input type="number" value="20" style="width:52px;font-size:.75rem;padding:6px 8px;"><span style="font-size:.6rem;color:var(--gray-light);">мест</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="bb-left">
+    <button class="bb-draft">💾 Черновик</button>
+    <div class="bb-autosave">✓ Автосохранение</div>
+  </div>
+  <div class="bb-right">
+    <button class="btn-prev" id="bPrev" onclick="prevStep()" style="display:none">← Назад</button>
+    <button class="btn-preview" onclick="openPreview()">👁 Предпросмотр</button>
+    <button class="btn-next" id="bNext" onclick="nextStep()">Далее →</button>
+  </div>
+</div>
+
+<!-- PREVIEW OVERLAY -->
+<div class="preview-overlay" id="prevOverlay">
+  <div class="preview-bar">
+    <div class="pb-lbl">👁 Предпросмотр <span>· Так видит покупатель</span></div>
+    <button class="pb-close" onclick="closePreview()">← Назад к редактированию</button>
+  </div>
+  <div class="prev-content">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+      <span style="font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(61,220,132,.08);color:var(--green);border:1px solid rgba(61,220,132,.2);">✅ Верифицированная</span>
+      <span style="font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(74,158,255,.08);color:var(--blue);border:1px solid rgba(74,158,255,.2);">📋 Линейная периодизация</span>
+      <span style="font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(61,220,132,.08);color:var(--green);border:1px solid rgba(61,220,132,.2);">🌿 Натурал</span>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:.93;margin-bottom:10px;" id="pvTitle">Жим 170+ кг за 6 месяцев</div>
+    <div style="font-size:.8rem;color:rgba(245,242,238,.7);line-height:1.7;max-width:500px;margin-bottom:18px;" id="pvPitch">Заполни поле «Питч» чтобы увидеть его здесь</div>
+    <div style="background:var(--gray);padding:14px 18px;display:inline-flex;gap:22px;margin-bottom:20px;border:1px solid var(--gray-mid);">
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--red);" id="pvGoal">170 кг</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Цель</div></div>
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;" id="pvWeeks">24</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Недели</div></div>
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--green);">+?</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Прирост</div></div>
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--gold);" id="pvPrice">$29</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Цена</div></div>
+    </div>
+    <div style="font-size:.7rem;color:var(--gray-light);line-height:1.7;padding:14px;background:var(--gray);border-left:3px solid var(--gray-mid);margin-bottom:24px;" id="pvDesc">Описание появится здесь после заполнения...</div>
+    <div style="background:var(--gray);padding:18px;border:1px solid rgba(232,38,11,.15);">
+      <div style="font-size:.52rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Хочешь зарабатывать на FitoRank?</div>
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:5px;">Напиши свою программу и зарабатывай</div>
+      <div style="font-size:.63rem;color:var(--gray-light);line-height:1.6;">Легенды получают 85% с каждой продажи. Это твои знания — они должны работать на тебя.<br><a href="fitorank-create-program.html" style="color:var(--red);text-decoration:none;font-weight:700;cursor:none;">→ Создать программу</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXERCISE MODAL -->
+<div class="ex-modal" id="exModal">
+  <div class="ex-inner">
+    <div class="em-head">
+      <div class="em-title-row"><div class="em-title">База упражнений</div><button class="em-close" onclick="closeExModal()">✕</button></div>
+      <input class="em-search" placeholder="Поиск..." oninput="renderEx(this.value)">
+      <div class="em-filters">
+        <button class="em-f active" onclick="setExFilter(this,'all')">Все</button>
+        <button class="em-f" onclick="setExFilter(this,'gold')">🏆 Золотой стандарт</button>
+        <button class="em-f" onclick="setExFilter(this,'rec')">⭐ Признанные</button>
+        <button class="em-f" onclick="setExFilter(this,'niche')">🔬 Нишевые</button>
+        <button class="em-f" onclick="setExFilter(this,'circus')">🎪 Цирк силы</button>
+      </div>
+    </div>
+    <div class="em-list" id="emList"></div>
+  </div>
+</div>
+
+<script>
+// Cursor
+const C=document.getElementById('cursor'),T=document.getElementById('trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;C.style.left=mx-5+'px';C.style.top=my-5+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;T.style.left=tx-16+'px';T.style.top=ty-16+'px';requestAnimationFrame(loop);})();
+
+// MODE
+let mode='s';
+function setMode(m){
+  mode=m;
+  document.getElementById('modeS').style.display=m==='s'?'block':'none';
+  document.getElementById('modeF').style.display=m==='f'?'block':'none';
+  document.getElementById('btnStructured').classList.toggle('active',m==='s');
+  document.getElementById('btnFree').classList.toggle('active',m==='f');
+  ['s2','s3'].forEach(id=>{document.getElementById(id).style.opacity=m==='f'?'.3':'1';});
+}
+
+// STEPS
+let step=1, total=5;
+function updSteps(){
+  for(let i=1;i<=6;i++){const el=document.getElementById('s'+i);if(!el)return;el.classList.remove('active','done');if(i<step)el.classList.add('done');else if(i===step)el.classList.add('active');}
+  document.getElementById('spf').style.width=((step-1)/total*100+17)+'%';
+  document.getElementById('bPrev').style.display=step>1?'inline-block':'none';
+  const bn=document.getElementById('bNext');
+  if(step===total){bn.textContent='👁 Предпросмотр';bn.className='btn-next btn-preview';bn.onclick=openPreview;}
+  else{bn.textContent='Далее →';bn.className='btn-next';bn.onclick=nextStep;}
+  for(let i=1;i<=5;i++){const s=document.getElementById('sc'+i);if(s)s.style.display=i===step?'block':'none';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function nextStep(){if(step<total){step++;updSteps();}}
+function prevStep(){if(step>1){step--;updSteps();}}
+
+// PILLS
+function tPill(el){el.classList.toggle('sel');}
+function selDays(el){document.querySelectorAll('#pgDays .pill').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');}
+
+// TYPE CARDS
+function toggleLiveAlert(el){
+  const has=el.classList.contains('sel');
+  document.getElementById('liveAlert').style.display=has?'flex':'none';
+}
+
+// COMMISSION
+function updComm(){
+  const p=parseFloat(document.getElementById('fPrice').value)||0;
+  document.getElementById('cbAuthor').textContent='$'+(p*.85).toFixed(2);
+  document.getElementById('cbPlatform').textContent='$'+(p*.15).toFixed(2);
+  document.getElementById('pvPrice').textContent='$'+p;
+}
+function setPM(el,m){
+  document.querySelectorAll('.price-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('priceBlock').style.display=m==='paid'?'block':'none';
+}
+
+// SYNC PREVIEW
+function syncPreview(){
+  const t=document.getElementById('fTitle'),p=document.getElementById('fPitch'),d=document.getElementById('fDesc'),g=document.getElementById('fGoal'),w=document.getElementById('fWeeks'),pr=document.getElementById('fPrice');
+  if(t)document.getElementById('pvTitle').textContent=t.value||'Название программы';
+  if(p)document.getElementById('pvPitch').textContent=p.value||'Заполни поле «Питч»...';
+  if(d)document.getElementById('pvDesc').textContent=d.value||'Описание появится здесь...';
+  if(g)document.getElementById('pvGoal').textContent=(g.value||'?')+' кг';
+  if(w)document.getElementById('pvWeeks').textContent=w.value||'?';
+  if(pr)document.getElementById('pvPrice').textContent='$'+(pr.value||'?');
+}
+
+// PREVIEW
+function openPreview(){syncPreview();document.getElementById('prevOverlay').classList.add('vis');}
+function closePreview(){document.getElementById('prevOverlay').classList.remove('vis');}
+
+// CAT TABLE
+function addCatRow(tableId){
+  const tb=document.getElementById(tableId).querySelector('tbody');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="text" placeholder="Новая категория"></td><td><input type="number" value="65" style="width:60px;"></td><td><input type="number" value="2.5" step="0.5" style="width:60px;"></td><td class="ex-cell"><button onclick="this.closest('tr').remove()" style="background:transparent;border:none;color:var(--gray-light);cursor:none;font-size:.65rem;">✕</button></td>`;
+  tb.appendChild(tr);
+}
+
+// WEEKS
+let weeks=[];
+function initWeeks(){
+  const n=parseInt(document.getElementById('fWeeks').value)||24;
+  weeks=[];
+  for(let i=0;i<n;i++) weeks.push({n:i+1,title:'',type:(i+1)%5===0?'deload':'normal',open:i===0,days:[
+    {lbl:'День 1',exs:[{name:'Жим лёжа',sets:'5×3',pct:'82%'}],rest:false},
+    {lbl:'День 2',exs:[],rest:true},
+    {lbl:'День 3',exs:[{name:'Жим лёжа',sets:'4×5',pct:'72%'}],rest:false},
+  ]});
+  renderWeeks();
+}
+function refreshWeeks(){document.getElementById('wkTotal').textContent=document.getElementById('fWeeks').value||24;initWeeks();}
+function renderWeeks(){
+  const dl=weeks.filter(w=>w.type==='deload').length;
+  document.getElementById('wkDeloads').textContent=dl;
+  document.getElementById('wkList').innerHTML=weeks.map((w,i)=>`
+    <div class="week-card ${w.open?'open':''} ${w.type==='deload'?'deload-card':''}">
+      <div class="wc-head" onclick="togWk(${i})">
+        <div class="wc-n">Нед <b>${w.n}</b></div>
+        <div class="wc-ti"><input type="text" placeholder="${w.type==='deload'?'💤 Разгрузочная неделя':'Название блока (необязательно)'}" value="${w.title}" onclick="event.stopPropagation()" oninput="weeks[${i}].title=this.value"></div>
+        <span class="wc-badge ${w.type}" onclick="event.stopPropagation();togDeload(${i})">${w.type==='deload'?'💤 РАЗГРУЗКА':'ОБЫЧНАЯ'}</span>
+        <span class="wc-arr ${w.open?'open':''}">▼</span>
+      </div>
+      <div class="wc-body ${w.open?'open':''}">
+        <div class="days-grid">
+          ${w.days.map((d,di)=>d.rest?`
+            <div class="day-slot rest-slot">
+              <span style="font-size:.58rem;color:var(--gray-light);font-weight:700;letter-spacing:.08em;text-transform:uppercase;">День отдыха</span>
+              <button class="toggle-rest" onclick="togRest(${i},${di})">→ Сделать тренировочным</button>
+            </div>
+          `:`
+            <div class="day-slot">
+              <div class="day-lbl">${d.lbl}</div>
+              <div class="day-exs">${d.exs.map((ex,ei)=>`
+                <div class="day-ex"><span class="dex-name">${ex.name}</span><span class="dex-sets">${ex.sets}</span><span style="font-size:.5rem;color:var(--gold);margin-left:3px;">${ex.pct}</span><button class="dex-rm" onclick="rmEx(${i},${di},${ei})">✕</button></div>
+              `).join('')}</div>
+              <button class="add-ex" onclick="openExForDay(${i},${di})">+ Упражнение</button>
+              <button class="toggle-rest" onclick="togRest(${i},${di})">→ День отдыха</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="wc-actions">
+          <button class="wca-btn" onclick="copyWk(${i})">Скопировать неделю</button>
+          ${i>0?`<button class="wca-btn danger" onclick="delWk(${i})">Удалить</button>`:''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function togWk(i){weeks[i].open=!weeks[i].open;renderWeeks();}
+function togDeload(i){weeks[i].type=weeks[i].type==='deload'?'normal':'deload';renderWeeks();}
+function togRest(wi,di){weeks[wi].days[di].rest=!weeks[wi].days[di].rest;renderWeeks();}
+function rmEx(wi,di,ei){weeks[wi].days[di].exs.splice(ei,1);renderWeeks();}
+function copyWk(i){const c=JSON.parse(JSON.stringify(weeks[i]));c.n=weeks.length+1;c.open=false;weeks.splice(i+1,0,c);weeks.forEach((w,idx)=>w.n=idx+1);renderWeeks();}
+function delWk(i){if(weeks.length>1){weeks.splice(i,1);weeks.forEach((w,idx)=>w.n=idx+1);renderWeeks();}}
+function addWeek(){weeks.push({n:weeks.length+1,title:'',type:'normal',open:false,days:[{lbl:'День 1',exs:[],rest:false},{lbl:'День 2',exs:[],rest:true},{lbl:'День 3',exs:[],rest:false}]});renderWeeks();}
+
+// EXERCISES
+const EXDB=[
+  {n:'Жим лёжа',lvl:'gold',cat:'Жим',m:'Гриф · Горизонт'},
+  {n:'Жим лёжа узкий хват',lvl:'gold',cat:'Жим',m:'Гриф · Узкий'},
+  {n:'Жим стоя (Милитари)',lvl:'rec',cat:'Жим',m:'Гриф · Стоя'},
+  {n:'Жим гантелей лёжа',lvl:'rec',cat:'Жим',m:'Гантели · Горизонт'},
+  {n:'Жим гантелей наклон',lvl:'rec',cat:'Жим',m:'Гантели · Наклон'},
+  {n:'Приседания со штангой',lvl:'gold',cat:'Присед',m:'Гриф · Классика'},
+  {n:'Фронтальные приседания',lvl:'rec',cat:'Присед',m:'Гриф · Фронт'},
+  {n:'Становая классика',lvl:'gold',cat:'Тяга',m:'Гриф · Классика'},
+  {n:'Становая сумо',lvl:'gold',cat:'Тяга',m:'Гриф · Сумо'},
+  {n:'Румынская тяга',lvl:'rec',cat:'Тяга',m:'Прямые ноги'},
+  {n:'Подтягивания прямой хват',lvl:'gold',cat:'Подтягивания',m:'Пронация · Широкий'},
+  {n:'Подтягивания обратный хват',lvl:'gold',cat:'Подтягивания',m:'Супинация'},
+  {n:'Подтягивания из-за головы',lvl:'niche',cat:'Подтягивания',m:'Нишевое'},
+  {n:'Отжимания на брусьях',lvl:'rec',cat:'Отжимания',m:'Брусья'},
+  {n:'Отжимания на 3 пальцах',lvl:'circus',cat:'Цирк силы',m:'🎪 Экстрим'},
+  {n:'Подтягивания на 2 пальцах',lvl:'circus',cat:'Цирк силы',m:'🎪 Экстрим'},
+];
+const LVL_COLOR={gold:'var(--gold)',rec:'var(--blue)',niche:'var(--green)',circus:'var(--red)'};
+const LVL_ICO={gold:'🏆',rec:'⭐',niche:'🔬',circus:'🎪'};
+let exFilter='all', targetWi=-1, targetDi=-1;
+
+function renderEx(q=''){
+  const l=document.getElementById('emList');
+  l.innerHTML=EXDB.filter(e=>(exFilter==='all'||e.lvl===exFilter)&&(e.n.toLowerCase().includes(q.toLowerCase())||e.cat.toLowerCase().includes(q.toLowerCase())))
+    .map(e=>`<div class="em-item" onclick="pickEx('${e.n}','${e.lvl}')"><div><div class="em-item-name">${e.n}</div><div class="em-item-meta">${e.cat} · ${e.m}</div></div><span class="em-lvl" style="color:${LVL_COLOR[e.lvl]};border:1px solid ${LVL_COLOR[e.lvl]}33;background:${LVL_COLOR[e.lvl]}11;">${LVL_ICO[e.lvl]}</span></div>`).join('');
+}
+function setExFilter(btn,lvl){document.querySelectorAll('.em-f').forEach(b=>b.classList.remove('active'));btn.classList.add('active');exFilter=lvl;renderEx();}
+function openExModal(){renderEx();document.getElementById('exModal').classList.add('vis');targetWi=-1;targetDi=-1;}
+function openExForDay(wi,di){openExModal();targetWi=wi;targetDi=di;}
+function closeExModal(){document.getElementById('exModal').classList.remove('vis');}
+function pickEx(name){
+  if(targetWi>=0&&targetDi>=0){weeks[targetWi].days[targetDi].exs.push({name,sets:'3×5',pct:'75%'});renderWeeks();}
+  else{document.getElementById('fExercise').value=name;}
+  closeExModal();
+}
+
+// FREE EDITOR
+function ins(b,a){const el=document.getElementById('fFreeEditor');const s=el.selectionStart,e=el.selectionEnd;el.value=el.value.substring(0,s)+b+el.value.substring(s,e)+a+el.value.substring(e);el.focus();}
+
+// INIT
+initWeeks();
+updSteps();
+</script>
+</body>
+</html>

@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Жим 170+ кг за 6 месяцев · Алексей К.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-bc{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-bc a{color:var(--gray-light);text-decoration:none;transition:color .2s;cursor:none;}
+.nav-bc a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-avatar{width:32px;height:32px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--red);}
+
+/* ═══ HERO ═══ */
+.hero{padding-top:65px;min-height:420px;position:relative;overflow:hidden;display:grid;grid-template-columns:1fr 400px;gap:0;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,38,11,.06) 0%,rgba(245,200,66,.03) 50%,transparent 100%);}
+.hero-bg-num{position:absolute;right:-40px;top:-20px;font-family:'Bebas Neue',sans-serif;font-size:28rem;line-height:1;color:rgba(255,255,255,.015);pointer-events:none;user-select:none;}
+.hero-left{padding:48px 48px 40px;position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.htag{font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border:1px solid;}
+.htag.verified{background:rgba(61,220,132,.08);color:var(--green);border-color:rgba(61,220,132,.2);}
+.htag.live{background:rgba(232,38,11,.1);color:var(--red);border-color:rgba(232,38,11,.2);}
+.htag.type{background:rgba(74,158,255,.08);color:var(--blue);border-color:rgba(74,158,255,.2);}
+.htag.nat{background:rgba(61,220,132,.06);color:var(--green);border-color:rgba(61,220,132,.15);}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:3.8rem;line-height:.95;margin-bottom:12px;max-width:600px;}
+.hero-pitch{font-size:.82rem;color:rgba(245,242,238,.7);line-height:1.7;max-width:520px;font-weight:300;margin-bottom:20px;}
+.hero-author{display:flex;align-items:center;gap:10px;}
+.ha-avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--black);}
+.ha-info{}
+.ha-name{font-size:.75rem;font-weight:700;color:var(--gold);}
+.ha-meta{font-size:.6rem;color:var(--gray-light);}
+
+/* ═══ PURCHASE PANEL ═══ */
+.purchase-panel{background:rgba(26,26,26,.98);border-left:1px solid var(--gray-mid);padding:32px 28px;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;z-index:10;}
+.pp-price-block{text-align:center;padding:20px 0 16px;border-bottom:1px solid var(--gray-mid);}
+.pp-price{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;line-height:1;color:var(--white);}
+.pp-price-sub{font-size:.6rem;color:var(--gray-light);margin-top:4px;}
+.pp-commission{font-size:.55rem;color:var(--gray-light);margin-top:2px;}
+.pp-commission b{color:var(--green);}
+
+.buy-btn{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:16px;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);cursor:none;transition:background .2s;}
+.buy-btn:hover{background:var(--red-dark);}
+.buy-btn.free{background:var(--green);color:var(--black);clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);}
+
+.pp-guarantee{font-size:.6rem;color:var(--gray-light);text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+/* Quick stats */
+.pp-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.pps-item{background:var(--black);padding:10px 12px;}
+.pps-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;line-height:1;}
+.pps-val.green{color:var(--green);}
+.pps-val.gold{color:var(--gold);}
+.pps-label{font-size:.48rem;color:var(--gray-light);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;}
+
+/* Category match */
+.pp-category{background:rgba(61,220,132,.05);border:1px solid rgba(61,220,132,.2);padding:12px 14px;}
+.pc-label{font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
+.pc-match{font-size:.72rem;font-weight:700;color:var(--white);}
+.pc-detail{font-size:.6rem;color:var(--gray-light);margin-top:2px;}
+
+/* Dewy alert */
+.pp-alert{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:10px 12px;font-size:.62rem;color:var(--gold);line-height:1.5;}
+
+/* Author record */
+.pp-author-record{background:var(--black);padding:12px 14px;border-left:3px solid var(--gold);}
+.par-label{font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.par-result{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;color:var(--gold);}
+.par-meta{font-size:.6rem;color:var(--gray-light);}
+
+/* ═══ MAIN CONTENT ═══ */
+.content{padding:40px 48px;max-width:900px;}
+
+/* Section headers */
+.section-label{font-size:.55rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
+h2::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+.content-section{margin-bottom:48px;}
+
+/* PASSPORT */
+.passport-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.pg-item{background:var(--gray);padding:14px 16px;}
+.pgi-label{font-size:.5rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.pgi-value{font-size:.82rem;font-weight:700;line-height:1.3;}
+.pgi-value.red{color:var(--red);}
+.pgi-value.gold{color:var(--gold);}
+.pgi-value.green{color:var(--green);}
+
+/* CATEGORY WEIGHTS */
+.cat-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.cat-table th{background:var(--gray);font-size:.52rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);padding:10px 14px;text-align:left;border-bottom:1px solid var(--gray-mid);}
+.cat-table td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.75rem;vertical-align:middle;}
+.cat-table tr:last-child td{border-bottom:none;}
+.cat-table tr.my-cat td{background:rgba(61,220,132,.04);}
+.my-badge{font-size:.48rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);margin-left:8px;}
+.coef{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--gold);}
+.example-weight{font-size:.7rem;color:var(--gray-light);}
+.example-weight b{color:var(--white);}
+
+/* PROGRESSION RULES */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.rule-card{background:var(--gray);padding:16px;border-top:2px solid var(--gray-mid);}
+.rule-card.rule-fail{border-top-color:var(--red);}
+.rule-card.rule-skip{border-top-color:var(--gold);}
+.rule-card.rule-deload{border-top-color:var(--blue);}
+.rc-title{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.rc-title.red{color:var(--red);}
+.rc-title.gold{color:var(--gold);}
+.rc-title.blue{color:var(--blue);}
+.rc-rule{font-size:.68rem;color:rgba(245,242,238,.8);line-height:1.6;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.rc-rule:last-child{border-bottom:none;}
+.rc-rule b{color:var(--white);}
+
+/* PROGRAM STRUCTURE */
+.weeks-overview{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.wo-block{background:var(--gray);padding:14px 18px;display:grid;grid-template-columns:100px 1fr auto;gap:14px;align-items:center;cursor:none;transition:background .15s;border:1px solid transparent;}
+.wo-block:hover{border-color:var(--gray-mid);}
+.wo-block.deload{background:rgba(74,158,255,.04);border-color:rgba(74,158,255,.1);}
+.wb-weeks{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gray-light);}
+.wb-weeks b{color:var(--white);}
+.wb-title{font-size:.75rem;font-weight:700;}
+.wb-desc{font-size:.62rem;color:var(--gray-light);margin-top:2px;}
+.wb-intensity{font-family:'Bebas Neue',sans-serif;font-size:1rem;}
+.wb-intensity.high{color:var(--red);}
+.wb-intensity.mid{color:var(--gold);}
+.wb-intensity.low{color:var(--blue);}
+
+/* SAMPLE WEEK */
+.sample-week{background:var(--gray);padding:20px;margin-bottom:16px;}
+.sw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.sw-title{font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);}
+.sw-week{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);}
+.sw-days{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.sw-day{background:var(--black);padding:12px 14px;}
+.swd-label{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.swd-exercise{font-size:.68rem;font-weight:700;margin-bottom:2px;}
+.swd-sets{font-size:.6rem;color:var(--gray-light);}
+.swd-sets b{color:var(--white);}
+.swd-pct{font-size:.58rem;color:var(--gold);margin-top:4px;}
+.swd-rest{font-size:.52rem;color:var(--gray-light);border-top:1px solid var(--gray-mid);padding-top:8px;margin-top:8px;}
+.sw-day.rest-day{opacity:.4;display:flex;align-items:center;justify-content:center;}
+.rest-label{font-size:.7rem;color:var(--gray-light);font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+
+/* RESULTS */
+.results-hero{background:var(--gray);padding:20px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--gray-mid);}
+.rh-item{background:var(--gray);padding:20px;text-align:center;}
+.rhi-val{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;}
+.rhi-val.green{color:var(--green);}
+.rhi-val.gold{color:var(--gold);}
+.rhi-val.white{color:var(--white);}
+.rhi-label{font-size:.55rem;color:var(--gray-light);margin-top:4px;text-transform:uppercase;letter-spacing:.1em;}
+
+/* REVIEWS */
+.reviews-list{display:flex;flex-direction:column;gap:8px;}
+.review-card{background:var(--gray);border:1px solid var(--gray-mid);padding:18px 20px;}
+.review-card.top{border-color:rgba(245,200,66,.25);background:rgba(245,200,66,.03);}
+.rc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;}
+.rch-left{display:flex;align-items:center;gap:10px;}
+.rch-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--black);flex-shrink:0;}
+.rch-name{font-size:.75rem;font-weight:700;}
+.rch-meta{font-size:.58rem;color:var(--gray-light);margin-top:1px;}
+.rch-right{text-align:right;flex-shrink:0;}
+.result-before-after{display:flex;align-items:center;gap:6px;}
+.rba-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;line-height:1;}
+.rba-val.before{color:var(--gray-light);}
+.rba-val.after{color:var(--green);}
+.rba-arrow{font-size:.8rem;color:var(--gray-mid);}
+.rba-delta{font-size:.62rem;font-weight:700;color:var(--green);}
+.rc-body{font-size:.72rem;color:rgba(245,242,238,.8);line-height:1.7;font-weight:300;}
+.rc-footer{display:flex;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);}
+.rcf-badge{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;}
+.rcf-badge.verified{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.rcf-badge.partial{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.rcf-badge.early{background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2);}
+.rcf-weeks{font-size:.58rem;color:var(--gray-light);}
+.rcf-link{font-size:.58rem;color:var(--blue);text-decoration:none;margin-left:auto;cursor:none;}
+
+/* DROPOUT CHART */
+.dropout-chart{background:var(--gray);padding:20px;margin-bottom:12px;}
+.dc-title{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;}
+.dc-rows{display:flex;flex-direction:column;gap:8px;}
+.dc-row{display:grid;grid-template-columns:60px 1fr 40px 30px;gap:10px;align-items:center;}
+.dc-week{font-size:.62rem;color:var(--gray-light);}
+.dc-bar-wrap{height:16px;background:var(--black);border-radius:2px;overflow:hidden;position:relative;}
+.dc-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.dc-pct{font-size:.6rem;font-weight:700;text-align:right;}
+.dc-feeling{font-size:.8rem;}
+
+/* AUTHOR BLOCK */
+.author-block{background:var(--gray);padding:24px;margin-bottom:16px;}
+.ab-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;}
+.ab-avatar{width:64px;height:64px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--black);flex-shrink:0;}
+.ab-info{flex:1;}
+.ab-name{font-size:1rem;font-weight:700;margin-bottom:4px;}
+.ab-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.ab-badge{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;}
+.ab-badge.legend{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.ab-badge.nat{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.ab-badge.verified{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.ab-bio{font-size:.7rem;color:rgba(245,242,238,.7);line-height:1.7;font-weight:300;}
+.ab-records{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px;}
+.abr-item{background:var(--black);padding:10px 12px;}
+.abr-ex{font-size:.5rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.abr-result{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;line-height:1;color:var(--gold);}
+.abr-rank{font-size:.55rem;color:var(--gray-light);}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:4px;}
+.faq-item{background:var(--gray);border:1px solid var(--gray-mid);}
+.faq-q{padding:14px 18px;font-size:.75rem;font-weight:700;cursor:none;display:flex;align-items:center;justify-content:space-between;transition:background .15s;}
+.faq-q:hover{background:rgba(255,255,255,.03);}
+.faq-toggle{font-size:.8rem;color:var(--gray-light);transition:transform .2s;}
+.faq-toggle.open{transform:rotate(180deg);}
+.faq-a{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;font-size:.7rem;color:rgba(245,242,238,.7);line-height:1.7;font-weight:300;}
+.faq-a.open{max-height:200px;padding:0 18px 14px;}
+
+/* STICKY MOBILE BUY */
+.mobile-buy{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);padding:12px 16px;z-index:400;align-items:center;gap:12px;}
+.mb-price{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;}
+.mb-btn{flex:1;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:14px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease both;}
+
+@media(max-width:960px){
+  body{cursor:auto;}
+  .cursor,.cursor-trail{display:none;}
+  nav{padding:12px 16px;}
+  .nav-bc{display:none;}
+  .hero{grid-template-columns:1fr;}
+  .purchase-panel{display:none;}
+  .hero-left{padding:24px 20px 20px;}
+  .hero-title{font-size:2.6rem;}
+  .content{padding:24px 16px 100px;}
+  .passport-grid{grid-template-columns:1fr 1fr;}
+  .rules-grid{grid-template-columns:1fr;}
+  .sw-days{grid-template-columns:1fr;}
+  .results-hero{grid-template-columns:1fr 1fr;}
+  .ab-records{grid-template-columns:1fr 1fr;}
+  .mobile-buy{display:flex;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-bc">
+    <a href="fitorank-programs.html">Программы</a>
+    <span class="nav-sep">/</span>
+    <a href="#">Жим лёжа</a>
+    <span class="nav-sep">/</span>
+    <span style="color:var(--white)">Жим 170+ кг за 6 месяцев</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<!-- HERO + PURCHASE PANEL -->
+<div style="display:grid;grid-template-columns:1fr 380px;padding-top:65px;min-height:380px;position:relative;z-index:1;">
+
+  <!-- HERO LEFT -->
+  <div class="hero-left fade-up" style="padding:40px 48px;background:linear-gradient(135deg,rgba(232,38,11,.05),transparent);border-bottom:1px solid var(--gray-mid);position:relative;overflow:hidden;">
+    <div class="hero-bg-num">170</div>
+
+    <div class="hero-tags" style="margin-bottom:14px;">
+      <span class="htag verified">✅ Верифицированная</span>
+      <span class="htag live">🔴 Живая</span>
+      <span class="htag type">📋 Линейная периодизация</span>
+      <span class="htag nat">🌿 Натурал</span>
+    </div>
+
+    <div class="hero-title">Жим лёжа<br>170+ кг<br><span style="color:var(--red)">за 6 месяцев</span></div>
+    <div class="hero-pitch">Линейная периодизация для натуралов. Проверено на себе — с 120 до 172 кг за 24 недели. Программа адаптируется под твой вес и стартовый результат автоматически.</div>
+
+    <div class="hero-author">
+      <div class="ha-avatar">А</div>
+      <div class="ha-info">
+        <div class="ha-name">Алексей К. · 🔥 Легенда · 1240 REP</div>
+        <div class="ha-meta">Топ-1 жим лёжа · 90–100 кг · 38 лет · Натурал</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PURCHASE PANEL -->
+  <div class="purchase-panel">
+
+    <div class="pp-price-block">
+      <div class="pp-price">$29</div>
+      <div class="pp-price-sub">Единоразовая оплата · Доступ навсегда</div>
+      <div class="pp-commission">Автор получает: <b>$24.65 (85%)</b> · Легенда</div>
+    </div>
+
+    <button class="buy-btn" onclick="handleBuy()">Купить программу</button>
+    <div class="pp-guarantee">🔒 Возврат в течение 7 дней</div>
+
+    <!-- Category match -->
+    <div class="pp-category">
+      <div class="pc-label">✅ Подходит твоей категории</div>
+      <div class="pc-match">Мужчины · 90–100 кг · Стаж 5+ лет</div>
+      <div class="pc-detail">Стартовый результат: от 100 кг жима</div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="pp-stats">
+      <div class="pps-item">
+        <div class="pps-val green">+16.2 кг</div>
+        <div class="pps-label">Средний прирост</div>
+      </div>
+      <div class="pps-item">
+        <div class="pps-val gold">87</div>
+        <div class="pps-label">Купили</div>
+      </div>
+      <div class="pps-item">
+        <div class="pps-val" style="color:var(--white)">4.9 ⭐</div>
+        <div class="pps-label">Рейтинг</div>
+      </div>
+      <div class="pps-item">
+        <div class="pps-val" style="color:var(--white)">24</div>
+        <div class="pps-label">Недели</div>
+      </div>
+    </div>
+
+    <!-- Author record -->
+    <div class="pp-author-record">
+      <div class="par-label">Результат автора по этой программе</div>
+      <div class="par-result">120 → 172 кг</div>
+      <div class="par-meta">Жим лёжа 1RM · +52 кг · 24 недели · <a href="fitorank-record.html" style="color:var(--blue);text-decoration:none;cursor:none;">смотреть рекорд →</a></div>
+    </div>
+
+    <!-- PDF -->
+    <div style="background:var(--black);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:.62rem;font-weight:700;">📄 PDF включён</div>
+        <div style="font-size:.55rem;color:var(--gray-light);margin-top:1px;">Генерируется автоматически из дневника</div>
+      </div>
+      <div style="font-size:.6rem;color:var(--green);">✓</div>
+    </div>
+
+    <div style="font-size:.6rem;color:var(--gray-light);line-height:1.6;padding-top:4px;">
+      После покупки программа доступна в разделе <b style="color:var(--white)">«Мои программы»</b> и сразу открывается дневник тренировок.
+    </div>
+
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div style="display:grid;grid-template-columns:1fr 380px;">
+<div class="content">
+
+  <!-- PASSPORT -->
+  <div class="content-section fade-up" style="animation-delay:.1s">
+    <div class="section-label">Паспорт программы</div>
+    <h2>Для кого</h2>
+
+    <div class="passport-grid">
+      <div class="pg-item">
+        <div class="pgi-label">Упражнение</div>
+        <div class="pgi-value red">Жим лёжа</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Методология</div>
+        <div class="pgi-value">Линейная периодизация</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Тип программы</div>
+        <div class="pgi-value">Живая + Верифицированная</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Длительность</div>
+        <div class="pgi-value gold">24 недели · 6 месяцев</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Дней в неделю</div>
+        <div class="pgi-value">3 тренировки</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Стаж</div>
+        <div class="pgi-value">3+ лет</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Стартовый результат</div>
+        <div class="pgi-value red">От 100 кг жима</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Цель программы</div>
+        <div class="pgi-value green">170+ кг жима</div>
+      </div>
+      <div class="pg-item">
+        <div class="pgi-label">Лига</div>
+        <div class="pgi-value">Любительская / Про</div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:32px;">Весовые категории</h2>
+    <p style="font-size:.72rem;color:var(--gray-light);margin-bottom:12px;font-weight:300;">Программа адаптирована под три категории. Дневник автоматически рассчитает рабочие веса под твой 1RM и категорию.</p>
+
+    <table class="cat-table">
+      <thead>
+        <tr>
+          <th>Категория</th>
+          <th>Коэф. старт</th>
+          <th>Шаг прогрессии</th>
+          <th>Пример · 1RM 110 кг</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Муж 80–90 кг</td>
+          <td><span class="coef">65%</span></td>
+          <td>+2.5 кг / нед</td>
+          <td class="example-weight"><b>71.5 кг</b> в нед. 1</td>
+        </tr>
+        <tr class="my-cat">
+          <td>Муж 90–100 кг <span class="my-badge">Твоя</span></td>
+          <td><span class="coef">67%</span></td>
+          <td>+2.5 кг / нед</td>
+          <td class="example-weight"><b>73.7 кг</b> в нед. 1</td>
+        </tr>
+        <tr>
+          <td>Муж 100+ кг</td>
+          <td><span class="coef">70%</span></td>
+          <td>+2.5 кг / нед</td>
+          <td class="example-weight"><b>77 кг</b> в нед. 1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PROGRESSION RULES -->
+  <div class="content-section fade-up" style="animation-delay:.15s">
+    <div class="section-label">Правила программы</div>
+    <h2>Коррекция весов</h2>
+
+    <div class="rules-grid">
+      <div class="rule-card rule-fail">
+        <div class="rc-title red">⛔ Вес не пошёл</div>
+        <div class="rc-rule">Не выполнил план <b>2 тренировки подряд</b> → повтори неделю с тем же весом</div>
+        <div class="rc-rule">Не пошло <b>3 недели подряд</b> → откат на <b>10%</b> и начни блок заново</div>
+        <div class="rc-rule">Критерий: выполнил менее <b>4 из 5</b> повторений в рабочем подходе</div>
+      </div>
+      <div class="rule-card rule-skip">
+        <div class="rc-title gold">📅 Пропуск тренировки</div>
+        <div class="rc-rule">Пропустил <b>1 тренировку</b> → продолжай по плану</div>
+        <div class="rc-rule">Пропустил <b>2 подряд</b> → повтори предыдущую неделю</div>
+        <div class="rc-rule">Пропустил <b>7+ дней</b> → откат на <b>15%</b> от текущих весов</div>
+      </div>
+      <div class="rule-card rule-deload">
+        <div class="rc-title blue">💤 Разгрузочные недели</div>
+        <div class="rc-rule">Каждые <b>4 недели</b> — разгрузочная неделя</div>
+        <div class="rc-rule">Объём снижается на <b>50%</b> (вдвое меньше подходов)</div>
+        <div class="rc-rule">Интенсивность снижается на <b>15%</b> от рабочего веса</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRAM STRUCTURE -->
+  <div class="content-section fade-up" style="animation-delay:.2s">
+    <div class="section-label">Структура</div>
+    <h2>План по блокам</h2>
+
+    <div class="weeks-overview">
+      <div class="wo-block">
+        <div class="wb-weeks">Нед <b>1–4</b></div>
+        <div>
+          <div class="wb-title">Блок 1 · Накопление объёма</div>
+          <div class="wb-desc">4×5 · Старт с 65–70% от 1RM · Привыкание к нагрузке</div>
+        </div>
+        <div class="wb-intensity mid">70%</div>
+      </div>
+      <div class="wo-block deload">
+        <div class="wb-weeks" style="color:var(--blue)">Нед <b>5</b></div>
+        <div>
+          <div class="wb-title" style="color:var(--blue)">💤 Разгрузка</div>
+          <div class="wb-desc">2×5 · 55% от 1RM · Восстановление</div>
+        </div>
+        <div class="wb-intensity low">55%</div>
+      </div>
+      <div class="wo-block">
+        <div class="wb-weeks">Нед <b>6–10</b></div>
+        <div>
+          <div class="wb-title">Блок 2 · Интенсификация</div>
+          <div class="wb-desc">5×3 · Рост интенсивности · +2.5 кг каждую неделю</div>
+        </div>
+        <div class="wb-intensity high">80%</div>
+      </div>
+      <div class="wo-block deload">
+        <div class="wb-weeks" style="color:var(--blue)">Нед <b>11</b></div>
+        <div>
+          <div class="wb-title" style="color:var(--blue)">💤 Разгрузка</div>
+          <div class="wb-desc">2×3 · 65% от 1RM</div>
+        </div>
+        <div class="wb-intensity low">65%</div>
+      </div>
+      <div class="wo-block">
+        <div class="wb-weeks">Нед <b>12–18</b></div>
+        <div>
+          <div class="wb-title">Блок 3 · Пиковая сила</div>
+          <div class="wb-desc">6×2–3 · Тяжёлые синглы · Проходки каждые 3 недели</div>
+        </div>
+        <div class="wb-intensity high">90%+</div>
+      </div>
+      <div class="wo-block deload">
+        <div class="wb-weeks" style="color:var(--blue)">Нед <b>19–20</b></div>
+        <div>
+          <div class="wb-title" style="color:var(--blue)">💤 Пиковая подводка</div>
+          <div class="wb-desc">Снижение объёма · Сохранение интенсивности</div>
+        </div>
+        <div class="wb-intensity low">75%</div>
+      </div>
+      <div class="wo-block" style="border-color:rgba(245,200,66,.2);background:rgba(245,200,66,.03);">
+        <div class="wb-weeks" style="color:var(--gold)">Нед <b>21–24</b></div>
+        <div>
+          <div class="wb-title" style="color:var(--gold)">🏆 Финальный блок · Рекорд</div>
+          <div class="wb-desc">Выход на максимум · Финальный 1RM с видео</div>
+        </div>
+        <div class="wb-intensity" style="color:var(--gold)">MAX</div>
+      </div>
+    </div>
+
+    <!-- Sample week -->
+    <div class="sample-week">
+      <div class="sw-header">
+        <span class="sw-title">Пример недели из блока 2</span>
+        <span class="sw-week">Неделя 7</span>
+      </div>
+      <div class="sw-days">
+        <div class="sw-day">
+          <div class="swd-label">День 1 · Понедельник</div>
+          <div class="swd-exercise">Жим лёжа (основной)</div>
+          <div class="swd-sets"><b>5×3</b> · Рабочий вес</div>
+          <div class="swd-pct">82.5% от 1RM → <b>90.7 кг</b> (при 1RM 110)</div>
+          <div class="swd-exercise" style="margin-top:10px;">Жим гантелей наклон</div>
+          <div class="swd-sets"><b>3×8</b> · 60% интенсивность</div>
+          <div class="swd-exercise" style="margin-top:8px;">Трицепс блок</div>
+          <div class="swd-sets"><b>3×12</b></div>
+          <div class="swd-rest">Отдых между рабочими подходами: <b>4–5 мин</b></div>
+        </div>
+        <div class="sw-day rest-day"><div class="rest-label">День отдыха</div></div>
+        <div class="sw-day">
+          <div class="swd-label">День 2 · Среда</div>
+          <div class="swd-exercise">Жим лёжа (объём)</div>
+          <div class="swd-sets"><b>4×5</b> · –10% от рабочего</div>
+          <div class="swd-pct">72.5% → <b>79.7 кг</b></div>
+          <div class="swd-exercise" style="margin-top:10px;">Подъём на грудь</div>
+          <div class="swd-sets"><b>3×6</b></div>
+          <div class="swd-exercise" style="margin-top:8px;">Передние дельты</div>
+          <div class="swd-sets"><b>3×12</b></div>
+          <div class="swd-rest">Отдых: <b>3 мин</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="content-section fade-up" style="animation-delay:.25s">
+    <div class="section-label">Подтверждённые результаты</div>
+    <h2>Что говорят цифры</h2>
+
+    <div class="results-hero">
+      <div class="rh-item">
+        <div class="rhi-val green">+16.2 кг</div>
+        <div class="rhi-label">Средний прирост</div>
+      </div>
+      <div class="rh-item">
+        <div class="rhi-val gold">23</div>
+        <div class="rhi-label">Прошли полностью</div>
+      </div>
+      <div class="rh-item">
+        <div class="rhi-val white">4.9</div>
+        <div class="rhi-label">Рейтинг программы</div>
+      </div>
+    </div>
+
+    <!-- Dropout chart -->
+    <div class="dropout-chart">
+      <div class="dc-title">👥 Удержание участников по неделям</div>
+      <div class="dc-rows" id="dcRows">
+        <div class="dc-row"><div class="dc-week">Нед 1–4</div><div class="dc-bar-wrap"><div class="dc-fill" style="width:0%;background:var(--green)"></div></div><div class="dc-pct" style="color:var(--green)">96%</div><div class="dc-feeling">💪</div></div>
+        <div class="dc-row"><div class="dc-week">Нед 5</div><div class="dc-bar-wrap"><div class="dc-fill" style="width:0%;background:var(--green)"></div></div><div class="dc-pct" style="color:var(--green)">94%</div><div class="dc-feeling">😐</div></div>
+        <div class="dc-row"><div class="dc-week">Нед 6–10</div><div class="dc-bar-wrap"><div class="dc-fill" style="width:0%;background:rgba(61,220,132,.7)"></div></div><div class="dc-pct" style="color:var(--green)">89%</div><div class="dc-feeling">😴</div></div>
+        <div class="dc-row"><div class="dc-week">Нед 11</div><div class="dc-bar-wrap"><div class="dc-fill" style="width:0%;background:var(--gold)"></div></div><div class="dc-pct" style="color:var(--gold)">84%</div><div class="dc-feeling">😐</div></div>
+        <div class="dc-row"><div class="dc-week">Нед 12–18</div><div class="dc-bar-wrap"><div class="dc-fill" style="width:0%;background:var(--gold)"></div></div><div class="dc-pct" style="color:var(--gold)">79%</div><div class="dc-feeling">💪</div></div>
+        <div class="dc-row"><div class="dc-week">Нед 19–24</div><div class="dc-bar-wrap"><div class="dc-fill" style="width:0%;background:var(--red)"></div></div><div class="dc-pct" style="color:var(--green)">71%</div><div class="dc-feeling">🔥</div></div>
+      </div>
+      <div style="font-size:.6rem;color:var(--gray-light);margin-top:10px;line-height:1.5;">Эмодзи — среднее самочувствие участников на каждом блоке по данным дневника</div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="reviews-list">
+
+      <div class="review-card top">
+        <div class="rc-header">
+          <div class="rch-left">
+            <div class="rch-avatar" style="background:linear-gradient(135deg,var(--red),#800000);">Д</div>
+            <div>
+              <div class="rch-name">Денис В.</div>
+              <div class="rch-meta">Муж · 94 кг · 36 лет · Натурал</div>
+            </div>
+          </div>
+          <div class="rch-right">
+            <div class="result-before-after">
+              <div class="rba-val before">118</div>
+              <div class="rba-arrow">→</div>
+              <div class="rba-val after">138 кг</div>
+            </div>
+            <div class="rba-delta">+20 кг · 24 нед</div>
+          </div>
+        </div>
+        <div class="rc-body">Честная программа без воды. Самое важное — понятные правила что делать когда вес не идёт. Раньше в таких ситуациях всегда терялся. Блок 3 тяжёлый, но именно он дал основной прирост. Алексей отвечает быстро — помог скорректировать нагрузку на 14-й неделе когда начало болеть плечо.</div>
+        <div class="rc-footer">
+          <span class="rcf-badge verified">✅ Полное прохождение</span>
+          <span class="rcf-weeks">24 недели</span>
+          <a href="fitorank-record.html" class="rcf-link">смотреть рекорд →</a>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="rc-header">
+          <div class="rch-left">
+            <div class="rch-avatar" style="background:linear-gradient(135deg,var(--blue),#003080);">П</div>
+            <div>
+              <div class="rch-name">Павел И.</div>
+              <div class="rch-meta">Муж · 88 кг · 41 год · Натурал</div>
+            </div>
+          </div>
+          <div class="rch-right">
+            <div class="result-before-after">
+              <div class="rba-val before">105</div>
+              <div class="rba-arrow">→</div>
+              <div class="rba-val after">119 кг</div>
+            </div>
+            <div class="rba-delta">+14 кг · 20 нед</div>
+          </div>
+        </div>
+        <div class="rc-body">Прошёл 20 из 24 недель — пришлось остановиться из-за командировки. Но за это время вырос на 14 кг. Коэффициент для категории 80–90 кг выставлен грамотно — не слишком легко и не убивает на старте.</div>
+        <div class="rc-footer">
+          <span class="rcf-badge partial">⚡ Частичное прохождение</span>
+          <span class="rcf-weeks">20 из 24 недель</span>
+          <a href="fitorank-record.html" class="rcf-link">смотреть рекорд →</a>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="rc-header">
+          <div class="rch-left">
+            <div class="rch-avatar" style="background:linear-gradient(135deg,var(--gold),#805000);">Р</div>
+            <div>
+              <div class="rch-name">Роман Д.</div>
+              <div class="rch-meta">Муж · 97 кг · 33 года · Натурал</div>
+            </div>
+          </div>
+          <div class="rch-right">
+            <div class="result-before-after">
+              <div class="rba-val before">130</div>
+              <div class="rba-arrow">→</div>
+              <div class="rba-val after">145 кг</div>
+            </div>
+            <div class="rba-delta">+15 кг · 24 нед</div>
+          </div>
+        </div>
+        <div class="rc-body">Ожидал большего роста при стартовом в 130, но 15 кг за полгода в натурале и в моём возрасте — честный результат. Разгрузочные недели поначалу казались лишними, потом понял зачем они нужны.</div>
+        <div class="rc-footer">
+          <span class="rcf-badge verified">✅ Полное прохождение</span>
+          <span class="rcf-weeks">24 недели</span>
+          <a href="fitorank-record.html" class="rcf-link">смотреть рекорд →</a>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="rc-header">
+          <div class="rch-left">
+            <div class="rch-avatar" style="background:linear-gradient(135deg,#444,#222);">К</div>
+            <div>
+              <div class="rch-name">Константин М.</div>
+              <div class="rch-meta">Муж · 92 кг · 29 лет · Натурал</div>
+            </div>
+          </div>
+          <div class="rch-right">
+            <div class="result-before-after">
+              <div class="rba-val before">112</div>
+              <div class="rba-arrow">→</div>
+              <div class="rba-val after">124 кг</div>
+            </div>
+            <div class="rba-delta">+12 кг · 14 нед</div>
+          </div>
+        </div>
+        <div class="rc-body">Завершил досрочно на 14 неделе — показал +12 кг на проходке. Решил зафиксировать результат и взять паузу. Программа рабочая, но блок 3 требует жёсткой дисциплины по сну и питанию.</div>
+        <div class="rc-footer">
+          <span class="rcf-badge early">🔬 Раннее завершение + рост</span>
+          <span class="rcf-weeks">14 из 24 недель</span>
+          <a href="fitorank-record.html" class="rcf-link">смотреть рекорд →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;padding:16px 0;">
+      <button style="background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;cursor:none;transition:all .2s;" onmouseover="this.style.borderColor='var(--white)';this.style.color='var(--white)'" onmouseout="this.style.borderColor='var(--gray-mid)';this.style.color='var(--gray-light)'">Показать все 87 отзывов</button>
+    </div>
+  </div>
+
+  <!-- AUTHOR -->
+  <div class="content-section fade-up" style="animation-delay:.3s">
+    <div class="section-label">Автор</div>
+    <h2>Алексей К.</h2>
+
+    <div class="author-block">
+      <div class="ab-header">
+        <div class="ab-avatar">А</div>
+        <div class="ab-info">
+          <div class="ab-name">Алексей Куликов</div>
+          <div class="ab-badges">
+            <span class="ab-badge legend">🔥 Легенда · 1240 REP</span>
+            <span class="ab-badge nat">🌿 Верифицированный натурал</span>
+            <span class="ab-badge verified">✅ Эксперт по технике</span>
+          </div>
+          <div class="ab-bio">Тренируюсь 11 лет, последние 4 года — целенаправленная работа над жимом. Начинал со 100 кг, сейчас 172 кг в натуральном режиме. Эта программа — точная копия того пути которым шёл сам.</div>
+        </div>
+      </div>
+      <div class="ab-records">
+        <div class="abr-item">
+          <div class="abr-ex">Жим лёжа</div>
+          <div class="abr-result">172 кг</div>
+          <div class="abr-rank">#1 в категории · 98% доверие</div>
+        </div>
+        <div class="abr-item">
+          <div class="abr-ex">Приседания</div>
+          <div class="abr-result">210 кг</div>
+          <div class="abr-rank">#3 в категории</div>
+        </div>
+        <div class="abr-item">
+          <div class="abr-ex">Становая тяга</div>
+          <div class="abr-result">240 кг</div>
+          <div class="abr-rank">#5 в категории</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="content-section fade-up" style="animation-delay:.35s">
+    <div class="section-label">Вопросы и ответы</div>
+    <h2>FAQ</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Что если мой стартовый результат меньше 100 кг?
+          <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-a">Программа рассчитана на атлетов с базой от 100 кг. При меньшем результате коэффициенты будут слишком лёгкими на старте — ты быстро уйдёшь за пределы расчётных весов. Рекомендую сначала набрать базу до 100 кг на более простой линейной программе.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Можно ли делать программу если я вешу 75 кг?
+          <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-a">Программа написана для категорий 80–100+ кг. Для атлетов 70–80 кг коэффициенты и прогрессия не оптимальны — у лёгких атлетов другая физиология восстановления и рычаги. Технически купить можно, но результат будет менее предсказуемым.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Как работает формат «Живая программа»?
+          <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-a">После покупки ты получаешь доступ к личному чату с Алексеем внутри FitoRank. Он отвечает в течение 48 часов на вопросы по программе, корректирует нагрузку если что-то идёт не так. Это не персональный коучинг — это поддержка автора программы.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Как получить PDF?
+          <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-a">PDF генерируется автоматически после покупки и доступен в разделе «Мои программы». Он всегда актуален — при обновлении программы автором PDF обновляется автоматически.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Засчитается ли мой результат если я прошёл меньше 24 недель?
+          <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-a">Да. Если ты прошёл 75%+ программы и зафиксировал рост результата — отзыв будет засчитан со статусом «Частичное прохождение». Если прошёл менее 75% но рост есть — статус «Раннее завершение + рост», идёт в отдельную категорию.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RIGHT SIDE (desktop repeat of purchase panel for scroll) -->
+<div style="padding:24px 0 24px 0;">
+</div>
+
+</div>
+
+<!-- MOBILE BUY -->
+<div class="mobile-buy">
+  <div class="mb-price">$29</div>
+  <button class="mb-btn" onclick="handleBuy()">Купить программу</button>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-6+'px';cur.style.top=my-6+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+// Animate dropout bars on scroll
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const pcts = [96,94,89,84,79,71];
+      e.target.querySelectorAll('.dc-fill').forEach((bar,i)=>{
+        setTimeout(()=>{ bar.style.width = pcts[i]+'%'; }, i*120);
+      });
+      observer.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+const dcRows = document.getElementById('dcRows');
+if(dcRows) observer.observe(dcRows);
+
+// FAQ toggle
+function toggleFaq(el) {
+  const ans = el.nextElementSibling;
+  const tog = el.querySelector('.faq-toggle');
+  ans.classList.toggle('open');
+  tog.classList.toggle('open');
+}
+
+// Buy
+function handleBuy() {
+  alert('Покупка программы!\n\nПосле оплаты:\n→ Программа появится в «Мои программы»\n→ Откроется дневник тренировок\n→ PDF будет доступен для скачивания\n\n(Платёжная система будет реализована в Этапе 3)');
+}
+</script>
+</body>
+</html>
