@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Концепт-документ v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+
+/* SIDEBAR NAV */
+.sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:rgba(8,8,8,.98);border-right:1px solid var(--gray-mid);overflow-y:auto;z-index:100;padding:24px 0;}
+.sb-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.1em;padding:0 20px 20px;border-bottom:1px solid var(--gray-mid);margin-bottom:16px;}
+.sb-logo span{color:var(--red);}
+.sb-version{font-size:.55rem;color:var(--gray-light);letter-spacing:.15em;text-transform:uppercase;padding:0 20px;margin-bottom:20px;}
+.sb-section{padding:0 20px;margin-bottom:20px;}
+.sb-section-title{font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:8px;}
+.sb-link{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.68rem;color:var(--gray-light);text-decoration:none;transition:all .2s;border-radius:2px;cursor:pointer;}
+.sb-link:hover,.sb-link.active{color:var(--white);background:rgba(255,255,255,.05);}
+.sb-link .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dot-done{background:var(--green);}
+.dot-pending{background:var(--gold);}
+.dot-future{background:var(--gray-mid);}
+.sb-link .status-tag{font-size:.45rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:1px 5px;margin-left:auto;}
+.st-done{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.st-wip{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.st-todo{background:rgba(136,136,136,.1);color:var(--gray-light);border:1px solid rgba(136,136,136,.2);}
+
+/* MAIN */
+.main{margin-left:240px;padding:48px 56px;max-width:1000px;position:relative;z-index:1;}
+
+/* SECTIONS */
+section{margin-bottom:72px;scroll-margin-top:32px;}
+
+/* HEADINGS */
+.doc-tag{font-size:.55rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:.95;margin-bottom:16px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
+h2::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+h3{font-size:.88rem;font-weight:700;margin-bottom:12px;color:var(--white);}
+p{font-size:.78rem;color:rgba(245,242,238,.8);margin-bottom:12px;font-weight:300;}
+p b{font-weight:700;color:var(--white);}
+p strong{font-weight:700;color:var(--gold);}
+
+/* PITCH */
+.pitch{font-size:1.05rem;font-weight:300;line-height:1.8;color:var(--white);border-left:3px solid var(--red);padding-left:20px;margin-bottom:24px;}
+.pitch b{font-weight:700;}
+
+/* STATUS CARDS */
+.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+.status-card{background:var(--gray);padding:16px;}
+.sc-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;margin-bottom:4px;}
+.sc-val.green{color:var(--green);}
+.sc-val.gold{color:var(--gold);}
+.sc-val.gray{color:var(--gray-light);}
+.sc-label{font-size:.58rem;color:var(--gray-light);}
+
+/* PAGE CARDS */
+.page-list{display:flex;flex-direction:column;gap:8px;}
+.page-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px 20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;}
+.page-card.done{border-left:3px solid var(--green);}
+.page-card.wip{border-left:3px solid var(--gold);}
+.page-card.todo{border-left:3px solid var(--gray-mid);}
+.pc-name{font-size:.82rem;font-weight:700;margin-bottom:4px;}
+.pc-file{font-size:.6rem;color:var(--blue);font-family:monospace;margin-bottom:6px;}
+.pc-desc{font-size:.68rem;color:var(--gray-light);line-height:1.5;}
+.pc-features{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.pc-feat{font-size:.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;background:rgba(255,255,255,.05);color:var(--gray-light);border:1px solid var(--gray-mid);}
+.badge-done{font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;white-space:nowrap;}
+.badge-done.green{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.badge-done.gold{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.badge-done.gray{background:rgba(136,136,136,.08);color:var(--gray-light);border:1px solid rgba(136,136,136,.2);}
+
+/* LEVELS TABLE */
+.levels-table{width:100%;border-collapse:collapse;margin-bottom:24px;}
+.levels-table th{background:var(--gray);font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);padding:10px 14px;text-align:left;border-bottom:1px solid var(--gray-mid);}
+.levels-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.72rem;vertical-align:top;}
+.levels-table tr:last-child td{border-bottom:none;}
+.levels-table tr:hover td{background:rgba(255,255,255,.02);}
+.level-icon{font-size:1rem;margin-right:4px;}
+.level-name{font-weight:700;}
+.rep-range{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gold);}
+.unlock-list{font-size:.65rem;color:var(--gray-light);line-height:1.7;}
+.unlock-list li{list-style:none;padding-left:12px;position:relative;}
+.unlock-list li::before{content:'→';position:absolute;left:0;color:var(--green);}
+
+/* REP MATH */
+.rep-block{background:var(--gray);padding:20px;margin-bottom:12px;border-left:3px solid var(--gray-mid);}
+.rep-block.profile{border-left-color:var(--blue);}
+.rep-block.achievements{border-left-color:var(--gold);}
+.rep-block.activity{border-left-color:var(--green);}
+.rep-block.antiinflation{border-left-color:var(--red);}
+.rb-title{font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.rb-title.blue{color:var(--blue);}
+.rb-title.gold{color:var(--gold);}
+.rb-title.green{color:var(--green);}
+.rb-title.red{color:var(--red);}
+.rep-rows{display:flex;flex-direction:column;gap:6px;}
+.rep-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.rep-row:last-child{border-bottom:none;}
+.rr-action{font-size:.7rem;color:rgba(245,242,238,.8);}
+.rr-action .note{font-size:.58rem;color:var(--gray-light);display:block;margin-top:1px;}
+.rr-value{font-family:'Bebas Neue',sans-serif;font-size:1rem;white-space:nowrap;}
+.rr-value.pos{color:var(--green);}
+.rr-value.decay{color:var(--gold);}
+
+/* VOTE WEIGHT */
+.formula-box{background:rgba(245,200,66,.04);border:1px solid rgba(245,200,66,.15);padding:20px;margin-bottom:16px;}
+.fb-formula{font-family:monospace;font-size:.82rem;color:var(--gold);letter-spacing:.05em;margin-bottom:12px;}
+.fb-table{width:100%;border-collapse:collapse;}
+.fb-table th{font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);padding:8px 10px;text-align:left;border-bottom:1px solid var(--gray-mid);}
+.fb-table td{padding:8px 10px;font-size:.7rem;border-bottom:1px solid rgba(255,255,255,.04);}
+.fb-table tr:last-child td{border-bottom:none;}
+.multiplier{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--gold);}
+
+/* NOTIFICATIONS */
+.notif-type{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;margin-bottom:8px;display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:start;}
+.nt-icon{font-size:1.4rem;text-align:center;}
+.nt-body{}
+.nt-name{font-size:.78rem;font-weight:700;margin-bottom:3px;}
+.nt-desc{font-size:.65rem;color:var(--gray-light);line-height:1.5;}
+.nt-example{font-size:.62rem;color:var(--white);margin-top:6px;padding:6px 10px;background:var(--black);border-left:2px solid var(--gray-mid);font-style:italic;}
+.nt-priority{font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;white-space:nowrap;}
+.nt-priority.high{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.nt-priority.med{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.nt-priority.low{background:rgba(136,136,136,.08);color:var(--gray-light);border:1px solid rgba(136,136,136,.2);}
+
+/* PROGRAMS */
+.program-type{background:var(--gray);border:1px solid var(--gray-mid);padding:18px 20px;margin-bottom:8px;}
+.pt-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.pt-icon{font-size:1.4rem;}
+.pt-name{font-size:.88rem;font-weight:700;}
+.pt-badge{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;margin-left:auto;}
+.pt-desc{font-size:.7rem;color:var(--gray-light);line-height:1.6;margin-bottom:10px;}
+.pt-rules{font-size:.65rem;color:rgba(245,242,238,.8);line-height:1.7;}
+.pt-rules li{list-style:none;padding-left:14px;position:relative;}
+.pt-rules li::before{content:'·';position:absolute;left:0;color:var(--red);}
+
+/* COMMISSION TABLE */
+.commission-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.commission-table th{background:var(--gray);font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);padding:10px 14px;text-align:left;border-bottom:1px solid var(--gray-mid);}
+.commission-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.75rem;}
+.commission-table tr:last-child td{border-bottom:none;}
+.commission-pct{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;}
+.pct-high{color:var(--red);}
+.pct-mid{color:var(--gold);}
+.pct-low{color:var(--green);}
+
+/* TECH STACK */
+.tech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.tech-item{background:var(--gray);padding:14px 16px;}
+.ti-layer{font-size:.5rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.ti-tech{font-size:.82rem;font-weight:700;}
+.ti-detail{font-size:.62rem;color:var(--gray-light);margin-top:2px;}
+
+/* COLD START */
+.cold-timeline{display:flex;flex-direction:column;gap:0;}
+.ct-item{display:grid;grid-template-columns:120px 1fr;gap:0;position:relative;}
+.ct-item::before{content:'';position:absolute;left:119px;top:20px;bottom:-4px;width:1px;background:var(--gray-mid);}
+.ct-item:last-child::before{display:none;}
+.ct-phase{padding:12px 16px 12px 0;border-right:1px solid var(--gray-mid);}
+.ct-phase-label{font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;}
+.ct-phase-val{font-size:.78rem;font-weight:700;color:var(--white);}
+.ct-body{padding:12px 0 12px 20px;}
+.ct-title{font-size:.78rem;font-weight:700;margin-bottom:4px;}
+.ct-desc{font-size:.65rem;color:var(--gray-light);line-height:1.5;}
+.ct-dot{position:absolute;left:112px;top:14px;width:14px;height:14px;border-radius:50%;border:2px solid var(--black);}
+
+/* PENDING UPDATES */
+.update-item{background:var(--gray);border:1px solid var(--gray-mid);padding:12px 16px;margin-bottom:6px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;}
+.ui-page{font-size:.62rem;color:var(--blue);font-family:monospace;margin-bottom:2px;}
+.ui-desc{font-size:.72rem;color:var(--gray-light);}
+
+/* PRINT / EXPORT */
+@media print{
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;padding:24px 16px;}
+  .status-grid{grid-template-columns:1fr 1fr;}
+  .tech-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">FITO<span>RANK</span></div>
+  <div class="sb-version">Концепт-документ · v1.0 · Март 2026</div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">Продукт</div>
+    <a class="sb-link" onclick="scrollTo('pitch')"><span class="dot dot-done"></span>Питч и концепция</a>
+    <a class="sb-link" onclick="scrollTo('status')"><span class="dot dot-done"></span>Статус разработки</a>
+    <a class="sb-link" onclick="scrollTo('pages')"><span class="dot dot-done"></span>Страницы / экраны</a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">Система пользователей</div>
+    <a class="sb-link" onclick="scrollTo('levels')"><span class="dot dot-done"></span>Уровни и разблокировки</a>
+    <a class="sb-link" onclick="scrollTo('rep-math')"><span class="dot dot-done"></span>Математика REP</a>
+    <a class="sb-link" onclick="scrollTo('vote-weight')"><span class="dot dot-done"></span>Модель веса голоса</a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">Механики</div>
+    <a class="sb-link" onclick="scrollTo('notifications')"><span class="dot dot-done"></span>Уведомления</a>
+    <a class="sb-link" onclick="scrollTo('tech-eval')"><span class="dot dot-done"></span>Оценка техники</a>
+    <a class="sb-link" onclick="scrollTo('programs')"><span class="dot dot-done"></span>Программы</a>
+    <a class="sb-link" onclick="scrollTo('diary')"><span class="dot dot-done"></span>Дневник тренировок</a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">Бизнес</div>
+    <a class="sb-link" onclick="scrollTo('monetization')"><span class="dot dot-done"></span>Монетизация</a>
+    <a class="sb-link" onclick="scrollTo('cold-start')"><span class="dot dot-done"></span>Холодный старт</a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">Технологии</div>
+    <a class="sb-link" onclick="scrollTo('tech-stack')"><span class="dot dot-done"></span>Стек</a>
+    <a class="sb-link" onclick="scrollTo('pending')"><span class="dot dot-pending"></span>Что ещё предстоит</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═══════════ PITCH ═══════════ -->
+  <section id="pitch">
+    <div class="doc-tag">Концепция продукта</div>
+    <h1>FITO<span style="color:var(--red)">RANK</span></h1>
+    <div class="pitch">
+      Платформа где твой жим, присед или подтягивания дают тебе <b>реальный рейтинг</b> среди людей твоего возраста, веса и роста. Не среди всех — среди равных. Каждый рекорд с видео, сообщество голосует за честность. <b>Strava встречает Reddit</b> — в мире силовых рекордов.
+    </div>
+    <p>Домен: <b style="color:var(--blue)">fitorank.com</b> (необходимо приобрести) · Валюта: <b>USD</b> · Целевая аудитория: непрофессиональные спортсмены 18–60+</p>
+
+    <h3>Ключевые дифференциаторы</h3>
+    <p><b>Сравнение среди равных.</b> Рекорды сравниваются только внутри категории: пол × возраст × вес × рост. Человек 40 лет не соревнуется с 22-летним.</p>
+    <p><b>Верификация через сообщество.</b> Каждый рекорд получает шкалу доверия — голосование Верю/Не верю с взвешенными голосами и экспертными метками.</p>
+    <p><b>Вирусная механика процентилей.</b> «Ты лучше чем 94% мужчин 40–44 лет в твоей весовой категории» — это то что человек немедленно хочет отправить друзьям.</p>
+    <p><b>Программы с верифицированными результатами.</b> Единственный маркетплейс где отзывы — это реальные рекорды до и после, невозможно подделать.</p>
+    <p><b>Разделение натурал / фарма.</b> Честные таблицы для тех кто тренируется без фармакологии.</p>
+  </section>
+
+  <!-- ═══════════ STATUS ═══════════ -->
+  <section id="status">
+    <div class="doc-tag">Текущий статус</div>
+    <h2>Статус разработки</h2>
+
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="sc-val green">8</div>
+        <div class="sc-label">Страниц готово</div>
+      </div>
+      <div class="status-card">
+        <div class="sc-val gold">3</div>
+        <div class="sc-label">В плане</div>
+      </div>
+      <div class="status-card">
+        <div class="sc-val gray">Этап 1</div>
+        <div class="sc-label">Фронтенд · MVP</div>
+      </div>
+    </div>
+
+    <p>Текущий этап — построение всех страниц фронтенда. По завершении переходим к связыванию взаимосвязанного функционала, затем математика и бэкенд.</p>
+    <p><b>Алгоритм работы:</b> Строим все страницы фронтенда → Фиксим взаимосвязи → Тестируем → Математика и бэкенд.</p>
+  </section>
+
+  <!-- ═══════════ PAGES ═══════════ -->
+  <section id="pages">
+    <div class="doc-tag">Фронтенд</div>
+    <h2>Страницы и экраны</h2>
+
+    <h3>✅ Готово</h3>
+    <div class="page-list" style="margin-bottom:24px;">
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Главная страница</div>
+          <div class="pc-file">fitorank.html</div>
+          <div class="pc-desc">Лендинг с питчем, примерами рекордов, CTA регистрации.</div>
+          <div class="pc-features"><span class="pc-feat">Hero</span><span class="pc-feat">Примеры</span><span class="pc-feat">Регистрация</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Онбординг</div>
+          <div class="pc-file">fitorank-onboarding.html</div>
+          <div class="pc-desc">5 шагов: авторизация (Google/VK/Apple/Facebook/TikTok), дата рождения, физические данные, весовая категория по федерациям, выбор лиги и первый рекорд.</div>
+          <div class="pc-features"><span class="pc-feat">5 шагов</span><span class="pc-feat">Соцсети</span><span class="pc-feat">Весовые категории WRPF</span><span class="pc-feat">Лиги</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Лента рекордов</div>
+          <div class="pc-file">fitorank-feed.html</div>
+          <div class="pc-desc">Карточки рекордов с видео, шкалой доверия, голосованием. Режимы: Горячее / Новые / Спорные / Оценить технику.</div>
+          <div class="pc-features"><span class="pc-feat">4 режима</span><span class="pc-feat">Голосование</span><span class="pc-feat">Очередь оценки техники</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Страница рекорда</div>
+          <div class="pc-file">fitorank-record.html</div>
+          <div class="pc-desc">Детальная страница: видео, шкала доверия, экспертные метки с именами, голосование, оценка техники, контекст категории, комментарии.</div>
+          <div class="pc-features"><span class="pc-feat">Шкала доверия</span><span class="pc-feat">Экспертные метки</span><span class="pc-feat">Комментарии</span><span class="pc-feat">Контекст категории</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Таблица лидеров</div>
+          <div class="pc-file">fitorank-leaderboard.html</div>
+          <div class="pc-desc">Пьедестал топ-3, полная таблица с колонками доверие/техника/REP, фильтры по упражнению/лиге/статусу/категории, моя позиция, растущие быстрее всех.</div>
+          <div class="pc-features"><span class="pc-feat">Пьедестал</span><span class="pc-feat">Фильтры</span><span class="pc-feat">Моя позиция</span><span class="pc-feat">Rising</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Уведомления</div>
+          <div class="pc-file">fitorank-notifications.html</div>
+          <div class="pc-desc">10 типов уведомлений, фильтрация по категориям, настройки пуш, тихие часы, статистика недели.</div>
+          <div class="pc-features"><span class="pc-feat">10 типов</span><span class="pc-feat">Фильтры</span><span class="pc-feat">Настройки пуш</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Чужой профиль</div>
+          <div class="pc-file">fitorank-public-profile.html</div>
+          <div class="pc-desc">Профиль другого пользователя: рекорды, прогресс, сравнение с собой, программы, о себе. Кнопки: Следить / Бросить вызов / Написать.</div>
+          <div class="pc-features"><span class="pc-feat">5 вкладок</span><span class="pc-feat">Сравнение</span><span class="pc-feat">Вызов</span><span class="pc-feat">Программы</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+      <div class="page-card done">
+        <div>
+          <div class="pc-name">Дневник тренировок</div>
+          <div class="pc-file">fitorank-diary.html</div>
+          <div class="pc-desc">Активная тренировка: упражнения с подходами, фиксация веса и повторений, таймер отдыха, адаптации, самочувствие, аналитика удержания участников, сообщение автора.</div>
+          <div class="pc-features"><span class="pc-feat">Фиксация подходов</span><span class="pc-feat">Таймер отдыха</span><span class="pc-feat">Адаптации</span><span class="pc-feat">Удержание</span><span class="pc-feat">Живой автор</span></div>
+        </div>
+        <span class="badge-done green">Готово</span>
+      </div>
+
+    </div>
+
+    <h3>🟡 В плане (следующие)</h3>
+    <div class="page-list" style="margin-bottom:24px;">
+
+      <div class="page-card wip">
+        <div>
+          <div class="pc-name">Страница программы</div>
+          <div class="pc-file">fitorank-program.html</div>
+          <div class="pc-desc">Карточка программы: описание, автор с рекордами, подтверждённые результаты участников, автоматические отзывы, покупка.</div>
+          <div class="pc-features"><span class="pc-feat">Результаты участников</span><span class="pc-feat">Автоотзывы</span><span class="pc-feat">Покупка</span></div>
+        </div>
+        <span class="badge-done gold">Следующая</span>
+      </div>
+
+      <div class="page-card wip">
+        <div>
+          <div class="pc-name">Каталог программ</div>
+          <div class="pc-file">fitorank-programs.html</div>
+          <div class="pc-desc">Маркетплейс: редакторская подборка, фильтры, карточки программ с рейтингом и средним приростом покупателей.</div>
+          <div class="pc-features"><span class="pc-feat">Редподборка</span><span class="pc-feat">Фильтры</span><span class="pc-feat">Прирост кг</span></div>
+        </div>
+        <span class="badge-done gold">В плане</span>
+      </div>
+
+      <div class="page-card wip">
+        <div>
+          <div class="pc-name">Главный экран дневника</div>
+          <div class="pc-file">fitorank-diary-home.html</div>
+          <div class="pc-desc">Обзор активных программ, прогресс-бары, кнопка «Открыть сегодняшнюю тренировку», состояние дня отдыха.</div>
+          <div class="pc-features"><span class="pc-feat">Список программ</span><span class="pc-feat">Состояния</span><span class="pc-feat">CTA тренировки</span></div>
+        </div>
+        <span class="badge-done gold">В плане</span>
+      </div>
+
+    </div>
+
+    <h3>⚪ Обновления готовых страниц (Этап 2)</h3>
+    <div class="page-list">
+      <div class="update-item"><div><div class="ui-page">fitorank-feed.html</div><div class="ui-desc">Экспертные метки в карточках, три режима ленты, вкладка «Оценить технику · N»</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-profile.html</div><div class="ui-desc">REP-система: уровни, прогресс-бар, разблокировки, средняя оценка техники</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-onboarding.html</div><div class="ui-desc">Дата рождения вместо возраста, Facebook/TikTok авторизация</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-record.html</div><div class="ui-desc">Чеклист техники в экспертной оценке</div></div><span class="badge-done gray">Этап 2</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LEVELS ═══════════ -->
+  <section id="levels">
+    <div class="doc-tag">Система пользователей</div>
+    <h2>Уровни и разблокировки</h2>
+
+    <p>Уровень определяется суммой REP. Рост необратим — REP не теряется. Разблокировки накапливаются: каждый следующий уровень включает все возможности предыдущего.</p>
+    <p><b>Важное правило:</b> только активность без рекордов → потолок 499 REP (Участник). Пробить выше можно только через спортивные результаты.</p>
+
+    <table class="levels-table">
+      <thead>
+        <tr>
+          <th>Уровень</th>
+          <th>REP</th>
+          <th>Что открывается</th>
+          <th>Доп. условия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="level-icon">🌱</span><span class="level-name">Новичок</span></td>
+          <td><span class="rep-range">0–249</span></td>
+          <td><ul class="unlock-list"><li>Смотреть ленту рекордов</li><li>Голосовать Верю / Не верю</li></ul></td>
+          <td style="font-size:.62rem;color:var(--gray-light);">—</td>
+        </tr>
+        <tr>
+          <td><span class="level-icon">💪</span><span class="level-name">Участник</span></td>
+          <td><span class="rep-range">250–499</span></td>
+          <td><ul class="unlock-list"><li>Голосовать Натурал / Химик</li><li>Оставлять комментарии</li></ul></td>
+          <td style="font-size:.62rem;color:var(--gray-light);">—</td>
+        </tr>
+        <tr>
+          <td><span class="level-icon">⭐</span><span class="level-name">Авторитет</span></td>
+          <td><span class="rep-range">500–999</span></td>
+          <td><ul class="unlock-list"><li>Оценка техники движения</li><li>Инициировать арбитраж</li><li>Продавать программы</li></ul></td>
+          <td style="font-size:.62rem;color:var(--gray-light);">Нужен рекорд с доверием 70%+</td>
+        </tr>
+        <tr>
+          <td><span class="level-icon">🏆</span><span class="level-name">Эксперт</span></td>
+          <td><span class="rep-range">1000–2499</span></td>
+          <td><ul class="unlock-list"><li>Взвешенный голос ×2</li><li>Именная экспертная метка на рекордах</li><li>Верификация рекордов других</li></ul></td>
+          <td style="font-size:.62rem;color:var(--gray-light);">Нужен топ-50 в своей категории</td>
+        </tr>
+        <tr>
+          <td><span class="level-icon">🔥</span><span class="level-name">Легенда</span></td>
+          <td><span class="rep-range">2500+</span></td>
+          <td><ul class="unlock-list"><li>Взвешенный голос ×3</li><li>Права модерации контента</li><li>Пониженная комиссия 15%</li></ul></td>
+          <td style="font-size:.62rem;color:var(--gray-light);">Нужен топ-10 в своей категории</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:.65rem;color:var(--gray-light);">Шкала открытая сверху — нет максимума REP. Нет штрафных механик снятия REP за обычные действия.</p>
+  </section>
+
+  <!-- ═══════════ REP MATH ═══════════ -->
+  <section id="rep-math">
+    <div class="doc-tag">Математика</div>
+    <h2>Начисление REP</h2>
+
+    <div class="rep-block profile">
+      <div class="rb-title blue">👤 Профиль — разовые начисления</div>
+      <div class="rep-rows">
+        <div class="rep-row"><div class="rr-action">Заполнил профиль полностью</div><div class="rr-value pos">+10</div></div>
+        <div class="rep-row"><div class="rr-action">Добавил фото профиля</div><div class="rr-value pos">+5</div></div>
+        <div class="rep-row"><div class="rr-action">Указал клуб / зал</div><div class="rr-value pos">+5</div></div>
+        <div class="rep-row"><div class="rr-action">Первый рекорд с видео</div><div class="rr-value pos">+15</div></div>
+        <div class="rep-row"><div class="rr-action">Прошёл верификацию натурал</div><div class="rr-value pos">+20</div></div>
+      </div>
+    </div>
+
+    <div class="rep-block achievements">
+      <div class="rb-title gold">🏆 Достижения — за результаты</div>
+      <div class="rep-rows">
+        <div class="rep-row"><div class="rr-action">Добавил новый рекорд (любой)</div><div class="rr-value pos">+5</div></div>
+        <div class="rep-row"><div class="rr-action">Рекорд набрал 10+ голосов «Верю»</div><div class="rr-value pos">+10</div></div>
+        <div class="rep-row"><div class="rr-action">Рекорд достиг 80%+ доверия</div><div class="rr-value pos">+15</div></div>
+        <div class="rep-row"><div class="rr-action">Обновил существующий рекорд</div><div class="rr-value pos">+8</div></div>
+        <div class="rep-row"><div class="rr-action">Вошёл в Топ-50 категории</div><div class="rr-value pos">+20</div></div>
+        <div class="rep-row"><div class="rr-action">Вошёл в Топ-10 категории</div><div class="rr-value pos">+50</div></div>
+        <div class="rep-row"><div class="rr-action">Вошёл в Топ-3 категории</div><div class="rr-value pos">+100</div></div>
+        <div class="rep-row"><div class="rr-action">Занял #1 в категории</div><div class="rr-value pos">+200</div></div>
+        <div class="rep-row"><div class="rr-action">Удержал #1 целый месяц</div><div class="rr-value pos">+50</div></div>
+      </div>
+    </div>
+
+    <div class="rep-block activity">
+      <div class="rb-title green">⚡ Активность — с антиинфляцией</div>
+      <div class="rep-rows">
+        <div class="rep-row">
+          <div class="rr-action">
+            Проголосовал (Верю / Не верю / Натурал / Химик)
+            <span class="note">Убывающая отдача: +0.5 за 1-й, затем ×0.1 каждый следующий того же типа в день. Минимум: 0.05</span>
+          </div>
+          <div class="rr-value decay">0.5→0.05</div>
+        </div>
+        <div class="rep-row">
+          <div class="rr-action">
+            Написал комментарий
+            <span class="note">Убывающая отдача: +1.0 за 1-й, затем ×0.1. Минимум: 0.05</span>
+          </div>
+          <div class="rr-value decay">1.0→0.05</div>
+        </div>
+        <div class="rep-row">
+          <div class="rr-action">Оценил технику движения <span class="note">Выше чем обычный голос — требует внимания</span></div>
+          <div class="rr-value pos">+2</div>
+        </div>
+        <div class="rep-row"><div class="rr-action">Комментарий набрал 5+ лайков <span class="note">Без дневного лимита</span></div><div class="rr-value pos">+3</div></div>
+        <div class="rep-row"><div class="rr-action">Оценка техники совпала с консенсусом</div><div class="rr-value pos">+3</div></div>
+        <div class="rep-row"><div class="rr-action">Голос совпал с итоговым результатом рекорда</div><div class="rr-value pos">+1</div></div>
+        <div class="rep-row"><div class="rr-action">Стрик активности 7 дней подряд</div><div class="rr-value pos">+10</div></div>
+        <div class="rep-row"><div class="rr-action">Стрик активности 30 дней подряд</div><div class="rr-value pos">+30</div></div>
+      </div>
+    </div>
+
+    <div class="rep-block antiinflation">
+      <div class="rb-title red">🛡 Антиинфляционные правила</div>
+      <div class="rep-rows">
+        <div class="rep-row"><div class="rr-action">Только активность без рекордов — жёсткий потолок</div><div class="rr-value" style="color:var(--red)">макс 499</div></div>
+        <div class="rep-row"><div class="rr-action">Аномальная активность (100+ одинаковых действий/день) — флаг системы</div><div class="rr-value" style="color:var(--red)">×0</div></div>
+        <div class="rep-row"><div class="rr-action">Убывающая отдача за однотипные действия в течение дня</div><div class="rr-value" style="color:var(--gold)">↓ Decay</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ VOTE WEIGHT ═══════════ -->
+  <section id="vote-weight">
+    <div class="doc-tag">Математика</div>
+    <h2>Модель веса голоса</h2>
+
+    <p>Единая шкала доверия — голоса взвешены, не разделены на «народные» и «экспертные». Итоговый процент доверия рассчитывается с учётом весов всех голосов.</p>
+
+    <div class="formula-box">
+      <div class="fb-formula">Вес = Базовый(REP) × Специализация(упражнение) × Качество(точность)</div>
+
+      <table class="fb-table" style="margin-bottom:14px;">
+        <thead><tr><th>Компонент</th><th>Условие</th><th>Множитель</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--gray-light)">Базовый (REP)</td><td>100 REP (Новичок)</td><td><span class="multiplier">×1.0</span></td></tr>
+          <tr><td></td><td>700 REP (Авторитет)</td><td><span class="multiplier">×1.4</span></td></tr>
+          <tr><td></td><td>3000 REP (Легенда)</td><td><span class="multiplier">×1.7</span></td></tr>
+          <tr><td style="color:var(--gray-light)">Специализация</td><td>Нет рекордов в упражнении</td><td><span class="multiplier">×1.0</span></td></tr>
+          <tr><td></td><td>Рекорды с доверием 60–79%</td><td><span class="multiplier">×1.3</span></td></tr>
+          <tr><td></td><td>Рекорды с доверием 80%+</td><td><span class="multiplier">×1.5</span></td></tr>
+          <tr><td></td><td>Топ-50 в этом упражнении</td><td><span class="multiplier">×1.8</span></td></tr>
+          <tr><td></td><td>Топ-10 в этом упражнении</td><td><span class="multiplier">×2.0</span></td></tr>
+          <tr><td style="color:var(--gray-light)">Качество (точность голосов за 30 дней)</td><td>Менее 50% совпадений с итогом</td><td><span class="multiplier">×0.8</span></td></tr>
+          <tr><td></td><td>50–70% совпадений</td><td><span class="multiplier">×1.0</span></td></tr>
+          <tr><td></td><td>70–85% совпадений</td><td><span class="multiplier">×1.1</span></td></tr>
+          <tr><td></td><td>85%+ совпадений</td><td><span class="multiplier">×1.2</span></td></tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:.65rem;color:var(--gray-light);margin:0;">Пример: Легенда (×1.7) + Топ-10 жим (×2.0) + точность 87% (×1.2) = <b style="color:var(--gold)">×4.08</b> от базового веса</p>
+    </div>
+
+    <h3>Статусы рекорда</h3>
+    <p>Присваиваются автоматически на основе голосов экспертов (Авторитет+):</p>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="background:var(--gray);padding:10px 14px;display:flex;gap:12px;align-items:center;"><span style="font-size:1rem">✅</span><div><div style="font-size:.75rem;font-weight:700;color:var(--green)">Подтверждено</div><div style="font-size:.62rem;color:var(--gray-light)">3+ эксперта проголосовали «Верю»</div></div></div>
+      <div style="background:var(--gray);padding:10px 14px;display:flex;gap:12px;align-items:center;"><span style="font-size:1rem">❌</span><div><div style="font-size:.75rem;font-weight:700;color:var(--red)">Признано недействительным</div><div style="font-size:.62rem;color:var(--gray-light)">5+ экспертов проголосовали «Не верю» (порог выше — обвинение серьёзное)</div></div></div>
+      <div style="background:var(--gray);padding:10px 14px;display:flex;gap:12px;align-items:center;"><span style="font-size:1rem">⚠️</span><div><div style="font-size:.75rem;font-weight:700;color:var(--gold)">Экспертный спор</div><div style="font-size:.62rem;color:var(--gray-light)">Голоса с обеих сторон от экспертов</div></div></div>
+      <div style="background:var(--gray);padding:10px 14px;display:flex;gap:12px;align-items:center;"><span style="font-size:1rem">🔍</span><div><div style="font-size:.75rem;font-weight:700;color:var(--blue)">Ожидает оценки</div><div style="font-size:.62rem;color:var(--gray-light)">Нет экспертных голосов</div></div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ NOTIFICATIONS ═══════════ -->
+  <section id="notifications">
+    <div class="doc-tag">Механики</div>
+    <h2>Система уведомлений</h2>
+
+    <p>Уведомления — ключевой инструмент возврата на платформу. Каждое уведомление провоцирует действие: посмотреть рекорд, обновить рекорд, оценить технику.</p>
+
+    <h3 style="margin-bottom:12px;">🔴 Высокий приоритет</h3>
+
+    <div class="notif-type">
+      <div class="nt-icon">⭐</div>
+      <div class="nt-body">
+        <div class="nt-name">Экспертная оценка рекорда</div>
+        <div class="nt-desc">Эксперт (Авторитет+) подтвердил или оспорил твой рекорд. Показывается имя, REP и рейтинг эксперта в упражнении. Включает цитату комментария.</div>
+        <div class="nt-example">«Алексей К. (Топ-1 жим · 1240 REP) подтвердил твой рекорд как эксперт»</div>
+      </div>
+      <span class="nt-priority high">Высокий</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">📉</div>
+      <div class="nt-body">
+        <div class="nt-name">Тебя обогнали в рейтинге</div>
+        <div class="nt-desc">Самое вирусное уведомление. Кто-то занял твоё место — показывается новая позиция и расстояние до прежнего места. CTA: «Обновить свой рекорд».</div>
+        <div class="nt-example">«Сергей М. обогнал тебя — ты теперь #7 в категории»</div>
+      </div>
+      <span class="nt-priority high">Высокий</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">🏆</div>
+      <div class="nt-body">
+        <div class="nt-name">Вошёл в Топ</div>
+        <div class="nt-desc">Рекорд попал в Топ-50 / Топ-10 / Топ-3 / #1. Начисляется REP. Показывается достижение-карточка.</div>
+        <div class="nt-example">«Твой рекорд вошёл в Топ-10 категории 🏆 +50 REP»</div>
+      </div>
+      <span class="nt-priority high">Высокий</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">🎯</div>
+      <div class="nt-body">
+        <div class="nt-name">Разблокирован новый уровень</div>
+        <div class="nt-desc">Достиг нового REP-уровня. Показывается что именно разблокировалось. Для Авторитета — прямая ссылка на очередь оценки техники.</div>
+        <div class="nt-example">«Уровень Авторитет разблокирован! → Оценить технику · 47 рекордов ждут»</div>
+      </div>
+      <span class="nt-priority high">Высокий</span>
+    </div>
+
+    <h3 style="margin-bottom:12px;margin-top:20px;">🟡 Средний приоритет</h3>
+
+    <div class="notif-type">
+      <div class="nt-icon">❌</div>
+      <div class="nt-body">
+        <div class="nt-name">Рекорд оспорен</div>
+        <div class="nt-desc">5+ голосов «Не верю» по рекорду. Показывается падение процента доверия и комментарий сомневающегося.</div>
+        <div class="nt-example">«Иван П. и ещё 4 человека проголосовали Не верю. Доверие: 91% → 88%»</div>
+      </div>
+      <span class="nt-priority med">Средний</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">✅</div>
+      <div class="nt-body">
+        <div class="nt-name">Волна голосов «Верю»</div>
+        <div class="nt-desc">Рекорд получил много голосов за короткое время (порог: 20+ за час).</div>
+        <div class="nt-example">«+47 голосов "Верю" за последний час по твоему жиму 140 кг»</div>
+      </div>
+      <span class="nt-priority med">Средний</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">🎂</div>
+      <div class="nt-body">
+        <div class="nt-name">День рождения — смена категории</div>
+        <div class="nt-desc">Переход в новую возрастную группу. Призыв обновить рекорды чтобы занять место в новой категории.</div>
+        <div class="nt-example">«Тебе 41 год! Ты перешёл в категорию 40–44. Обнови рекорды и займи своё место»</div>
+      </div>
+      <span class="nt-priority med">Средний</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">🔥</div>
+      <div class="nt-body">
+        <div class="nt-name">Стрик активности</div>
+        <div class="nt-desc">Достиг стрика 7 или 30 дней. Визуальная полоска дней. Начисляется REP.</div>
+        <div class="nt-example">«Стрик 7 дней подряд 🔥 +10 REP»</div>
+      </div>
+      <span class="nt-priority med">Средний</span>
+    </div>
+
+    <h3 style="margin-bottom:12px;margin-top:20px;">⚪ Низкий приоритет</h3>
+
+    <div class="notif-type">
+      <div class="nt-icon">💬</div>
+      <div class="nt-body">
+        <div class="nt-name">Ответ на комментарий</div>
+        <div class="nt-desc">Кто-то ответил на твой комментарий под рекордом.</div>
+        <div class="nt-example">«Константин М. ответил на твой комментарий»</div>
+      </div>
+      <span class="nt-priority low">Низкий</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">👤</div>
+      <div class="nt-body">
+        <div class="nt-name">Новый подписчик</div>
+        <div class="nt-desc">Кто-то начал следить за профилем.</div>
+        <div class="nt-example">«Денис В. начал следить за тобой»</div>
+      </div>
+      <span class="nt-priority low">Низкий</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">⚡</div>
+      <div class="nt-body">
+        <div class="nt-name">Стрик под угрозой</div>
+        <div class="nt-desc">Пользователь не заходил 6 дней — стрик сгорит завтра.</div>
+        <div class="nt-example">«Ты не заходил 6 дней. Стрик сгорит завтра»</div>
+      </div>
+      <span class="nt-priority low">Низкий</span>
+    </div>
+
+    <div class="notif-type">
+      <div class="nt-icon">📋</div>
+      <div class="nt-body">
+        <div class="nt-name">Напоминание о программе</div>
+        <div class="nt-desc">Сегодня по программе запланирована тренировка.</div>
+        <div class="nt-example">«Сегодня тренировка по программе «Жим 170+» · Неделя 4 · День 2»</div>
+      </div>
+      <span class="nt-priority low">Низкий</span>
+    </div>
+
+    <p style="margin-top:16px;font-size:.65rem;color:var(--gray-light);">Настройки: все типы управляются индивидуально. Тихие часы: по умолчанию 23:00–08:00.</p>
+  </section>
+
+  <!-- ═══════════ TECH EVAL ═══════════ -->
+  <section id="tech-eval">
+    <div class="doc-tag">Механики</div>
+    <h2>Оценка техники</h2>
+
+    <p>Отдельная механика от голосования Верю/Не верю. Позволяет оценить качество исполнения упражнения независимо от достоверности результата.</p>
+
+    <h3>Кто может оценивать</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <div style="background:var(--gray);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:.75rem;font-weight:700;">Холодный старт (первые 90 дней / до 500 пользователей)</div><div style="font-size:.62rem;color:var(--gray-light);">Любой у кого есть хотя бы 1 собственный рекорд с видео</div></div>
+        <span style="font-size:.55rem;font-weight:700;color:var(--gold);border:1px solid rgba(245,200,66,.3);padding:3px 8px;">ВРЕМЕННО</span>
+      </div>
+      <div style="background:var(--gray);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:.75rem;font-weight:700;">После набора аудитории</div><div style="font-size:.62rem;color:var(--gray-light);">Авторитет и выше (500+ REP)</div></div>
+        <span style="font-size:.55rem;font-weight:700;color:var(--green);border:1px solid rgba(61,220,132,.3);padding:3px 8px;">ПОСТОЯННО</span>
+      </div>
+    </div>
+
+    <h3>Механика в ленте</h3>
+    <p>Отдельная вкладка «⚡ Оценить технику · N» — рекорды с видео без оценки техники попадают в очередь. Сортировка: самые старые сверху. REP за оценку техники выше чем за обычный голос (+2 REP). +3 REP дополнительно если оценка совпала с консенсусом.</p>
+    <p>При достижении Авторитета — специальное уведомление с прямой ссылкой на очередь оценки техники.</p>
+  </section>
+
+  <!-- ═══════════ PROGRAMS ═══════════ -->
+  <section id="programs">
+    <div class="doc-tag">Механики</div>
+    <h2>Система программ</h2>
+
+    <p>Маркетплейс тренировочных программ. Уникальность: отзывы — это реальные рекорды до и после, верифицированные через дневник тренировок на платформе. Невозможно подделать.</p>
+
+    <h3>Кто может продавать</h3>
+    <p>Авторитет и выше (500+ REP). Это создаёт естественный фильтр качества — только те кто уже доказал результаты.</p>
+
+    <h3>Три типа программ</h3>
+
+    <div class="program-type">
+      <div class="pt-header">
+        <div class="pt-icon">📋</div>
+        <div class="pt-name">Стандартная</div>
+        <span class="pt-badge" style="background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2);">БАЗОВЫЙ</span>
+      </div>
+      <div class="pt-desc">Тренировочный план по шаблону. Дневник прохождения на платформе. Отзывы по желанию.</div>
+      <ul class="pt-rules">
+        <li>Заполняется по обязательному шаблону: упражнение, цель (результат до/после), недели, структура, прогрессия</li>
+        <li>Покупатель проходит через дневник FitoRank</li>
+        <li>Нет автоматической верификации результатов</li>
+      </ul>
+    </div>
+
+    <div class="program-type" style="border-color:rgba(61,220,132,.2);">
+      <div class="pt-header">
+        <div class="pt-icon">✅</div>
+        <div class="pt-name">Верифицированная</div>
+        <span class="pt-badge" style="background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);">ДОВЕРИЕ</span>
+      </div>
+      <div class="pt-desc">Программа получает статус Верифицированной автоматически когда минимум 5 участников прошли её полностью и зафиксировали финальный рекорд с видео.</div>
+      <ul class="pt-rules">
+        <li>Автоматические отзывы: имя + рекорд до + рекорд после + видео</li>
+        <li>Средний прирост рабочих показателей (в кг или повторениях)</li>
+        <li>Тепловая карта удержания по неделям — видна всем покупателям</li>
+        <li>Обновления программы бесплатны для купивших</li>
+      </ul>
+    </div>
+
+    <div class="program-type" style="border-color:rgba(232,38,11,.2);">
+      <div class="pt-header">
+        <div class="pt-icon">🔴</div>
+        <div class="pt-name">Живая</div>
+        <span class="pt-badge" style="background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);">LIVE</span>
+      </div>
+      <div class="pt-desc">Автор активно участвует в процессе: отвечает на вопросы, корректирует план под участника, разбирает ошибки. Лимит участников устанавливает автор.</div>
+      <ul class="pt-rules">
+        <li>Автор обязан отвечать в течение 48 часов</li>
+        <li>При нарушении — покупатель может запросить возврат</li>
+        <li>Обоснование для более высокой цены</li>
+        <li>Отдельный значок в каталоге</li>
+      </ul>
+    </div>
+
+    <h3 style="margin-top:20px;">Гибкость прохождения</h3>
+    <p>Программа — скелет, не клетка. Автор задаёт минимально необходимое. Отклонения фиксируются честно, не блокируются.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--gray);padding:12px;border-top:2px solid var(--green);">
+        <div style="font-size:.62rem;font-weight:700;color:var(--green);margin-bottom:6px;">⬆️ Отклонение вверх</div>
+        <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Больший вес, доп. подходы, доп. тренировки. Всегда разрешено. Фиксируется как «с превышением».</div>
+      </div>
+      <div style="background:var(--gray);padding:12px;border-top:2px solid var(--gold);">
+        <div style="font-size:.62rem;font-weight:700;color:var(--gold);margin-bottom:6px;">⏱ Отклонение по времени</div>
+        <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Лишний день отдыха, сдвиг дней. Засчитывается если выполнено 75%+ тренировок.</div>
+      </div>
+      <div style="background:var(--gray);padding:12px;border-top:2px solid var(--gray-light);">
+        <div style="font-size:.62rem;font-weight:700;color:var(--white);margin-bottom:6px;">⬇️ Отклонение вниз</div>
+        <div style="font-size:.65rem;color:var(--gray-light);line-height:1.5;">Меньший вес, пропуск подходов. Разрешено, фиксируется с причиной. Ценная обратная связь для автора.</div>
+      </div>
+    </div>
+
+    <h3>Верификация результата</h3>
+    <p>Верификация по результату, не по протоколу. Засчитывается если зафиксирован рост показателей даже при частичном прохождении.</p>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+      <div style="background:var(--gray);padding:10px 14px;border-left:3px solid var(--green);font-size:.72rem;">✅ <b>Полное прохождение + рост</b> — 100% объёма, финальный рекорд выше стартового</div>
+      <div style="background:var(--gray);padding:10px 14px;border-left:3px solid var(--gold);font-size:.72rem;">⚡ <b>Частичное прохождение + рост</b> — 75%+ объёма, рекорд всё равно вырос</div>
+      <div style="background:var(--gray);padding:10px 14px;border-left:3px solid var(--blue);font-size:.72rem;">🔬 <b>Раннее завершение + рост</b> — менее 75%, но рост зафиксирован. Идёт в отдельную категорию</div>
+    </div>
+
+    <p style="font-size:.65rem;color:var(--gray-light);">Защита от «прокликивания»: временной замок (нельзя отметить тренировку раньше чем через 23 ч после предыдущей), проверка прогрессии весов, финальный рекорд требует видео.</p>
+  </section>
+
+  <!-- ═══════════ DIARY ═══════════ -->
+  <section id="diary">
+    <div class="doc-tag">Механики</div>
+    <h2>Дневник тренировок</h2>
+
+    <p>Отдельная страница на FitoRank где пользователь выполняет программу. Данные из дневника формируют автоматические отзывы и аналитику для автора.</p>
+
+    <h3>Экраны дневника</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--gray);padding:12px 16px;border-left:3px solid var(--green);display:flex;justify-content:space-between;">
+        <div><div style="font-size:.75rem;font-weight:700;">fitorank-diary.html</div><div style="font-size:.62rem;color:var(--gray-light);">Активная тренировка — упражнения, подходы, фиксация</div></div>
+        <span style="font-size:.55rem;color:var(--green);font-weight:700;">ГОТОВО</span>
+      </div>
+      <div style="background:var(--gray);padding:12px 16px;border-left:3px solid var(--gold);display:flex;justify-content:space-between;">
+        <div><div style="font-size:.75rem;font-weight:700;">fitorank-diary-home.html</div><div style="font-size:.62rem;color:var(--gray-light);">Главный экран — прогресс программ, кнопка «Открыть сегодняшнюю»</div></div>
+        <span style="font-size:.55rem;color:var(--gold);font-weight:700;">В ПЛАНЕ</span>
+      </div>
+    </div>
+
+    <h3>Что фиксирует дневник на каждом подходе</h3>
+    <p>Вес + повторения → кнопка ✓. Отклонение вверх подсвечивается зелёным автоматически. Таймер отдыха между подходами. Возможность добавить лишний подход.</p>
+
+    <h3>Обратная связь для автора</h3>
+    <p>Самочувствие спрашивается один раз — после всей тренировки (😵 Убит / 😴 Устал / 😐 Норм / 💪 Хорошо / 🔥 Огонь). Агрегируется по всем участникам и отображается в аналитике автора как тепловая карта по неделям.</p>
+    <p>Резкий спад самочувствия на конкретной неделе = сигнал перетренированности. Автор видит это и корректирует программу.</p>
+  </section>
+
+  <!-- ═══════════ MONETIZATION ═══════════ -->
+  <section id="monetization">
+    <div class="doc-tag">Бизнес-модель</div>
+    <h2>Монетизация</h2>
+
+    <h3>Комиссия с продажи программ</h3>
+    <p>FitoRank берёт комиссию с каждой продажи программы. Размер комиссии снижается с ростом REP автора — стимул прокачивать репутацию не только ради статуса, но и ради денег.</p>
+
+    <table class="commission-table">
+      <thead>
+        <tr><th>Уровень автора</th><th>REP</th><th>Комиссия FitoRank</th><th>Автору остаётся</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>⭐ Авторитет</td>
+          <td style="font-family:'Bebas Neue',sans-serif;font-size:.9rem;">500–999</td>
+          <td><span class="commission-pct pct-high">25%</span></td>
+          <td style="color:var(--green);font-weight:700;">75%</td>
+        </tr>
+        <tr>
+          <td>🏆 Эксперт</td>
+          <td style="font-family:'Bebas Neue',sans-serif;font-size:.9rem;">1000–2499</td>
+          <td><span class="commission-pct pct-mid">20%</span></td>
+          <td style="color:var(--green);font-weight:700;">80%</td>
+        </tr>
+        <tr>
+          <td>🔥 Легенда</td>
+          <td style="font-family:'Bebas Neue',sans-serif;font-size:.9rem;">2500+</td>
+          <td><span class="commission-pct pct-low">15%</span></td>
+          <td style="color:var(--green);font-weight:700;">85%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Бесплатные программы разрешены — автор сам устанавливает цену включая $0. Используются как инструмент привлечения к платным. Комиссия с нуля = ноль.</p>
+    <p>Продвижение программ в каталоге возможно в будущем — пока не реализуется.</p>
+  </section>
+
+  <!-- ═══════════ COLD START ═══════════ -->
+  <section id="cold-start">
+    <div class="doc-tag">Рост</div>
+    <h2>Холодный старт</h2>
+
+    <p>На старте у всех 0 REP — нужны специальные механики чтобы рекорды получали оценки и платформа была живой с первого дня.</p>
+
+    <div class="cold-timeline">
+      <div class="ct-item">
+        <div class="ct-dot" style="background:var(--red)"></div>
+        <div class="ct-phase">
+          <div class="ct-phase-label">День 1–90</div>
+          <div class="ct-phase-val">Старт</div>
+        </div>
+        <div class="ct-body">
+          <div class="ct-title">Заниженный порог оценки техники</div>
+          <div class="ct-desc">Оценивать технику может любой у кого есть хотя бы 1 рекорд с видео. Решает проблему пустой очереди оценки. Автоматически отключается при 500+ активных пользователях.</div>
+        </div>
+      </div>
+      <div class="ct-item">
+        <div class="ct-dot" style="background:var(--gold)"></div>
+        <div class="ct-phase">
+          <div class="ct-phase-label">500 пользователей</div>
+          <div class="ct-phase-val">Рост</div>
+        </div>
+        <div class="ct-body">
+          <div class="ct-title">Стандартные пороги включаются</div>
+          <div class="ct-desc">Оценка техники — только Авторитет+. Достаточно пользователей чтобы поддерживать качество оценок без занижения порога.</div>
+        </div>
+      </div>
+      <div class="ct-item">
+        <div class="ct-dot" style="background:var(--green)"></div>
+        <div class="ct-phase">
+          <div class="ct-phase-label">Зрелость</div>
+          <div class="ct-phase-val">Масштаб</div>
+        </div>
+        <div class="ct-body">
+          <div class="ct-title">Полная система репутации</div>
+          <div class="ct-desc">Эксперты и Легенды сформированы органически. Маркетплейс программ работает на реальных данных. Возможно ужесточение требований или введение региональных лиг.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ TECH STACK ═══════════ -->
+  <section id="tech-stack">
+    <div class="doc-tag">Технологии</div>
+    <h2>Технический стек</h2>
+
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="ti-layer">Frontend</div>
+        <div class="ti-tech">HTML / CSS / JavaScript</div>
+        <div class="ti-detail">Vanilla JS, без фреймворка на этапе MVP</div>
+      </div>
+      <div class="tech-item">
+        <div class="ti-layer">Backend</div>
+        <div class="ti-tech">Node.js + Express</div>
+        <div class="ti-detail">REST API</div>
+      </div>
+      <div class="tech-item">
+        <div class="ti-layer">База данных</div>
+        <div class="ti-tech">PostgreSQL</div>
+        <div class="ti-detail">Через Supabase — хостинг + Auth + Realtime</div>
+      </div>
+      <div class="tech-item">
+        <div class="ti-layer">Авторизация</div>
+        <div class="ti-tech">Supabase Auth</div>
+        <div class="ti-detail">Google · VK · Facebook · TikTok · Apple</div>
+      </div>
+      <div class="tech-item">
+        <div class="ti-layer">Деплой</div>
+        <div class="ti-tech">Railway / Render</div>
+        <div class="ti-detail">TBD — выбирается при переходе к бэкенду</div>
+      </div>
+      <div class="tech-item">
+        <div class="ti-layer">Репозиторий</div>
+        <div class="ti-tech">GitHub</div>
+        <div class="ti-detail">github.com/Kitab7al/fitoapp · Приватный</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:20px;">Структура репозитория (при добавлении бэкенда)</h3>
+    <div style="background:var(--gray);padding:16px;font-family:monospace;font-size:.72rem;line-height:2;color:var(--gray-light);">
+      fitorank/<br>
+      ├── <span style="color:var(--white)">frontend/</span> &nbsp;&nbsp;&nbsp;← все HTML страницы<br>
+      ├── <span style="color:var(--white)">backend/</span> &nbsp;&nbsp;&nbsp;&nbsp;← Node.js + Express<br>
+      ├── <span style="color:var(--white)">.gitignore</span><br>
+      └── <span style="color:var(--white)">README.md</span>
+    </div>
+  </section>
+
+  <!-- ═══════════ PENDING ═══════════ -->
+  <section id="pending">
+    <div class="doc-tag">Дорожная карта</div>
+    <h2>Что предстоит</h2>
+
+    <h3 style="margin-bottom:10px;">📋 Страницы (Этап 1 — продолжение)</h3>
+    <div style="margin-bottom:20px;">
+      <div class="update-item"><div><div class="ui-page">fitorank-program.html</div><div class="ui-desc">Страница конкретной программы с результатами участников и покупкой</div></div><span class="badge-done gold">Следующая</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-programs.html</div><div class="ui-desc">Каталог программ — маркетплейс</div></div><span class="badge-done gold">В плане</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-diary-home.html</div><div class="ui-desc">Главный экран дневника — обзор программ и CTA тренировки</div></div><span class="badge-done gold">В плане</span></div>
+    </div>
+
+    <h3 style="margin-bottom:10px;">🔄 Обновления готовых страниц (Этап 2)</h3>
+    <div style="margin-bottom:20px;">
+      <div class="update-item"><div><div class="ui-page">fitorank-feed.html</div><div class="ui-desc">Экспертные метки в карточках, вкладка «Оценить технику · N»</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-profile.html</div><div class="ui-desc">REP-уровни, прогресс, разблокировки, средняя оценка техники</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-onboarding.html</div><div class="ui-desc">Дата рождения вместо возраста</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-record.html</div><div class="ui-desc">Чеклист техники в экспертной оценке</div></div><span class="badge-done gray">Этап 2</span></div>
+      <div class="update-item"><div><div class="ui-page">fitorank-leaderboard.html</div><div class="ui-desc">Связь с реальными данными, живые фильтры</div></div><span class="badge-done gray">Этап 2</span></div>
+    </div>
+
+    <h3 style="margin-bottom:10px;">⚙️ Математика и бэкенд (Этап 3)</h3>
+    <div>
+      <div class="update-item"><div><div class="ui-page">REP Engine</div><div class="ui-desc">Расчёт репутации, антиинфляция, потолки</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Trust Score Engine</div><div class="ui-desc">Взвешенные голоса, расчёт % доверия</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Feed Algorithm</div><div class="ui-desc">Горячее (Reddit score) / Спорные / Персонализация</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Пуш-уведомления</div><div class="ui-desc">Real-time через Supabase</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Платёжная система</div><div class="ui-desc">Stripe — приём платежей за программы, выплаты авторам</div></div><span class="badge-done gray">Этап 3</span></div>
+      <div class="update-item"><div><div class="ui-page">Дневник — защита от прокликивания</div><div class="ui-desc">Временной замок 23ч, валидация прогрессии весов</div></div><span class="badge-done gray">Этап 3</span></div>
+    </div>
+  </section>
+
+  <div style="padding:40px 0;border-top:1px solid var(--gray-mid);font-size:.62rem;color:var(--gray-light);display:flex;justify-content:space-between;">
+    <span>FitoRank Concept Document · v1.0</span>
+    <span>Март 2026 · Конфиденциально</span>
+  </div>
+
+</div>
+
+<script>
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  event.target.closest('.sb-link').classList.add('active');
+}
+
+// Highlight active section on scroll
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let current = '';
+  sections.forEach(s=>{
+    if(window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  document.querySelectorAll('.sb-link').forEach(l=>{
+    l.classList.remove('active');
+    if(l.getAttribute('onclick') && l.getAttribute('onclick').includes("'"+current+"'")) {
+      l.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
