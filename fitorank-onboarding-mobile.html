@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FitoRank</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808;
+  --white: #f5f2ee;
+  --red: #e8260b;
+  --red-dark: #b51e08;
+  --gray: #1a1a1a;
+  --gray-mid: #2e2e2e;
+  --gray-light: #888;
+  --green: #3ddc84;
+  --gold: #f5c842;
+  --blue: #4a9eff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; }
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: .4;
+}
+
+/* LANG SWITCHER */
+.lang-switcher {
+  position: fixed; top: 16px; right: 16px; z-index: 200;
+  display: flex;
+  background: rgba(26,26,26,.92); border: 1px solid var(--gray-mid);
+  backdrop-filter: blur(8px); overflow: hidden;
+}
+.lang-btn {
+  background: none; border: none; color: var(--gray-light);
+  font-family: 'Montserrat', sans-serif; font-size: .58rem;
+  font-weight: 700; letter-spacing: .12em; padding: 7px 12px;
+  cursor: pointer; transition: all .2s;
+}
+.lang-btn.active { background: var(--red); color: var(--white); }
+
+/* SCREENS */
+.screens { position: fixed; inset: 0; z-index: 1; }
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transform: translateX(32px);
+  transition: opacity .32s ease, transform .32s ease;
+  overflow-y: auto; overflow-x: hidden;
+}
+.screen.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+.screen.exit   { opacity: 0; transform: translateX(-32px); }
+
+/* ══ SCREEN 0: ENTRY ══ */
+#s-entry { justify-content: space-between; overflow: hidden; }
+.entry-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 55% at 50% 28%, rgba(232,38,11,.16) 0%, transparent 70%);
+}
+.entry-top {
+  position: relative; z-index: 2;
+  padding: 68px 28px 0; text-align: center;
+}
+.entry-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.8rem; letter-spacing: .12em; line-height: 1; margin-bottom: 5px;
+}
+.entry-logo span { color: var(--red); }
+.entry-tagline {
+  font-size: .6rem; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--gray-light);
+}
+.entry-visual {
+  position: relative; z-index: 2;
+  flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.ev-bg-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 44vw;
+  line-height: .85; color: rgba(255,255,255,.038);
+  letter-spacing: -.02em; user-select: none;
+  animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.015)} }
+.ev-center { position: absolute; text-align: center; padding: 0 32px; }
+.ev-stat { font-family: 'Bebas Neue', sans-serif; font-size: 3.4rem; line-height: 1; }
+.ev-stat span { color: var(--red); }
+.ev-stat-label { font-size: .58rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+.entry-bottom {
+  position: relative; z-index: 2;
+  padding: 24px 24px 44px;
+  background: linear-gradient(to top, rgba(8,8,8,.98) 65%, transparent);
+}
+.skip-line { text-align: center; margin-bottom: 18px; }
+.skip-btn {
+  background: none; border: none; border-bottom: 1px solid var(--gray-mid);
+  color: var(--gray-light); font-family: 'Montserrat', sans-serif;
+  font-size: .64rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer; padding: 6px 12px;
+}
+
+/* BUTTONS */
+.btn-p {
+  width: 100%; background: var(--red); color: var(--white); border: none;
+  font-family: 'Montserrat', sans-serif; font-size: .8rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; padding: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 10px; transition: background .2s, transform .1s; -webkit-appearance: none;
+  clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+}
+.btn-p.no-clip { clip-path: none; }
+.btn-p:active { background: var(--red-dark); transform: scale(.98); }
+.btn-p:disabled { opacity: .45; pointer-events: none; }
+.btn-s {
+  width: 100%; background: transparent; color: var(--white);
+  border: 1px solid var(--gray-mid); font-family: 'Montserrat', sans-serif;
+  font-size: .8rem; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; padding: 16px; cursor: pointer; margin-top: 10px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; transition: border-color .2s; -webkit-appearance: none;
+}
+.btn-s:active { border-color: var(--white); }
+
+/* ══ SHARED HEADER ══ */
+.sh-header { padding: 52px 24px 26px; border-bottom: 1px solid var(--gray-mid); flex-shrink: 0; }
+.back-btn {
+  display: flex; align-items: center; gap: 7px;
+  color: var(--gray-light); font-size: .6rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 22px;
+}
+.back-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.sh-tag { font-size: .52rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--red); margin-bottom: 7px; }
+.sh-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.7rem; line-height: 1; margin-bottom: 5px; }
+.sh-sub { font-size: .68rem; color: var(--gray-light); line-height: 1.6; }
+.step-dots { display: flex; gap: 6px; margin-top: 14px; }
+.dot { width: 20px; height: 3px; background: var(--gray-mid); border-radius: 2px; transition: background .3s, width .3s; }
+.dot.active { background: var(--red); width: 32px; }
+.dot.done { background: var(--green); }
+
+/* ══ SCREEN 1: AUTH ══ */
+.auth-body { flex: 1; padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.social-btn {
+  width: 100%; background: var(--gray); border: 1px solid var(--gray-mid);
+  color: var(--white); font-family: 'Montserrat', sans-serif;
+  font-size: .8rem; font-weight: 600; letter-spacing: .03em;
+  padding: 17px 18px; cursor: pointer;
+  display: flex; align-items: center; gap: 13px;
+  transition: background .2s, border-color .2s; -webkit-appearance: none;
+}
+.social-btn:active { background: #222; border-color: var(--gray-light); }
+.sb-icon { width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.sb-text { flex: 1; text-align: left; }
+.sb-arr { color: var(--gray-light); }
+.sb-google { border-left: 3px solid #4285f4; }
+.sb-apple  { border-left: 3px solid #e8e5e1; }
+.sb-vk     { border-left: 3px solid #0077ff; }
+.divider { display: flex; align-items: center; gap: 10px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-mid); }
+.divider span { font-size: .58rem; color: var(--gray-light); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: .54rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--gray-light); }
+.field-input {
+  background: var(--gray); border: 1px solid var(--gray-mid); color: var(--white);
+  font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600;
+  padding: 15px 14px; outline: none; transition: border-color .2s;
+  -webkit-appearance: none; border-radius: 0; width: 100%;
+}
+.field-input::placeholder { color: var(--gray-light); font-weight: 400; }
+.field-input:focus { border-color: var(--red); }
+.auth-footer { padding: 12px 24px 44px; flex-shrink: 0; }
+.legal-text { font-size: .53rem; color: var(--gray-light); text-align: center; line-height: 1.6; }
+.legal-text a { color: var(--gray-light); text-decoration: underline; }
+
+/* ══ SCREEN 2: DOB ══ */
+.dob-body { flex: 1; padding: 28px 24px; display: flex; flex-direction: column; overflow-y: auto; }
+.dob-intro { font-size: .7rem; color: var(--gray-light); line-height: 1.7; margin-bottom: 22px; }
+.dob-intro b { color: var(--white); }
+.dob-field {
+  background: var(--gray); border: 1px solid var(--gray-mid);
+  margin-bottom: 14px; transition: border-color .2s;
+}
+.dob-field.focused { border-color: var(--red); }
+.dob-field-label { font-size: .5rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gray-light); padding: 11px 14px 0; }
+.dob-input {
+  background: transparent; border: none; color: var(--white);
+  font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700;
+  padding: 3px 14px 13px; outline: none; width: 100%;
+  -webkit-appearance: none; color-scheme: dark;
+}
+.dob-result {
+  background: rgba(232,38,11,.05); border: 1px solid rgba(232,38,11,.2);
+  padding: 15px; display: none; margin-bottom: 14px;
+  animation: fadeUp .3s ease;
+}
+.dob-result.show { display: block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.dr-label { font-size: .5rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--red); margin-bottom: 5px; }
+.dr-age { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; line-height: 1; }
+.dr-cat { font-size: .62rem; color: var(--gold); font-weight: 600; margin-top: 2px; }
+.dr-note { font-size: .56rem; color: var(--gray-light); line-height: 1.5; margin-top: 5px; }
+.why-note { display: flex; gap: 10px; background: var(--gray); padding: 13px; margin-bottom: 24px; }
+.why-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.why-text { font-size: .6rem; color: var(--gray-light); line-height: 1.6; }
+.why-text b { color: var(--white); }
+.dob-footer { padding: 12px 24px 44px; flex-shrink: 0; }
+
+/* ══ SCREEN 3: SUCCESS ══ */
+#s-success {
+  justify-content: center; align-items: center;
+  padding: 40px 28px; text-align: center;
+  background: radial-gradient(ellipse 80% 45% at 50% 38%, rgba(61,220,132,.07) 0%, transparent 70%);
+}
+.success-icon { font-size: 3.6rem; margin-bottom: 18px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.success-title { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; margin-bottom: 8px; letter-spacing: .04em; }
+.success-sub { font-size: .7rem; color: var(--gray-light); line-height: 1.7; margin-bottom: 28px; max-width: 280px; }
+.success-card {
+  background: var(--gray); border: 1px solid var(--gray-mid);
+  padding: 18px; width: 100%; max-width: 300px; margin: 0 auto 28px; text-align: left;
+}
+.sc-label { font-size: .5rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gray-light); margin-bottom: 3px; }
+.sc-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; line-height: 1.1; }
+.sc-cat { font-size: .6rem; color: var(--gold); font-weight: 600; margin-top: 2px; }
+.success-actions { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ══ GATE (bottom sheet) ══ */
+#s-gate { justify-content: flex-end; background: rgba(8,8,8,.88); backdrop-filter: blur(8px); }
+.gate-sheet {
+  background: var(--gray); border-top: 1px solid var(--gray-mid);
+  padding: 26px 24px 48px;
+  animation: slideUp .3s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.gate-handle { width: 34px; height: 4px; background: var(--gray-mid); border-radius: 2px; margin: 0 auto 22px; }
+.gate-icon { font-size: 1.8rem; margin-bottom: 10px; }
+.gate-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; margin-bottom: 7px; }
+.gate-sub { font-size: .68rem; color: var(--gray-light); line-height: 1.6; margin-bottom: 18px; }
+.gate-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(61,220,132,.07); border: 1px solid rgba(61,220,132,.2);
+  padding: 5px 11px; font-size: .58rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: 18px;
+}
+.gate-close {
+  background: none; border: none; color: var(--gray-light);
+  font-size: .6rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer; padding: 12px;
+  display: block; width: 100%; text-align: center; margin-top: 6px;
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .entry-bottom, .auth-footer, .dob-footer, .success-actions, .gate-sheet {
+    padding-bottom: max(44px, calc(env(safe-area-inset-bottom) + 16px));
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- LANG SWITCHER (always visible) -->
+<div class="lang-switcher">
+  <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="screens">
+
+  <!-- ══ 0: ENTRY ══ -->
+  <div class="screen" id="s-entry">
+    <div class="entry-bg"></div>
+    <div class="entry-top">
+      <div class="entry-logo">FITO<span>RANK</span></div>
+      <div class="entry-tagline" data-t="tagline"></div>
+    </div>
+    <div class="entry-visual">
+      <div class="ev-bg-num">1</div>
+      <div class="ev-center">
+        <div class="ev-stat">84<span>%</span></div>
+        <div class="ev-stat-label" data-t="stat_label"></div>
+      </div>
+    </div>
+    <div class="entry-bottom">
+      <div class="skip-line">
+        <button class="skip-btn" data-t="skip" onclick="goFeed()"></button>
+      </div>
+      <button class="btn-p" onclick="go('s-auth')">
+        <span data-t="register"></span><span>→</span>
+      </button>
+      <button class="btn-s" data-t="login" onclick="go('s-auth')"></button>
+    </div>
+  </div>
+
+  <!-- ══ 1: AUTH ══ -->
+  <div class="screen" id="s-auth">
+    <div class="sh-header">
+      <button class="back-btn" onclick="go('s-entry')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+        <span data-t="back"></span>
+      </button>
+      <div class="sh-tag" data-t="step1_tag"></div>
+      <div class="sh-title" data-t="step1_title"></div>
+      <div class="sh-sub" data-t="step1_sub"></div>
+      <div class="step-dots"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+    <div class="auth-body">
+      <button class="social-btn sb-google" onclick="authWith('Google')">
+        <div class="sb-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+        </div>
+        <span class="sb-text" data-t="google"></span>
+        <span class="sb-arr">›</span>
+      </button>
+      <button class="social-btn sb-apple" onclick="authWith('Apple')">
+        <div class="sb-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--white)">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+        </div>
+        <span class="sb-text" data-t="apple"></span>
+        <span class="sb-arr">›</span>
+      </button>
+      <button class="social-btn sb-vk" onclick="authWith('VK')">
+        <div class="sb-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="#0077ff">
+            <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14C20.67 22 22 20.67 22 15.07V8.93C22 3.33 20.67 2 15.07 2zm3.08 13.63h-1.59c-.6 0-.79-.48-1.87-1.57-1-.93-1.43-.79-1.43.22v1.43c0 .36-.11.57-1.05.57-1.56 0-3.28-.95-4.5-2.71-1.82-2.56-2.32-4.48-2.32-4.87 0-.19.07-.37.27-.37h1.59c.2 0 .27.09.34.3.37 1.07.99 2.01 1.25 2.01.1 0 .14-.05.14-.31V8.9c-.03-.7-.41-.76-.41-.76s-.07-.12.08-.2h2.5c.17 0 .23.09.23.29v2.87c0 .16.07.22.12.22.1 0 .19-.06.39-.27.59-.66 1.01-1.68 1.01-1.68.06-.12.15-.23.35-.23h1.59c.48 0 .59.24.48.48-.2.46-.68 1.12-1.13 1.73-.09.13-.13.2 0 .35.09.12.39.37.59.59.37.38.73.79.73 1.09 0 .12-.06.19-.19.19z"/>
+          </svg>
+        </div>
+        <span class="sb-text" data-t="vk"></span>
+        <span class="sb-arr">›</span>
+      </button>
+      <div class="divider"><span data-t="or"></span></div>
+      <div class="field">
+        <div class="field-label" data-t="email_label"></div>
+        <input class="field-input" type="email" id="emailInput" inputmode="email" autocomplete="email">
+      </div>
+      <button class="btn-p no-clip" data-t="email_btn" onclick="authWithEmail()"></button>
+    </div>
+    <div class="auth-footer">
+      <div class="legal-text"><span data-t="legal"></span></div>
+    </div>
+  </div>
+
+  <!-- ══ 2: DOB ══ -->
+  <div class="screen" id="s-dob">
+    <div class="sh-header">
+      <button class="back-btn" onclick="go('s-auth')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+        <span data-t="back"></span>
+      </button>
+      <div class="sh-tag" data-t="step2_tag"></div>
+      <div class="sh-title" data-t="step2_title"></div>
+      <div class="sh-sub" data-t="step2_sub"></div>
+      <div class="step-dots"><div class="dot done"></div><div class="dot active"></div></div>
+    </div>
+    <div class="dob-body">
+      <div class="dob-intro" data-t-html="dob_intro"></div>
+      <div class="dob-field" id="dobField">
+        <div class="dob-field-label" data-t="dob_label"></div>
+        <input class="dob-input" type="date" id="dobInput" onchange="handleDob(this)">
+      </div>
+      <div class="dob-result" id="dobResult">
+        <div class="dr-label" data-t="dob_profile"></div>
+        <div class="dr-age" id="drAge">—</div>
+        <div class="dr-cat" id="drCat">—</div>
+        <div class="dr-note" data-t="dob_note"></div>
+      </div>
+      <div class="why-note">
+        <div class="why-icon">🔒</div>
+        <div class="why-text" data-t-html="why_text"></div>
+      </div>
+    </div>
+    <div class="dob-footer">
+      <button class="btn-p no-clip" id="dobBtn" data-t="dob_btn" onclick="completeDob()" disabled></button>
+    </div>
+  </div>
+
+  <!-- ══ 3: SUCCESS ══ -->
+  <div class="screen" id="s-success">
+    <div class="success-icon">🔥</div>
+    <div class="success-title" data-t="success_title"></div>
+    <div class="success-sub" data-t="success_sub"></div>
+    <div class="success-card">
+      <div class="sc-label" data-t="dob_profile"></div>
+      <div class="sc-val" id="scAge">—</div>
+      <div class="sc-cat" id="scCat">—</div>
+    </div>
+    <div class="success-actions">
+      <button class="btn-p no-clip" data-t="go_feed" onclick="goFeed()"></button>
+      <button class="btn-s" data-t="add_record" onclick="goFeed()"></button>
+    </div>
+  </div>
+
+  <!-- ══ GATE ══ -->
+  <div class="screen" id="s-gate">
+    <div class="gate-sheet">
+      <div class="gate-handle"></div>
+      <div class="gate-icon">⚡</div>
+      <div class="gate-title" data-t="gate_title"></div>
+      <div class="gate-sub" id="gateText"></div>
+      <div class="gate-badge" data-t="gate_time"></div>
+      <button class="btn-p no-clip" data-t="gate_register" onclick="go('s-auth')"></button>
+      <button class="gate-close" data-t="gate_skip" onclick="closeGate()"></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════
+// I18N
+// ═══════════════════════════════
+const T = {
+  ru: {
+    tagline:       'Платформа персональных рекордов',
+    stat_label:    'Рекордов с видео-подтверждением',
+    skip:          'Смотреть ленту без регистрации →',
+    register:      'Зарегистрироваться',
+    login:         'Уже есть аккаунт — войти',
+    back:          'Назад',
+
+    step1_tag:     'Шаг 1 из 2',
+    step1_title:   'ВОЙТИ В FITORANK',
+    step1_sub:     'Выбери удобный способ. Займёт меньше минуты.',
+    google:        'Продолжить с Google',
+    apple:         'Продолжить с Apple',
+    vk:            'Продолжить с VK',
+    or:            'или',
+    email_label:   'Email',
+    email_ph:      'твой@email.com',
+    email_btn:     'Продолжить с email →',
+    legal:         'Регистрируясь, ты принимаешь Условия использования и Политику конфиденциальности',
+
+    step2_tag:     'Шаг 2 из 2',
+    step2_title:   'ДАТА РОЖДЕНИЯ',
+    step2_sub:     'Основа расчётов — возраст на дату рекорда, категория, Masters.',
+    dob_intro:     'Укажи <b>реальную дату рождения</b>. Используется для автоматического расчёта возраста — в том числе для рекордов из прошлого.',
+    dob_label:     'Дата рождения',
+    dob_profile:   'Твой профиль',
+    dob_note:      'Возраст считается на дату каждого рекорда',
+    why_text:      '<b>Зачем это нужно?</b> FitoRank фиксирует возраст на дату рекорда навсегда. Жим в 29 лет и в 45 — разные категории. Это честно.',
+    dob_btn:       'Готово — перейти в ленту →',
+
+    success_title: 'ДОБРО ПОЖАЛОВАТЬ!',
+    success_sub:   'Ты в FitoRank. Смотри рекорды, голосуй, добавляй свои достижения.',
+    go_feed:       'Открыть ленту рекордов →',
+    add_record:    'Добавить свой рекорд',
+
+    gate_title:    'НУЖНА РЕГИСТРАЦИЯ',
+    gate_time:     '⏱ Займёт ~1 минуту',
+    gate_register: 'Зарегистрироваться →',
+    gate_skip:     'Пока не сейчас',
+    gate_vote:     'Чтобы голосовать за рекорды — создай аккаунт. Займёт меньше минуты.',
+    gate_comment:  'Чтобы оставить комментарий — создай аккаунт. Быстро и бесплатно.',
+    gate_record:   'Чтобы добавить рекорд и попасть в рейтинг — нужна регистрация.',
+    gate_default:  'Чтобы проявить активность — создай аккаунт. Займёт меньше минуты.',
+
+    years: 'лет',
+    cats: {
+      junior: '🔵 Юниор · до 18 лет',
+      u23:    '🟢 U23 · 18–23 года',
+      open:   '🟡 Open · 24–39 лет',
+      m1:     '🟠 Masters 1 · 40–49 лет',
+      m2:     '🔴 Masters 2 · 50–59 лет',
+      m3:     '⚪ Masters 3+ · 60+',
+    }
+  },
+  en: {
+    tagline:       'Personal Records Platform',
+    stat_label:    'Records with video proof',
+    skip:          'Browse feed without signing up →',
+    register:      'Create account',
+    login:         'Already have an account — log in',
+    back:          'Back',
+
+    step1_tag:     'Step 1 of 2',
+    step1_title:   'JOIN FITORANK',
+    step1_sub:     'Choose a sign-up method. Takes less than a minute.',
+    google:        'Continue with Google',
+    apple:         'Continue with Apple',
+    vk:            'Continue with VK',
+    or:            'or',
+    email_label:   'Email',
+    email_ph:      'your@email.com',
+    email_btn:     'Continue with email →',
+    legal:         'By signing up you agree to our Terms of Service and Privacy Policy',
+
+    step2_tag:     'Step 2 of 2',
+    step2_title:   'DATE OF BIRTH',
+    step2_sub:     'Used for all calculations — age at record date, category, Masters.',
+    dob_intro:     'Enter your <b>real date of birth</b>. Used to automatically calculate age — including for records set in the past.',
+    dob_label:     'Date of birth',
+    dob_profile:   'Your profile',
+    dob_note:      'Age is calculated for each record\'s date',
+    why_text:      '<b>Why do we need this?</b> FitoRank locks age permanently to the record date. A bench press at 29 vs 45 are different categories. That\'s fair.',
+    dob_btn:       'Done — go to feed →',
+
+    success_title: 'WELCOME!',
+    success_sub:   'You\'re in FitoRank. Browse records, vote, add your achievements.',
+    go_feed:       'Open records feed →',
+    add_record:    'Add your record',
+
+    gate_title:    'SIGN UP REQUIRED',
+    gate_time:     '⏱ Takes ~1 minute',
+    gate_register: 'Create account →',
+    gate_skip:     'Not right now',
+    gate_vote:     'To vote on records — create an account. Takes less than a minute.',
+    gate_comment:  'To comment — create an account. Free and fast.',
+    gate_record:   'To add your record and join rankings — sign up.',
+    gate_default:  'To interact with the feed — create an account. Takes less than a minute.',
+
+    years: 'y.o.',
+    cats: {
+      junior: '🔵 Junior · under 18',
+      u23:    '🟢 U23 · 18–23',
+      open:   '🟡 Open · 24–39',
+      m1:     '🟠 Masters 1 · 40–49',
+      m2:     '🔴 Masters 2 · 50–59',
+      m3:     '⚪ Masters 3+ · 60+',
+    }
+  }
+};
+
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+let lang = 'ru';
+let prevScreen = 's-entry';
+const state = { age: null, dob: null };
+
+// ═══════════════════════════════
+// LANG
+// ═══════════════════════════════
+function detectLang() {
+  const saved = localStorage.getItem('fitorank_lang');
+  if (saved === 'ru' || saved === 'en') return saved;
+  const bl = (navigator.language || 'ru').toLowerCase();
+  const sng = ['ru','uk','kk','be','uz','hy','az','ka','tg','tk','ky'];
+  return sng.some(l => bl.startsWith(l)) ? 'ru' : 'en';
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('fitorank_lang', l);
+  document.getElementById('btn-ru').classList.toggle('active', l === 'ru');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.documentElement.lang = l;
+  applyLang();
+}
+
+function applyLang() {
+  const t = T[lang];
+  // text nodes
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.dataset.t;
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+  // html nodes
+  document.querySelectorAll('[data-t-html]').forEach(el => {
+    const key = el.dataset.tHtml;
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  // email placeholder
+  const ei = document.getElementById('emailInput');
+  if (ei) ei.placeholder = t.email_ph;
+  // re-render age if set
+  if (state.age !== null) renderAge(state.age);
+}
+
+// ═══════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════
+function go(id) {
+  const cur = document.querySelector('.screen.active');
+  if (cur) {
+    prevScreen = cur.id;
+    cur.classList.add('exit');
+    cur.classList.remove('active');
+    setTimeout(() => cur.classList.remove('exit'), 340);
+  }
+  document.getElementById(id).classList.add('active');
+}
+
+function goFeed() {
+  window.location.href = 'fitorank-feed-mobile.html';
+}
+
+function closeGate() { go(prevScreen || 's-entry'); }
+
+// ═══════════════════════════════
+// AUTH
+// ═══════════════════════════════
+function authWith(provider) {
+  // Production: OAuth redirect
+  localStorage.setItem('fitorank_user', 'true');
+  go('s-dob');
+}
+
+function authWithEmail() {
+  const email = document.getElementById('emailInput').value.trim();
+  const input = document.getElementById('emailInput');
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = 'var(--red)';
+    input.focus();
+    return;
+  }
+  input.style.borderColor = '';
+  go('s-dob');
+}
+
+// ═══════════════════════════════
+// DOB
+// ═══════════════════════════════
+// Set max = today
+const _today = new Date();
+document.getElementById('dobInput').max =
+  _today.getFullYear() + '-' +
+  String(_today.getMonth()+1).padStart(2,'0') + '-' +
+  String(_today.getDate()).padStart(2,'0');
+
+function getAge(dob) {
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
+  return age;
+}
+
+function getCatKey(age) {
+  if (age < 18)  return 'junior';
+  if (age <= 23) return 'u23';
+  if (age <= 39) return 'open';
+  if (age <= 49) return 'm1';
+  if (age <= 59) return 'm2';
+  return 'm3';
+}
+
+function renderAge(age) {
+  const t = T[lang];
+  const catStr = t.cats[getCatKey(age)];
+  document.getElementById('drAge').textContent = age + ' ' + t.years;
+  document.getElementById('drCat').textContent = catStr;
+  document.getElementById('scAge').textContent = age + ' ' + t.years;
+  document.getElementById('scCat').textContent = catStr.replace(/[🔵🟢🟡🟠🔴⚪]/gu,'').trim() + ' · FitoRank';
+}
+
+function handleDob(input) {
+  const val = input.value;
+  if (!val) return;
+  const age = getAge(new Date(val));
+  if (age < 8 || age > 100) {
+    document.getElementById('dobResult').classList.remove('show');
+    return;
+  }
+  state.dob = val;
+  state.age = age;
+  renderAge(age);
+  document.getElementById('dobResult').classList.add('show');
+  const btn = document.getElementById('dobBtn');
+  btn.disabled = false;
+}
+
+function completeDob() {
+  if (!state.dob) return;
+  localStorage.setItem('fitorank_user', 'true'); // флаг для ленты
+  go('s-success');
+}
+
+// ═══════════════════════════════
+// GATE
+// ═══════════════════════════════
+function showGate(reason) {
+  const t = T[lang];
+  const map = { vote: t.gate_vote, comment: t.gate_comment, record: t.gate_record };
+  document.getElementById('gateText').textContent = map[reason] || t.gate_default;
+  go('s-gate');
+}
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
+lang = detectLang();
+setLang(lang);
+go('s-entry');
+</script>
+</body>
+</html>
