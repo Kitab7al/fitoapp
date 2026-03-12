@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Алексей К. · Профиль</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-center{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-center a{color:var(--gray-light);text-decoration:none;transition:color .2s;cursor:none;}
+.nav-center a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-avatar{width:32px;height:32px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--red);}
+
+/* LAYOUT */
+.page{display:grid;grid-template-columns:320px 1fr;gap:0;padding-top:65px;min-height:100vh;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{padding:28px 24px;border-right:1px solid var(--gray-mid);position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;}
+
+/* AVATAR BLOCK */
+.avatar-wrap{position:relative;width:96px;height:96px;margin-bottom:16px;}
+.avatar{width:96px;height:96px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--white);}
+.online-dot{position:absolute;bottom:4px;right:4px;width:14px;height:14px;background:var(--green);border-radius:50%;border:2px solid var(--black);}
+
+/* NAME & HANDLE */
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;margin-bottom:4px;}
+.profile-handle{font-size:.65rem;color:var(--gray-light);margin-bottom:10px;}
+.profile-location{font-size:.65rem;color:var(--gray-light);display:flex;align-items:center;gap:4px;margin-bottom:12px;}
+
+/* BADGES */
+.badges-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px;}
+.badge{font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:2px;}
+.badge.natural{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.2);}
+.badge.verified{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.badge.expert{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.2);}
+.badge.pro{background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2);}
+
+/* ACTION BUTTONS */
+.action-btns{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.btn-follow{background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background .2s;width:100%;}
+.btn-follow:hover{background:var(--red-dark);}
+.btn-follow.following{background:transparent;border:1px solid var(--green);color:var(--green);clip-path:none;}
+.btn-challenge{background:transparent;border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px;cursor:none;transition:all .2s;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-challenge:hover{border-color:var(--gold);color:var(--gold);}
+.btn-message{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px;cursor:none;transition:all .2s;width:100%;}
+.btn-message:hover{border-color:var(--gray-light);color:var(--white);}
+
+/* REP BLOCK */
+.rep-block{background:var(--gray);padding:16px;margin-bottom:16px;}
+.rb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.rb-label{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);}
+.rb-level{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.rb-number{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--gold);line-height:1;margin-bottom:6px;}
+.rep-bar{height:4px;background:var(--gray-mid);border-radius:2px;overflow:hidden;margin-bottom:6px;}
+.rep-bar-fill{height:100%;background:linear-gradient(to right,var(--red),var(--gold));border-radius:2px;}
+.rep-next{font-size:.58rem;color:var(--gray-light);}
+.rep-next b{color:var(--white);}
+
+/* BIO STATS */
+.bio-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px;}
+.bs-item{background:var(--gray);padding:10px 12px;}
+.bs-val{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1;}
+.bs-label{font-size:.52rem;color:var(--gray-light);margin-top:1px;}
+
+/* SOCIAL STATS */
+.social-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gray-mid);margin-bottom:16px;}
+.ss-item{background:var(--black);padding:10px 12px;text-align:center;cursor:none;transition:background .2s;}
+.ss-item:hover{background:var(--gray);}
+.ss-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;}
+.ss-label{font-size:.52rem;color:var(--gray-light);}
+
+/* ACHIEVEMENTS */
+.achievements{margin-bottom:16px;}
+.ach-title{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:8px;}
+.ach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.ach-item{background:var(--gray);padding:8px;text-align:center;position:relative;}
+.ach-item.earned{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.15);}
+.ach-icon{font-size:1.2rem;}
+.ach-name{font-size:.45rem;color:var(--gray-light);margin-top:3px;line-height:1.2;}
+.ach-item.earned .ach-name{color:var(--gold);}
+
+/* REPORT LINK */
+.report-link{font-size:.58rem;color:var(--gray-light);text-align:center;display:block;cursor:none;transition:color .2s;margin-top:8px;}
+.report-link:hover{color:var(--red);}
+
+/* MAIN CONTENT */
+.main-content{padding:0;}
+
+/* COVER / HERO */
+.profile-hero{height:180px;background:linear-gradient(135deg,rgba(232,38,11,.08),rgba(245,200,66,.04),transparent);border-bottom:1px solid var(--gray-mid);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:24px 32px;}
+.ph-bg-num{position:absolute;right:-20px;top:-20px;font-family:'Bebas Neue',sans-serif;font-size:22rem;line-height:1;color:rgba(255,255,255,.02);pointer-events:none;}
+.ph-exercise{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.15em;color:var(--gray-light);margin-bottom:4px;}
+.ph-result{font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;color:var(--white);}
+.ph-unit{font-size:1.5rem;color:var(--gray-light);}
+.ph-rank{font-size:.65rem;color:var(--gold);margin-top:4px;}
+.ph-rank b{font-size:1rem;font-family:'Bebas Neue',sans-serif;}
+
+/* TABS */
+.tabs-wrap{border-bottom:1px solid var(--gray-mid);overflow-x:auto;scrollbar-width:none;}
+.tabs-wrap::-webkit-scrollbar{display:none;}
+.tabs{display:flex;}
+.tab{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 20px;cursor:none;transition:all .2s;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab:hover{color:var(--white);}
+.tab.active{color:var(--white);border-bottom-color:var(--red);}
+
+/* TAB CONTENT */
+.tab-content{display:none;padding:28px 32px;}
+.tab-content.active{display:block;}
+
+/* RECORDS TAB */
+.records-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.rf-btn{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;cursor:none;transition:all .2s;}
+.rf-btn:hover{border-color:var(--gray-light);color:var(--white);}
+.rf-btn.active{background:rgba(232,38,11,.1);border-color:var(--red);color:var(--white);}
+
+.record-card{background:var(--gray);border:1px solid var(--gray-mid);padding:18px 20px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;cursor:none;transition:border-color .2s;}
+.record-card:hover{border-color:var(--gray-light);}
+.record-card.gold-border{border-color:rgba(245,200,66,.3);}
+.rc-left{}
+.rc-exercise{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.rc-result{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;margin-bottom:4px;}
+.rc-meta{display:flex;gap:6px;flex-wrap:wrap;}
+.rc-badge{font-size:.48rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;}
+.rc-badge.type{background:rgba(232,38,11,.1);color:var(--red);border:1px solid rgba(232,38,11,.15);}
+.rc-badge.nat{background:rgba(61,220,132,.1);color:var(--green);border:1px solid rgba(61,220,132,.15);}
+.rc-badge.clean{background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.15);}
+.rc-date{font-size:.58rem;color:var(--gray-light);}
+.rc-right{text-align:right;}
+.rc-rank{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;}
+.rc-rank.gold{color:var(--gold);}
+.rc-rank.silver{color:#c0c0c0;}
+.rc-rank.red{color:var(--red);}
+.rc-pct{font-size:.6rem;color:var(--gray-light);margin-top:2px;}
+.rc-pct b{color:var(--green);}
+.rc-trust{display:flex;align-items:center;gap:6px;margin-top:4px;justify-content:flex-end;}
+.trust-mini{width:40px;height:3px;background:var(--gray-mid);border-radius:2px;overflow:hidden;}
+.tm-fill{height:100%;background:var(--green);border-radius:2px;}
+.trust-num{font-size:.58rem;color:var(--green);font-weight:700;}
+
+/* BEST RESULTS SUMMARY */
+.best-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+.bs-card{background:var(--gray);padding:16px;border:1px solid var(--gray-mid);position:relative;overflow:hidden;}
+.bs-card::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;}
+.bs-card.first::before{background:var(--gold);}
+.bs-card.second::before{background:#c0c0c0;}
+.bs-card.third::before{background:var(--bronze, #cd7f32);}
+.bsc-exercise{font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.bsc-result{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;}
+.bsc-rank{font-size:.6rem;color:var(--gray-light);margin-top:2px;}
+
+/* PROGRESS TAB */
+.progress-chart{background:var(--gray);padding:20px;margin-bottom:16px;}
+.pc-title{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:16px;}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chart-bar{width:100%;background:rgba(232,38,11,.3);border-radius:2px 2px 0 0;transition:background .2s;cursor:none;position:relative;}
+.chart-bar:hover{background:var(--red);}
+.chart-bar.latest{background:var(--red);}
+.chart-val{font-family:'Bebas Neue',sans-serif;font-size:.7rem;color:var(--white);}
+.chart-date{font-size:.48rem;color:var(--gray-light);}
+
+/* ABOUT TAB */
+.about-section{margin-bottom:24px;}
+.as-title{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.as-title::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+.about-text{font-size:.8rem;line-height:1.8;color:rgba(245,242,238,.8);font-weight:300;}
+.about-text b{font-weight:700;color:var(--white);}
+.training-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.ti-item{background:var(--gray);padding:12px 14px;}
+.ti-label{font-size:.55rem;color:var(--gray-light);margin-bottom:4px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.ti-value{font-size:.75rem;font-weight:600;}
+
+/* PROGRAMS TAB */
+.program-card{background:var(--gray);border:1px solid var(--gray-mid);padding:20px;margin-bottom:10px;cursor:none;transition:border-color .2s;}
+.program-card:hover{border-color:var(--gray-light);}
+.program-card.featured{border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.03);}
+.pc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.pc-name{font-size:.95rem;font-weight:700;margin-bottom:4px;}
+.pc-desc{font-size:.68rem;color:var(--gray-light);line-height:1.5;}
+.pc-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--gold);flex-shrink:0;}
+.pc-price.free{color:var(--green);font-size:1.1rem;}
+.pc-stats{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;}
+.pc-stat{font-size:.6rem;color:var(--gray-light);}
+.pc-stat b{color:var(--white);}
+.pc-buy{width:100%;background:var(--gold);color:var(--black);border:none;font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px;cursor:none;margin-top:12px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:opacity .2s;}
+.pc-buy:hover{opacity:.85;}
+.pc-buy.free-btn{background:var(--green);}
+
+/* COMPARE BLOCK */
+.compare-block{background:rgba(232,38,11,.04);border:1px solid rgba(232,38,11,.15);padding:20px;margin-bottom:20px;}
+.cb-title{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:14px;}
+.compare-row{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:10px;}
+.cr-you{text-align:right;}
+.cr-them{text-align:left;}
+.cr-exercise{font-size:.58rem;color:var(--gray-light);font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-bottom:4px;}
+.cr-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;}
+.cr-val.win{color:var(--green);}
+.cr-val.lose{color:var(--red);}
+.cr-val.tie{color:var(--gold);}
+.cr-vs{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gray-light);text-align:center;}
+.cr-bar-wrap{margin-top:4px;}
+.cr-bar{height:4px;background:var(--gray-mid);border-radius:2px;overflow:hidden;position:relative;}
+.cr-fill-you{position:absolute;top:0;right:50%;height:100%;background:var(--green);border-radius:2px 0 0 2px;transform-origin:right;}
+.cr-fill-them{position:absolute;top:0;left:50%;height:100%;background:var(--red);border-radius:0 2px 2px 0;transform-origin:left;}
+
+/* MOBILE BOTTOM NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);z-index:400;padding:8px 0 12px;}
+.bn-items{display:flex;justify-content:space-around;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:none;color:var(--gray-light);text-decoration:none;transition:color .2s;font-size:.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.bn-item:hover{color:var(--white);}
+.bn-icon{font-size:1.2rem;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.tab-content.active{animation:fadeIn .25s ease;}
+
+@media(max-width:768px){
+  body{cursor:auto;}
+  .cursor,.cursor-trail{display:none;}
+  nav{padding:12px 16px;}
+  .nav-center{display:none;}
+  .page{grid-template-columns:1fr;}
+  .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--gray-mid);}
+  .profile-hero{height:120px;padding:16px;}
+  .ph-result{font-size:3rem;}
+  .tab-content{padding:20px 16px 80px;}
+  .best-summary{grid-template-columns:1fr;}
+  .training-info{grid-template-columns:1fr;}
+  .compare-row{grid-template-columns:1fr auto 1fr;}
+  .bottom-nav{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-center">
+    <a href="fitorank-feed.html">Лента</a>
+    <span class="nav-sep">/</span>
+    <a href="#">Профили</a>
+    <span class="nav-sep">/</span>
+    <span style="color:var(--white)">Алексей К.</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="avatar-wrap">
+      <div class="avatar">А</div>
+      <div class="online-dot"></div>
+    </div>
+
+    <div class="profile-name">Алексей К.</div>
+    <div class="profile-handle">@aleksey_k</div>
+    <div class="profile-location">📍 Санкт-Петербург</div>
+
+    <div class="badges-row">
+      <span class="badge natural">🌿 Натурал</span>
+      <span class="badge verified">✅ Верифицирован</span>
+      <span class="badge expert">⭐ Эксперт</span>
+    </div>
+
+    <div class="action-btns">
+      <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Следить</button>
+      <button class="btn-challenge" onclick="showChallenge()">⚔️ Бросить вызов</button>
+      <button class="btn-message">✉️ Написать</button>
+    </div>
+
+    <!-- REP -->
+    <div class="rep-block">
+      <div class="rb-top">
+        <span class="rb-label">Репутация</span>
+        <span class="rb-level">🏆 Эксперт</span>
+      </div>
+      <div class="rb-number">1240</div>
+      <div class="rep-bar"><div class="rep-bar-fill" style="width:74%"></div></div>
+      <div class="rep-next">До Легенды: <b>260 REP</b></div>
+    </div>
+
+    <!-- BIO STATS -->
+    <div class="bio-stats">
+      <div class="bs-item">
+        <div class="bs-val">38</div>
+        <div class="bs-label">Лет</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-val">92 кг</div>
+        <div class="bs-label">Вес</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-val">182 см</div>
+        <div class="bs-label">Рост</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-val">11 лет</div>
+        <div class="bs-label">Стаж</div>
+      </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="social-stats">
+      <div class="ss-item">
+        <div class="ss-val">234</div>
+        <div class="ss-label">Подписчиков</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-val">87</div>
+        <div class="ss-label">Подписок</div>
+      </div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="achievements">
+      <div class="ach-title">Достижения</div>
+      <div class="ach-grid">
+        <div class="ach-item earned">
+          <div class="ach-icon">🥇</div>
+          <div class="ach-name">Топ-1 жим</div>
+        </div>
+        <div class="ach-item earned">
+          <div class="ach-icon">⭐</div>
+          <div class="ach-name">Эксперт</div>
+        </div>
+        <div class="ach-item earned">
+          <div class="ach-icon">🔥</div>
+          <div class="ach-name">Стрик 30д</div>
+        </div>
+        <div class="ach-item earned">
+          <div class="ach-icon">🌿</div>
+          <div class="ach-name">Натурал</div>
+        </div>
+        <div class="ach-item earned">
+          <div class="ach-icon">💬</div>
+          <div class="ach-name">Наставник</div>
+        </div>
+        <div class="ach-item earned">
+          <div class="ach-icon">📈</div>
+          <div class="ach-name">+30 кг</div>
+        </div>
+        <div class="ach-item">
+          <div class="ach-icon" style="opacity:.3">🏆</div>
+          <div class="ach-name">Легенда</div>
+        </div>
+        <div class="ach-item">
+          <div class="ach-icon" style="opacity:.3">🌍</div>
+          <div class="ach-name">Топ мира</div>
+        </div>
+      </div>
+    </div>
+
+    <a href="#" class="report-link" onclick="event.preventDefault();alert('Жалоба отправлена на модерацию')">⚑ Пожаловаться на профиль</a>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- HERO — лучший результат -->
+    <div class="profile-hero">
+      <div class="ph-bg-num">172</div>
+      <div>
+        <div class="ph-exercise">Лучший результат · Жим лёжа</div>
+        <div class="ph-result">172 <span class="ph-unit">кг</span></div>
+        <div class="ph-rank"><b>#1</b> в категории · Муж 35–39 · 90–100 кг · Топ <b style="color:var(--green)">98%</b></div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('records',this)">Рекорды</button>
+        <button class="tab" onclick="showTab('progress',this)">Прогресс</button>
+        <button class="tab" onclick="showTab('compare',this)">Сравнить с собой</button>
+        <button class="tab" onclick="showTab('programs',this)">Программы</button>
+        <button class="tab" onclick="showTab('about',this)">О себе</button>
+      </div>
+    </div>
+
+    <!-- TAB: RECORDS -->
+    <div class="tab-content active" id="tab-records">
+
+      <div class="best-summary">
+        <div class="bs-card first">
+          <div class="bsc-exercise">Жим лёжа · 1RM</div>
+          <div class="bsc-result" style="color:var(--gold)">172 кг</div>
+          <div class="bsc-rank">🥇 #1 в категории · 98% доверие</div>
+        </div>
+        <div class="bs-card second">
+          <div class="bsc-exercise">Приседания · 1RM</div>
+          <div class="bsc-result" style="color:#c0c0c0">210 кг</div>
+          <div class="bsc-rank">#3 в категории · 94% доверие</div>
+        </div>
+        <div class="bs-card third">
+          <div class="bsc-exercise">Становая тяга · 1RM</div>
+          <div class="bsc-result" style="color:#cd7f32">240 кг</div>
+          <div class="bsc-rank">#5 в категории · 91% доверие</div>
+        </div>
+      </div>
+
+      <div class="records-filters">
+        <button class="rf-btn active" onclick="setFilter(this)">Все</button>
+        <button class="rf-btn" onclick="setFilter(this)">Жим лёжа</button>
+        <button class="rf-btn" onclick="setFilter(this)">Приседания</button>
+        <button class="rf-btn" onclick="setFilter(this)">Становая</button>
+        <button class="rf-btn" onclick="setFilter(this)">1RM</button>
+        <button class="rf-btn" onclick="setFilter(this)">Rep Max</button>
+      </div>
+
+      <div class="record-card gold-border" onclick="location.href='fitorank-record.html'">
+        <div class="rc-left">
+          <div class="rc-exercise">Жим лёжа · 1RM</div>
+          <div class="rc-result" style="color:var(--gold)">172 кг</div>
+          <div class="rc-meta">
+            <span class="rc-badge type">1RM</span>
+            <span class="rc-badge nat">Натурал</span>
+            <span class="rc-badge clean">Чистая</span>
+          </div>
+          <div class="rc-date" style="margin-top:4px;">15 февраля 2026</div>
+        </div>
+        <div class="rc-right">
+          <div class="rc-rank gold">#1</div>
+          <div class="rc-pct">Топ <b>98%</b></div>
+          <div class="rc-trust">
+            <div class="trust-mini"><div class="tm-fill" style="width:98%"></div></div>
+            <span class="trust-num">98%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="record-card" onclick="location.href='fitorank-record.html'">
+        <div class="rc-left">
+          <div class="rc-exercise">Приседания · 1RM</div>
+          <div class="rc-result">210 кг</div>
+          <div class="rc-meta">
+            <span class="rc-badge type">1RM</span>
+            <span class="rc-badge nat">Натурал</span>
+            <span class="rc-badge clean">Чистая</span>
+          </div>
+          <div class="rc-date" style="margin-top:4px;">2 января 2026</div>
+        </div>
+        <div class="rc-right">
+          <div class="rc-rank silver">#3</div>
+          <div class="rc-pct">Топ <b>92%</b></div>
+          <div class="rc-trust">
+            <div class="trust-mini"><div class="tm-fill" style="width:94%"></div></div>
+            <span class="trust-num">94%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="record-card" onclick="location.href='fitorank-record.html'">
+        <div class="rc-left">
+          <div class="rc-exercise">Становая тяга · 1RM</div>
+          <div class="rc-result">240 кг</div>
+          <div class="rc-meta">
+            <span class="rc-badge type">1RM</span>
+            <span class="rc-badge nat">Натурал</span>
+          </div>
+          <div class="rc-date" style="margin-top:4px;">10 ноября 2025</div>
+        </div>
+        <div class="rc-right">
+          <div class="rc-rank" style="color:var(--white)">#5</div>
+          <div class="rc-pct">Топ <b>88%</b></div>
+          <div class="rc-trust">
+            <div class="trust-mini"><div class="tm-fill" style="width:91%"></div></div>
+            <span class="trust-num">91%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="record-card" onclick="location.href='fitorank-record.html'">
+        <div class="rc-left">
+          <div class="rc-exercise">Подтягивания · Rep Max</div>
+          <div class="rc-result">22 <span style="font-size:.7rem;color:var(--gray-light);font-family:'Montserrat',sans-serif">повт.</span></div>
+          <div class="rc-meta">
+            <span class="rc-badge type">Rep Max</span>
+            <span class="rc-badge nat">Натурал</span>
+            <span class="rc-badge clean">Чистая</span>
+          </div>
+          <div class="rc-date" style="margin-top:4px;">5 октября 2025</div>
+        </div>
+        <div class="rc-right">
+          <div class="rc-rank" style="color:var(--white)">#2</div>
+          <div class="rc-pct">Топ <b>95%</b></div>
+          <div class="rc-trust">
+            <div class="trust-mini"><div class="tm-fill" style="width:96%"></div></div>
+            <span class="trust-num">96%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: PROGRESS -->
+    <div class="tab-content" id="tab-progress">
+
+      <div class="progress-chart">
+        <div class="pc-title">Жим лёжа · История рекордов</div>
+        <div class="chart-bars">
+          <div class="chart-bar-wrap">
+            <div class="chart-val">140</div>
+            <div class="chart-bar" style="height:65%"></div>
+            <div class="chart-date">Янв'24</div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-val">148</div>
+            <div class="chart-bar" style="height:72%"></div>
+            <div class="chart-date">Апр'24</div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-val">155</div>
+            <div class="chart-bar" style="height:80%"></div>
+            <div class="chart-date">Авг'24</div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-val">162</div>
+            <div class="chart-bar" style="height:90%"></div>
+            <div class="chart-date">Ноя'24</div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-val">168</div>
+            <div class="chart-bar" style="height:95%"></div>
+            <div class="chart-date">Янв'25</div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-val">172</div>
+            <div class="chart-bar latest" style="height:100%"></div>
+            <div class="chart-date">Фев'26</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--gray);padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div>
+          <div style="font-size:.55rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.15em;margin-bottom:4px;">Прирост за год</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--green);">+32 кг</div>
+        </div>
+        <div>
+          <div style="font-size:.55rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.15em;margin-bottom:4px;">Рекордов добавлено</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--white);">6</div>
+        </div>
+        <div>
+          <div style="font-size:.55rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.15em;margin-bottom:4px;">Позиция в начале</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--red);">#8 → #1</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: COMPARE -->
+    <div class="tab-content" id="tab-compare">
+
+      <div style="background:rgba(232,38,11,.04);border:1px solid rgba(232,38,11,.1);padding:14px 16px;margin-bottom:20px;font-size:.72rem;color:var(--gray-light);line-height:1.6;">
+        Сравнение твоих лучших результатов с результатами <b style="color:var(--white)">Алексея К.</b> в одних и тех же упражнениях и категориях.
+      </div>
+
+      <div class="compare-block">
+        <div class="cb-title">⚔️ Ты vs Алексей К.</div>
+
+        <div style="font-size:.58rem;color:var(--gray-light);margin-bottom:12px;display:grid;grid-template-columns:1fr auto 1fr;gap:12px;text-align:center;">
+          <span style="text-align:right;color:var(--white);font-weight:700;">Захар М. (ты)</span>
+          <span></span>
+          <span style="text-align:left;color:var(--gold);font-weight:700;">Алексей К.</span>
+        </div>
+
+        <!-- Жим лёжа -->
+        <div style="margin-bottom:16px;">
+          <div class="cr-exercise">Жим лёжа · 1RM</div>
+          <div class="compare-row">
+            <div class="cr-you"><div class="cr-val lose">140</div><div style="font-size:.55rem;color:var(--gray-light)">кг · #7</div></div>
+            <div class="cr-vs">VS</div>
+            <div class="cr-them"><div class="cr-val win" style="color:var(--gold)">172</div><div style="font-size:.55rem;color:var(--gray-light)">кг · #1</div></div>
+          </div>
+          <div class="cr-bar">
+            <div class="cr-fill-you" style="width:40%"></div>
+            <div class="cr-fill-them" style="width:50%"></div>
+          </div>
+          <div style="font-size:.58rem;color:var(--gray-light);margin-top:4px;text-align:center;">Алексей жмёт на <b style="color:var(--red)">+32 кг</b> больше</div>
+        </div>
+
+        <!-- Приседания -->
+        <div style="margin-bottom:16px;">
+          <div class="cr-exercise">Приседания · 1RM</div>
+          <div class="compare-row">
+            <div class="cr-you"><div class="cr-val lose">180</div><div style="font-size:.55rem;color:var(--gray-light)">кг · #6</div></div>
+            <div class="cr-vs">VS</div>
+            <div class="cr-them"><div class="cr-val win" style="color:var(--gold)">210</div><div style="font-size:.55rem;color:var(--gray-light)">кг · #3</div></div>
+          </div>
+          <div class="cr-bar">
+            <div class="cr-fill-you" style="width:42%"></div>
+            <div class="cr-fill-them" style="width:50%"></div>
+          </div>
+          <div style="font-size:.58rem;color:var(--gray-light);margin-top:4px;text-align:center;">Алексей приседает на <b style="color:var(--red)">+30 кг</b> больше</div>
+        </div>
+
+        <!-- Подтягивания -->
+        <div>
+          <div class="cr-exercise">Подтягивания · Rep Max</div>
+          <div class="compare-row">
+            <div class="cr-you"><div class="cr-val win" style="color:var(--green)">25</div><div style="font-size:.55rem;color:var(--gray-light)">повт. · #1</div></div>
+            <div class="cr-vs">VS</div>
+            <div class="cr-them"><div class="cr-val lose">22</div><div style="font-size:.55rem;color:var(--gray-light)">повт. · #2</div></div>
+          </div>
+          <div class="cr-bar">
+            <div class="cr-fill-you" style="width:50%;background:var(--green)"></div>
+            <div class="cr-fill-them" style="width:44%"></div>
+          </div>
+          <div style="font-size:.58rem;color:var(--gray-light);margin-top:4px;text-align:center;">Ты делаешь на <b style="color:var(--green)">+3 повторения</b> больше</div>
+        </div>
+
+      </div>
+
+      <button style="width:100%;background:rgba(232,38,11,.08);border:1px solid rgba(232,38,11,.2);color:var(--red);font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px;cursor:none;transition:all .2s;" onmouseover="this.style.background='rgba(232,38,11,.15)'" onmouseout="this.style.background='rgba(232,38,11,.08)'" onclick="showChallenge()">⚔️ Бросить вызов Алексею</button>
+
+    </div>
+
+    <!-- TAB: PROGRAMS -->
+    <div class="tab-content" id="tab-programs">
+
+      <div style="font-size:.72rem;color:var(--gray-light);margin-bottom:20px;line-height:1.6;">
+        Алексей — <b style="color:var(--white)">Эксперт FitoRank</b>. Его программы проверены сообществом и подкреплены реальными рекордами.
+      </div>
+
+      <div class="program-card featured">
+        <div class="pc-top">
+          <div>
+            <div class="pc-name">Жим лёжа 170+ кг за 6 месяцев</div>
+            <div class="pc-desc">Линейная периодизация для натуралов. Подходит для спортсменов с базой от 120 кг. Подробный дневник тренировок, техника, питание.</div>
+          </div>
+          <div class="pc-price">$29</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat">⭐ <b>4.9</b> рейтинг</div>
+          <div class="pc-stat">👥 <b>87</b> купили</div>
+          <div class="pc-stat">✅ <b>94%</b> доверие</div>
+          <div class="pc-stat">📈 Средний прирост <b>+24 кг</b></div>
+        </div>
+        <button class="pc-buy" onclick="alert('Покупка программы — будет реализована в следующем этапе')">Купить программу — $29</button>
+      </div>
+
+      <div class="program-card">
+        <div class="pc-top">
+          <div>
+            <div class="pc-name">Техника жима — разбор ошибок</div>
+            <div class="pc-desc">Видеокурс. 12 уроков по технике, разбор 20 типичных ошибок, как избежать травм. Для любого уровня.</div>
+          </div>
+          <div class="pc-price">$9</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat">⭐ <b>4.7</b> рейтинг</div>
+          <div class="pc-stat">👥 <b>143</b> купили</div>
+          <div class="pc-stat">✅ <b>91%</b> доверие</div>
+        </div>
+        <button class="pc-buy" onclick="alert('Покупка программы')">Купить — $9</button>
+      </div>
+
+      <div class="program-card">
+        <div class="pc-top">
+          <div>
+            <div class="pc-name">Базовый план тренировок</div>
+            <div class="pc-desc">Бесплатная программа для начинающих. 3 дня в неделю, основные упражнения, прогрессия нагрузки.</div>
+          </div>
+          <div class="pc-price free">FREE</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat">⭐ <b>4.5</b> рейтинг</div>
+          <div class="pc-stat">👥 <b>312</b> скачали</div>
+        </div>
+        <button class="pc-buy free-btn" onclick="alert('Скачать бесплатно')">Скачать бесплатно</button>
+      </div>
+
+    </div>
+
+    <!-- TAB: ABOUT -->
+    <div class="tab-content" id="tab-about">
+
+      <div class="about-section">
+        <div class="as-title">О себе</div>
+        <div class="about-text">
+          Тренируюсь <b>11 лет</b>, последние 4 года целенаправленно работаю над жимом лёжа. Начинал со 100 кг, сейчас 172 кг в натуральном режиме.<br><br>
+          Верю в <b>методичность и технику</b> — не в объём ради объёма. Никогда не использовал фармакологию, это принципиально. Помогаю новичкам в комментариях — спрашивайте.
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="as-title">Тренировки</div>
+        <div class="training-info">
+          <div class="ti-item">
+            <div class="ti-label">Зал</div>
+            <div class="ti-value">Powerhouse Gym · СПб</div>
+          </div>
+          <div class="ti-item">
+            <div class="ti-label">Дней в неделю</div>
+            <div class="ti-value">4 дня</div>
+          </div>
+          <div class="ti-item">
+            <div class="ti-label">Текущая программа</div>
+            <div class="ti-value">Линейная периодизация</div>
+          </div>
+          <div class="ti-item">
+            <div class="ti-label">Цель 2026</div>
+            <div class="ti-value">180 кг жим, 220 кг приседания</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="as-title">Активность</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:var(--gray);padding:12px;text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--red);">47</div>
+            <div style="font-size:.55rem;color:var(--gray-light);">Экспертных оценок</div>
+          </div>
+          <div style="background:var(--gray);padding:12px;text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--green);">312</div>
+            <div style="font-size:.55rem;color:var(--gray-light);">Голосов отдано</div>
+          </div>
+          <div style="background:var(--gray);padding:12px;text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);">89%</div>
+            <div style="font-size:.55rem;color:var(--gray-light);">Точность голосов</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn-items">
+    <a href="fitorank.html" class="bn-item"><span class="bn-icon">🏠</span>Главная</a>
+    <a href="fitorank-feed.html" class="bn-item"><span class="bn-icon">📋</span>Лента</a>
+    <a href="fitorank-leaderboard.html" class="bn-item"><span class="bn-icon">🏆</span>Лидеры</a>
+    <a href="fitorank-notifications.html" class="bn-item"><span class="bn-icon">🔔</span>Уведомления</a>
+    <a href="fitorank-profile.html" class="bn-item"><span class="bn-icon">👤</span>Профиль</a>
+  </div>
+</div>
+
+<script>
+const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-6+'px';cur.style.top=my-6+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setFilter(btn) {
+  document.querySelectorAll('.rf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toggleFollow() {
+  const btn = document.getElementById('followBtn');
+  const following = btn.classList.contains('following');
+  btn.classList.toggle('following');
+  btn.textContent = following ? '+ Следить' : '✓ Подписан';
+}
+
+function showChallenge() {
+  alert('Вызов брошен! Алексей получит уведомление.\n\nВы соревнуетесь в: Жим лёжа · Категория Муж 35–44\n\nЭта механика будет реализована в следующем этапе.');
+}
+</script>
+</body>
+</html>

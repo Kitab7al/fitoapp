@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Создать программу</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:10px;height:10px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);}
+.cursor-trail{width:32px;height:32px;border:1px solid rgba(232,38,11,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .14s ease;transform:translate(-50%,-50%);}
+
+/* ═══ NAV ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;cursor:none;}
+.logo span{color:var(--red);}
+.nav-bc{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-bc a{color:var(--gray-light);text-decoration:none;cursor:none;transition:color .2s;}
+.nav-bc a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-rep{font-size:.6rem;color:var(--gray-light);}
+.nav-rep b{color:var(--gold);}
+.nav-draft{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 14px;cursor:none;transition:all .2s;}
+.nav-draft:hover{border-color:var(--white);color:var(--white);}
+.nav-autosave{font-size:.56rem;color:var(--green);display:flex;align-items:center;gap:4px;}
+
+/* ═══ STEP BAR ═══ */
+.step-bar{position:fixed;top:65px;left:0;right:0;z-index:400;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.step-bar-inner{display:flex;align-items:stretch;height:46px;padding:0 40px;gap:0;}
+.step{display:flex;align-items:center;gap:8px;padding:0 20px 0 0;position:relative;cursor:none;flex:1;}
+.step:not(:last-child)::after{content:'›';position:absolute;right:4px;color:var(--gray-mid);font-size:1rem;}
+.step-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:700;flex-shrink:0;border:1px solid var(--gray-mid);color:var(--gray-light);transition:all .3s;}
+.step-label{font-size:.57rem;font-weight:600;color:var(--gray-light);transition:color .3s;white-space:nowrap;}
+.step.active .step-num{background:var(--red);border-color:var(--red);color:var(--white);}
+.step.active .step-label{color:var(--white);}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:var(--black);}
+.step.done .step-label{color:var(--green);}
+.step-progress{height:2px;background:var(--gray-mid);}
+.step-progress-fill{height:100%;background:var(--red);transition:width .4s ease;}
+
+/* ═══ MODE ROW ═══ */
+.mode-row{position:fixed;top:111px;left:0;right:0;z-index:399;background:rgba(8,8,8,.95);border-bottom:1px solid var(--gray-mid);padding:7px 40px;}
+.mode-inner{display:flex;gap:6px;max-width:920px;}
+.ms-btn{flex:1;padding:8px 14px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--gray-mid);background:transparent;color:var(--gray-light);cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ms-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
+.ms-req{font-size:.46rem;font-weight:400;letter-spacing:.04em;opacity:.7;}
+
+/* ═══ LAYOUT ═══ */
+.app{padding-top:157px;}
+.creator-wrap{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 157px);}
+.form-area{padding:28px 40px 120px;max-width:920px;}
+.sidebar{background:rgba(12,12,12,.98);border-left:1px solid var(--gray-mid);padding:24px 20px;position:sticky;top:157px;height:calc(100vh - 157px);overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+
+/* ═══ FORM BASE ═══ */
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.fs-tag{font-size:.5rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:4px;}
+.fs-title{font-size:1.05rem;font-weight:700;margin-bottom:6px;}
+.fs-desc{font-size:.65rem;color:var(--gray-light);font-weight:300;line-height:1.55;margin-bottom:20px;}
+.divider{height:1px;background:var(--gray-mid);margin:22px 0;}
+
+.field{margin-bottom:14px;}
+.field-label{font-size:.54rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:5px;display:flex;align-items:center;gap:7px;}
+.field-label .req{color:var(--red);}
+.field-label .tip{font-size:.48rem;font-weight:400;letter-spacing:.04em;text-transform:none;background:var(--gray-mid);padding:1px 6px;color:var(--gray-light);}
+.field-hint{font-size:.57rem;color:var(--gray-light);margin-top:4px;line-height:1.5;font-style:italic;}
+
+input[type=text],input[type=number],textarea,select{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:10px 12px;outline:none;transition:border-color .2s;cursor:none;}
+input:focus,textarea:focus,select:focus{border-color:var(--red);}
+input::placeholder,textarea::placeholder{color:var(--gray-light);font-style:italic;}
+textarea{resize:vertical;min-height:80px;line-height:1.6;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-color:var(--gray);}
+select option{background:var(--gray);}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+.pill-group{display:flex;flex-wrap:wrap;gap:5px;}
+.pill{padding:6px 12px;font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--gray-mid);color:var(--gray-light);cursor:none;transition:all .2s;background:transparent;}
+.pill:hover{border-color:var(--gray-light);color:var(--white);}
+.pill.sel{background:var(--red);border-color:var(--red);color:var(--white);}
+.pill.sel-green{background:var(--green);border-color:var(--green);color:var(--black);}
+.pill.sel-gold{background:var(--gold);border-color:var(--gold);color:var(--black);}
+
+.inline-alert{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:9px 12px;font-size:.62rem;color:var(--gold);line-height:1.55;margin-bottom:14px;display:flex;gap:8px;}
+.inline-alert.blue{background:rgba(74,158,255,.05);border-color:rgba(74,158,255,.15);color:var(--blue);}
+.inline-alert.green{background:rgba(61,220,132,.05);border-color:rgba(61,220,132,.15);color:var(--green);}
+
+/* ═══ TYPE CARDS ═══ */
+.type-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.type-card{background:var(--gray);border:1px solid var(--gray-mid);padding:14px;cursor:none;transition:all .2s;position:relative;}
+.type-card:hover{border-color:var(--gray-light);}
+.type-card.sel{border-color:var(--red);background:rgba(232,38,11,.05);}
+.type-card.sel::after{content:'✓';position:absolute;top:8px;right:10px;font-size:.65rem;color:var(--red);font-weight:700;}
+.tc-icon{font-size:1.2rem;margin-bottom:5px;}
+.tc-name{font-size:.7rem;font-weight:700;margin-bottom:3px;}
+.tc-desc{font-size:.56rem;color:var(--gray-light);line-height:1.4;}
+
+/* ═══ EXERCISE FIELD ═══ */
+.ex-field-wrap{position:relative;}
+.ex-field-input{cursor:none!important;}
+.ex-selected-tag{display:flex;align-items:center;justify-content:space-between;background:rgba(61,220,132,.06);border:1px solid rgba(61,220,132,.2);padding:9px 12px;margin-top:6px;}
+.est-left{display:flex;align-items:center;gap:8px;}
+.est-badge{font-size:.46rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border:1px solid;}
+.est-name{font-size:.7rem;font-weight:700;color:var(--green);}
+.est-cat{font-size:.56rem;color:var(--gray-light);}
+.est-clear{color:var(--gray-light);cursor:none;font-size:.7rem;background:none;border:none;transition:color .2s;}
+.est-clear:hover{color:var(--red);}
+
+/* ═══ WEIGHT METHOD (Подход А) ═══ */
+.wm-section{margin-bottom:20px;}
+.wm-title{font-size:.54rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;}
+.wm-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.wm-card{background:var(--gray);border:2px solid var(--gray-mid);padding:12px;cursor:none;transition:all .2s;text-align:center;}
+.wm-card:hover{border-color:var(--gray-light);}
+.wm-card.sel{border-color:var(--blue);background:rgba(74,158,255,.06);}
+.wm-icon{font-size:1.4rem;margin-bottom:5px;}
+.wm-name{font-size:.65rem;font-weight:700;margin-bottom:3px;}
+.wm-example{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--blue);}
+.wm-hint{font-size:.52rem;color:var(--gray-light);margin-top:2px;}
+
+/* RPE/1RM шпаргалка */
+.cheatsheet{background:rgba(74,158,255,.04);border:1px solid rgba(74,158,255,.12);padding:14px;margin-top:12px;}
+.cs-title{font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:none;}
+.cs-toggle{font-size:.5rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--gray-light);}
+.cs-body{display:none;}
+.cs-body.open{display:block;}
+.cs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+.cs-col-title{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+.cs-row{display:flex;justify-content:space-between;font-size:.6rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.cs-row:last-child{border-bottom:none;}
+.cs-key{color:var(--blue);font-weight:700;}
+.cs-val{color:rgba(245,242,238,.7);}
+.cs-note{font-size:.58rem;color:var(--gray-light);line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
+
+/* ═══ BLOCKS & WEEKS ═══ */
+.blocks-list{display:flex;flex-direction:column;gap:10px;}
+.block-card{background:var(--gray);border:1px solid var(--gray-mid);overflow:hidden;}
+.block-card.open{border-color:rgba(232,38,11,.2);}
+.bc-head{padding:12px 15px;display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;cursor:none;transition:background .15s;}
+.bc-head:hover{background:rgba(255,255,255,.02);}
+.bc-num{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red);}
+.bc-title-input{background:transparent;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;width:100%;outline:none;cursor:none;}
+.bc-title-input::placeholder{color:var(--gray-light);font-weight:400;font-style:italic;}
+.bc-meta{font-size:.55rem;color:var(--gray-light);white-space:nowrap;}
+.bc-arr{font-size:.65rem;color:var(--gray-light);transition:transform .2s;padding:2px 6px;}
+.bc-arr.open{transform:rotate(180deg);}
+.bc-body{display:none;border-top:1px solid rgba(255,255,255,.05);}
+.bc-body.open{display:block;}
+
+.weeks-list{display:flex;flex-direction:column;gap:4px;padding:10px 12px;}
+.week-card{background:var(--black);border:1px solid var(--gray-mid);overflow:hidden;}
+.week-card.open{border-color:rgba(245,242,238,.12);}
+.week-card.deload{border-color:rgba(74,158,255,.15);background:rgba(74,158,255,.02);}
+.wc-head{padding:10px 13px;display:grid;grid-template-columns:56px 1fr auto auto auto;gap:10px;align-items:center;cursor:none;}
+.wc-head:hover{background:rgba(255,255,255,.02);}
+.wc-n{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--gray-light);}
+.wc-ti input{background:transparent;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.67rem;font-weight:600;width:100%;outline:none;cursor:none;}
+.wc-ti input::placeholder{color:var(--gray-light);font-weight:400;font-style:italic;}
+.wc-deload-btn{font-size:.46rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border:1px solid;cursor:none;background:transparent;white-space:nowrap;transition:all .2s;}
+.wc-deload-btn.normal{color:var(--gray-light);border-color:var(--gray-mid);}
+.wc-deload-btn.normal:hover{color:var(--blue);border-color:var(--blue);}
+.wc-deload-btn.deload{color:var(--blue);border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.wc-arr{font-size:.6rem;color:var(--gray-light);transition:transform .2s;}
+.wc-arr.open{transform:rotate(180deg);}
+.wc-body{display:none;padding:10px 12px 12px;border-top:1px solid rgba(255,255,255,.05);}
+.wc-body.open{display:block;}
+
+/* Days */
+.days-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.day-card{background:var(--gray);border:1px solid var(--gray-mid);padding:11px 12px;}
+.day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.day-label-input{background:transparent;border:none;color:var(--gold);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;outline:none;cursor:none;width:120px;}
+.day-actions{display:flex;gap:6px;align-items:center;}
+.day-add-ex{background:none;border:1px solid rgba(74,158,255,.3);color:var(--blue);font-family:'Montserrat',sans-serif;font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;cursor:none;transition:all .2s;}
+.day-add-ex:hover{background:rgba(74,158,255,.1);}
+.day-del{background:none;border:none;color:var(--gray-mid);font-size:.7rem;cursor:none;transition:color .2s;}
+.day-del:hover{color:var(--red);}
+
+/* Exercise rows */
+.ex-rows{display:flex;flex-direction:column;gap:4px;}
+.ex-row{display:grid;grid-template-columns:1fr 70px 90px 70px 24px;gap:6px;align-items:center;}
+.ex-row-name{font-size:.65rem;font-weight:600;display:flex;align-items:center;gap:5px;}
+.ex-lvl-dot{font-size:.65rem;}
+.ex-row input{padding:6px 8px;font-size:.65rem;}
+.ex-row-del{background:none;border:none;color:var(--gray-mid);cursor:none;font-size:.7rem;transition:color .2s;}
+.ex-row-del:hover{color:var(--red);}
+.ex-row-header{display:grid;grid-template-columns:1fr 70px 90px 70px 24px;gap:6px;padding:0 0 4px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:4px;}
+.ex-row-header span{font-size:.46rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);}
+
+/* Weight type selector per exercise */
+.wt-select{background:var(--black);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.6rem;padding:6px 8px;outline:none;cursor:none;width:100%;}
+
+.add-day-btn,.add-week-btn,.add-block-btn{background:transparent;border:1px dashed var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:8px;width:100%;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.add-day-btn:hover{border-color:rgba(74,158,255,.4);color:var(--blue);}
+.add-week-btn:hover{border-color:var(--gray-light);color:var(--white);}
+.add-block-btn{margin-top:8px;border-color:rgba(232,38,11,.2);}
+.add-block-btn:hover{border-color:var(--red);color:var(--red);}
+
+.wc-footer{display:flex;gap:6px;margin-top:8px;}
+.wc-btn{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.5rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;cursor:none;transition:all .2s;}
+.wc-btn:hover{border-color:var(--white);color:var(--white);}
+.wc-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* ═══ RULES ═══ */
+.rule-block{background:var(--gray);padding:16px;margin-bottom:10px;}
+.rb-head{font-size:.56rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:12px;}
+.rb-head.red{color:var(--red);}
+.rb-head.gold{color:var(--gold);}
+.rb-head.green{color:var(--green);}
+.rule-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.rule-row:last-child{border-bottom:none;}
+.rr-txt{font-size:.65rem;color:rgba(245,242,238,.8);}
+.rr-txt small{font-size:.56rem;color:var(--gray-light);display:block;margin-top:1px;}
+.rr-inputs{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.rr-inputs input{width:46px;background:var(--black);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.7rem;padding:5px 7px;outline:none;text-align:center;cursor:none;}
+.rr-inputs input:focus{border-color:var(--red);}
+.rr-inputs span{font-size:.58rem;color:var(--gray-light);white-space:nowrap;}
+
+/* ═══ PRICING ═══ */
+.price-opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.price-opt{background:var(--gray);border:1px solid var(--gray-mid);padding:13px;cursor:none;transition:all .2s;position:relative;}
+.price-opt:hover{border-color:var(--gray-light);}
+.price-opt.sel{border-color:var(--green);}
+.price-opt.sel::after{content:'✓';position:absolute;top:8px;right:10px;font-size:.65rem;color:var(--green);font-weight:700;}
+.po-icon{font-size:1.2rem;margin-bottom:4px;}
+.po-name{font-size:.7rem;font-weight:700;margin-bottom:3px;}
+.po-desc{font-size:.56rem;color:var(--gray-light);line-height:1.4;}
+
+.commission-box{background:var(--black);border:1px solid var(--gray-mid);padding:14px 16px;margin-top:10px;}
+.cb-title{font-size:.5rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.cb-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.cb-row:last-child{border-bottom:none;}
+.cb-label{font-size:.63rem;color:rgba(245,242,238,.7);}
+.cb-val{font-size:.7rem;font-weight:700;}
+.cb-val.green{color:var(--green);}
+.cb-val.red{color:var(--red);}
+.cb-val.big{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--green);}
+
+/* ═══ CHECKLIST ═══ */
+.checklist{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;margin-top:16px;}
+.cl-title{font-size:.52rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.cl-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.65rem;}
+.cl-item:last-child{border-bottom:none;}
+.cl-icon{font-size:.85rem;flex-shrink:0;width:20px;text-align:center;}
+.cl-text{flex:1;}
+.cl-status{font-size:.55rem;font-weight:700;white-space:nowrap;}
+.cl-status.ok{color:var(--green);}
+.cl-status.warn{color:var(--gold);}
+.cl-status.err{color:var(--red);}
+
+/* ═══ BOTTOM BAR ═══ */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.98);border-top:1px solid var(--gray-mid);padding:11px 40px;z-index:400;display:flex;align-items:center;justify-content:space-between;}
+.bb-left{display:flex;align-items:center;gap:10px;}
+.bb-right{display:flex;gap:7px;}
+.btn-back{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 18px;cursor:none;transition:all .2s;clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);}
+.btn-back:hover{border-color:var(--white);color:var(--white);}
+.btn-preview-bar{background:transparent;border:1px solid rgba(74,158,255,.4);color:var(--blue);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;cursor:none;transition:all .2s;}
+.btn-preview-bar:hover{background:rgba(74,158,255,.08);}
+.btn-next{background:var(--red);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;cursor:none;transition:background .2s;clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);}
+.btn-next:hover{background:var(--red-dark);}
+.btn-publish{background:var(--green);color:var(--black);}
+.btn-publish:hover{background:#2ab868;}
+.btn-publish:disabled{background:var(--gray-mid);color:var(--gray-light);cursor:not-allowed;}
+
+/* ═══ SIDEBAR ═══ */
+.sb-preview{background:var(--black);border:1px solid var(--gray-mid);}
+.sb-preview-label{font-size:.5rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);padding:9px 12px;border-bottom:1px solid var(--gray-mid);}
+.sb-preview-body{padding:12px;}
+.sbp-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.sbp-tag{font-size:.44rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border:1px solid;}
+.sbp-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;line-height:1;margin-bottom:4px;}
+.sbp-title.ph{color:var(--gray-mid);}
+.sbp-meta{font-size:.56rem;color:var(--gray-light);line-height:1.5;}
+.sbp-price{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--green);margin-top:6px;}
+
+.sb-status{background:var(--black);border:1px solid var(--gray-mid);padding:13px;}
+.sb-status-title{font-size:.5rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;}
+.sb-status-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.sb-status-key{font-size:.58rem;color:var(--gray-light);}
+.sb-status-val{font-size:.58rem;font-weight:700;}
+
+.sb-tip{background:rgba(74,158,255,.04);border:1px solid rgba(74,158,255,.12);padding:12px;}
+.sb-tip-icon{font-size:.9rem;margin-bottom:5px;}
+.sb-tip-title{font-size:.56rem;font-weight:700;color:var(--blue);margin-bottom:5px;}
+.sb-tip-text{font-size:.58rem;color:rgba(245,242,238,.55);line-height:1.6;}
+
+.sb-rep{background:rgba(245,200,66,.04);border:1px solid rgba(245,200,66,.12);padding:12px;}
+.sb-rep-title{font-size:.56rem;font-weight:700;color:var(--gold);margin-bottom:8px;}
+.sb-rep-row{display:flex;justify-content:space-between;font-size:.58rem;margin-bottom:3px;}
+.sb-rep-label{color:rgba(245,242,238,.55);}
+.sb-rep-val{font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:var(--gold);}
+
+/* ═══ PREVIEW OVERLAY ═══ */
+.preview-overlay{position:fixed;inset:0;background:var(--black);z-index:600;display:none;overflow-y:auto;}
+.preview-overlay.vis{display:block;}
+.preview-bar{position:sticky;top:0;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);padding:11px 40px;display:flex;align-items:center;justify-content:space-between;z-index:10;}
+.pb-label{font-size:.56rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
+.pb-label span{color:var(--gray-light);font-weight:400;}
+.pb-close{background:var(--red);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;cursor:none;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
+.prev-content{max-width:800px;margin:0 auto;padding:32px 40px 80px;}
+
+/* ═══ EXERCISE MODAL ═══ */
+.ex-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:700;display:none;align-items:center;justify-content:center;}
+.ex-modal.vis{display:flex;}
+.ex-inner{background:var(--gray);width:520px;max-height:70vh;display:flex;flex-direction:column;border:1px solid var(--gray-mid);}
+.em-head{padding:16px;border-bottom:1px solid var(--gray-mid);}
+.em-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.em-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.em-close{background:transparent;border:none;color:var(--gray-light);font-size:1rem;cursor:none;transition:color .2s;}
+.em-close:hover{color:var(--white);}
+.em-search{width:100%;background:var(--black);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:9px 12px;outline:none;}
+.em-search:focus{border-color:var(--red);}
+.em-filters{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;}
+.em-f{font-size:.48rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--gray-mid);color:var(--gray-light);cursor:none;background:transparent;transition:all .2s;}
+.em-f.active{background:var(--red);border-color:var(--red);color:var(--white);}
+.em-list{overflow-y:auto;padding:4px;}
+.em-item{padding:9px 13px;cursor:none;transition:background .12s;display:flex;align-items:center;justify-content:space-between;}
+.em-item:hover{background:var(--black);}
+.em-item-name{font-size:.68rem;font-weight:700;}
+.em-item-meta{font-size:.54rem;color:var(--gray-light);margin-top:1px;}
+.em-lvl{font-size:.46rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+    <div class="nav-bc">
+      <a href="fitorank-profile.html">Мои программы</a>
+      <span class="nav-sep">/</span>
+      <span style="color:var(--white)">Новая программа</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-autosave" id="autosaveIndicator">✓ Автосохранение</div>
+    <button class="nav-draft" onclick="saveDraft()">💾 Черновик</button>
+    <div class="nav-rep">🔥 Легенда · <b>1240 REP</b></div>
+  </div>
+</nav>
+
+<!-- STEP BAR -->
+<div class="step-bar">
+  <div class="step-bar-inner">
+    <div class="step active" id="s1"><div class="step-num">1</div><div class="step-label">Паспорт</div></div>
+    <div class="step" id="s2"><div class="step-num">2</div><div class="step-label">Веса</div></div>
+    <div class="step" id="s3"><div class="step-num">3</div><div class="step-label">Структура</div></div>
+    <div class="step" id="s4"><div class="step-num">4</div><div class="step-label">Правила</div></div>
+    <div class="step" id="s5"><div class="step-num">5</div><div class="step-label">Цена</div></div>
+    <div class="step" id="s6"><div class="step-num">👁</div><div class="step-label">Публикация</div></div>
+  </div>
+  <div class="step-progress"><div class="step-progress-fill" id="spf" style="width:17%"></div></div>
+</div>
+
+<!-- MODE ROW -->
+<div class="mode-row">
+  <div class="mode-inner">
+    <button class="ms-btn active" id="btnS" onclick="setMode('s')">📋 Структурированный <span class="ms-req">· Авторитет+</span></button>
+    <button class="ms-btn" id="btnF" onclick="setMode('f')">✏️ Свободный <span class="ms-req">· Эксперт+</span></button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+<div class="creator-wrap">
+
+<!-- ═══ FORM AREA ═══ -->
+<div class="form-area">
+
+<!-- ══ SCREEN 1: ПАСПОРТ ══ -->
+<div class="screen active" id="sc1">
+  <div id="modeS1">
+    <div class="fs-tag">Шаг 1 из 5</div>
+    <div class="fs-title">Основная информация</div>
+    <div class="fs-desc">Паспорт программы — виден покупателю на карточке и странице.</div>
+
+    <div class="field">
+      <div class="field-label">Название <span class="req">*</span></div>
+      <input type="text" id="fTitle" placeholder="Жим 170+ кг за 6 месяцев" oninput="syncPreview()">
+      <div class="field-hint">Конкретика продаёт. Цифра в названии = +40% конверсии.</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Питч — одна строка <span class="req">*</span> <span class="tip">Видна в каталоге</span></div>
+      <input type="text" id="fPitch" placeholder="Линейная периодизация для натуралов. Проверено на себе." oninput="syncPreview()">
+    </div>
+    <div class="field">
+      <div class="field-label">Описание <span class="req">*</span></div>
+      <textarea id="fDesc" placeholder="Расскажи о программе, методологии, своём опыте..."></textarea>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="font-size:.72rem;font-weight:700;margin-bottom:6px;">Тип программы</div>
+    <div class="fs-desc">Живая + Верифицированная — самая сильная комбинация для продаж.</div>
+    <div class="type-cards">
+      <div class="type-card" onclick="this.classList.toggle('sel')">
+        <div class="tc-icon">📋</div><div class="tc-name">Стандартная</div><div class="tc-desc">Шаблон + дневник тренировок</div>
+      </div>
+      <div class="type-card sel" onclick="this.classList.toggle('sel')">
+        <div class="tc-icon">✅</div><div class="tc-name">Верифицированная</div><div class="tc-desc">Автоотзывы с рекордами участников</div>
+      </div>
+      <div class="type-card" onclick="this.classList.toggle('sel');toggleLiveAlert(this)">
+        <div class="tc-icon">🔴</div><div class="tc-name">Живая</div><div class="tc-desc">Сопровождение автора · 48ч</div>
+      </div>
+    </div>
+    <div class="inline-alert" id="liveAlert" style="display:none">⚠️ Живая программа: обязан отвечать в течение 48 ч. При нарушении — покупатель может запросить возврат.</div>
+
+    <div class="divider"></div>
+
+    <div style="font-size:.72rem;font-weight:700;margin-bottom:14px;">Упражнение и параметры</div>
+    <div class="row2">
+      <div class="field">
+        <div class="field-label">Целевое упражнение <span class="req">*</span></div>
+        <div class="ex-field-wrap">
+          <input type="text" id="fExercise" placeholder="Выбрать из базы..." onclick="openExModal('passport')" readonly class="ex-field-input">
+          <div class="field-hint">Только из базы FitoRank. Уровень отображается автоматически.</div>
+          <div class="ex-selected-tag" id="exSelTag" style="display:none">
+            <div class="est-left">
+              <span class="est-badge" id="exSelBadge"></span>
+              <div><div class="est-name" id="exSelName"></div><div class="est-cat" id="exSelCat"></div></div>
+            </div>
+            <button class="est-clear" onclick="clearEx()">✕ Убрать</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Методология <span class="req">*</span></div>
+        <select id="fMethod">
+          <option value="linear" selected>Линейная периодизация</option>
+          <option value="wave">Линейно-волновая</option>
+          <option value="block">Блоковая периодизация</option>
+          <option value="conjugate">Сопряжённый метод</option>
+          <option value="free">Авторская методология</option>
+        </select>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field">
+        <div class="field-label">Старт от (кг) <span class="req">*</span></div>
+        <input type="number" value="100" id="fFrom"><div class="field-hint">Мин. порог входа</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Цель (кг) <span class="req">*</span></div>
+        <input type="number" value="170" id="fGoal" oninput="syncPreview()">
+      </div>
+      <div class="field">
+        <div class="field-label">Длительность</div>
+        <div style="display:flex;align-items:center;gap:6px;"><input type="number" value="12" id="fWeeks" style="flex:1;" oninput="syncPreview()"><span style="font-size:.63rem;color:var(--gray-light);">нед</span></div>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field">
+        <div class="field-label">Тренировок в неделю</div>
+        <div class="pill-group" id="pgDays">
+          <button class="pill" onclick="selDays(this)">2</button>
+          <button class="pill sel" onclick="selDays(this)">3</button>
+          <button class="pill" onclick="selDays(this)">4</button>
+          <button class="pill" onclick="selDays(this)">5</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Стаж атлета</div>
+        <select><option>1–2 года</option><option>3–5 лет</option><option selected>5+ лет</option></select>
+      </div>
+      <div class="field">
+        <div class="field-label">Натурал / Открытая</div>
+        <div class="pill-group">
+          <button class="pill sel-green sel" onclick="tPill(this)">🌿 Натурал</button>
+          <button class="pill" onclick="tPill(this)">⚗️ Открытая</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREE MODE SCREEN 1 -->
+  <div id="modeF1" style="display:none">
+    <div class="inline-alert">✏️ Свободный режим — Эксперт+ (1000+ REP). Паспорт обязателен — без него невозможно построить дневник.</div>
+    <div style="background:rgba(232,38,11,.04);border:1px solid rgba(232,38,11,.12);padding:14px;margin-bottom:16px;">
+      <div style="font-size:.52rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:10px;">⚡ Паспорт — обязательно</div>
+      <div class="row3">
+        <div><label style="font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);display:block;margin-bottom:3px;">Упражнение *</label><input type="text" placeholder="Жим лёжа" onclick="openExModal('free')" readonly style="font-size:.68rem;"></div>
+        <div><label style="font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);display:block;margin-bottom:3px;">Цель (кг) *</label><input type="number" placeholder="170" style="font-size:.68rem;"></div>
+        <div><label style="font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);display:block;margin-bottom:3px;">Недели *</label><input type="number" placeholder="12" style="font-size:.68rem;"></div>
+      </div>
+    </div>
+    <div style="font-size:.72rem;font-weight:700;margin-bottom:8px;">Содержание программы</div>
+    <div style="font-size:.63rem;color:var(--gray-light);margin-bottom:12px;">Пиши в свободной форме. Markdown поддерживается.</div>
+    <div style="background:var(--gray);border:1px solid var(--gray-mid);">
+      <div style="display:flex;gap:4px;padding:9px 11px;border-bottom:1px solid var(--gray-mid);flex-wrap:wrap;">
+        <button style="background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:700;padding:3px 8px;cursor:none;" onclick="ins('**','**')"><b>Б</b></button>
+        <button style="background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.54rem;padding:3px 8px;cursor:none;" onclick="ins('*','*')"><i>К</i></button>
+        <button style="background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:700;padding:3px 8px;cursor:none;" onclick="ins('## ','')">H2</button>
+        <button style="background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:700;padding:3px 8px;cursor:none;" onclick="ins('- ','')">Список</button>
+        <button style="background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:700;padding:3px 8px;cursor:none;" onclick="ins('| Нед | Упр | Сеты | % 1RM |\n|---|---|---|---|\n| 1 | Жим | 5×5 | 70% |\n','')">Таблица</button>
+      </div>
+      <textarea id="fFreeEditor" style="background:var(--black);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.7rem;padding:14px;width:100%;min-height:260px;outline:none;resize:vertical;line-height:1.8;" placeholder="## Блок 1 — Накопление&#10;Недели 1–4&#10;&#10;- Жим лёжа: 5×5 · 70% от 1RM&#10;..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: ВЕСА (Подход А) ══ -->
+<div class="screen" id="sc2">
+  <div class="fs-tag">Шаг 2 из 5</div>
+  <div class="fs-title">Система весов</div>
+  <div class="fs-desc">Подход А: автор задаёт % от 1RM или RPE. Атлет вводит свой 1RM один раз — дневник рассчитывает рабочие веса автоматически. Форматы можно комбинировать.</div>
+
+  <div class="wm-section">
+    <div class="wm-title">Основной формат записи весов в программе</div>
+    <div class="wm-cards">
+      <div class="wm-card sel" onclick="selWM(this,'pct')">
+        <div class="wm-icon">📊</div>
+        <div class="wm-name">% от 1RM</div>
+        <div class="wm-example">5×5 @ 70%</div>
+        <div class="wm-hint">Точная периодизация</div>
+      </div>
+      <div class="wm-card" onclick="selWM(this,'rpe')">
+        <div class="wm-icon">🎯</div>
+        <div class="wm-name">RPE</div>
+        <div class="wm-example">4×4 @ RPE 8</div>
+        <div class="wm-hint">Авторегуляция нагрузки</div>
+      </div>
+      <div class="wm-card" onclick="selWM(this,'fixed')">
+        <div class="wm-icon">🔢</div>
+        <div class="wm-name">Фиксированный</div>
+        <div class="wm-example">3×10 @ 60 кг</div>
+        <div class="wm-hint">Вспомогательные упр.</div>
+      </div>
+    </div>
+    <div class="inline-alert blue">💡 Можно комбинировать форматы — для каждого упражнения в структуре выбирается свой тип. Например: жим лёжа в % от 1RM, изоляция в RPE.</div>
+  </div>
+
+  <!-- Тестовая неделя -->
+  <div class="divider"></div>
+  <div style="font-size:.72rem;font-weight:700;margin-bottom:6px;">Определение 1RM покупателя</div>
+  <div class="fs-desc">Как атлет узнает свой 1RM перед началом программы?</div>
+  <div class="pill-group" style="margin-bottom:8px;">
+    <button class="pill sel" onclick="tPill(this)">✅ Тестовая неделя в программе</button>
+    <button class="pill" onclick="tPill(this)">Покупатель знает свой 1RM</button>
+    <button class="pill" onclick="tPill(this)">Протокол AMRAP (расчёт по формуле)</button>
+  </div>
+  <div class="field-hint">При выборе «Тестовая неделя» — дневник начнётся с протокола определения 1RM, результат автоматически подставится во все расчёты.</div>
+
+  <!-- Шпаргалка -->
+  <div class="divider"></div>
+  <div class="cheatsheet">
+    <div class="cs-title" onclick="toggleCheatsheet()">
+      📖 Шпаргалка: % 1RM и RPE — как правильно расставлять
+      <span class="cs-toggle" id="csTgl">▼ Развернуть</span>
+    </div>
+    <div class="cs-body" id="csBody">
+      <div class="cs-grid">
+        <div>
+          <div class="cs-col-title">% от 1RM → интенсивность</div>
+          <div class="cs-row"><span class="cs-key">50–60%</span><span class="cs-val">Разминка / техника</span></div>
+          <div class="cs-row"><span class="cs-key">65–70%</span><span class="cs-val">Объём · GPP</span></div>
+          <div class="cs-row"><span class="cs-key">75–80%</span><span class="cs-val">Основная работа</span></div>
+          <div class="cs-row"><span class="cs-key">85–90%</span><span class="cs-val">Силовые / пик</span></div>
+          <div class="cs-row"><span class="cs-key">90–95%</span><span class="cs-val">Соревновательные</span></div>
+          <div class="cs-row"><span class="cs-key">95–100%</span><span class="cs-val">1RM / тест</span></div>
+        </div>
+        <div>
+          <div class="cs-col-title">RPE → ощущение нагрузки</div>
+          <div class="cs-row"><span class="cs-key">RPE 6</span><span class="cs-val">Легко, 4+ в запасе</span></div>
+          <div class="cs-row"><span class="cs-key">RPE 7</span><span class="cs-val">Умеренно, 3 в запасе</span></div>
+          <div class="cs-row"><span class="cs-key">RPE 8</span><span class="cs-val">Тяжело, 2 в запасе</span></div>
+          <div class="cs-row"><span class="cs-key">RPE 9</span><span class="cs-val">Очень тяжело, 1</span></div>
+          <div class="cs-row"><span class="cs-key">RPE 10</span><span class="cs-val">Максимум, отказ</span></div>
+          <div class="cs-row"><span class="cs-key">@9+ → ≈90%+ 1RM</span><span class="cs-val">Пересчёт</span></div>
+        </div>
+      </div>
+      <div class="cs-note">
+        <b style="color:var(--white);">Рекомендация для натуралов:</b> Основные подъёмы 75–85%, вспомогательные RPE 7–8. Не используй 90%+ чаще 1 раза в 2 недели — риск травмы и перетренированности.
+      </div>
+    </div>
+  </div>
+
+  <!-- Весовые категории -->
+  <div class="divider"></div>
+  <div style="font-size:.72rem;font-weight:700;margin-bottom:6px;">Весовые категории</div>
+  <div class="fs-desc">Задай стартовый % от 1RM и шаг прогрессии для каждой категории. Дневник пересчитывает рабочие веса автоматически.</div>
+  <div class="inline-alert">💡 Точная адаптация под категорию → выше результаты → больше отзывов → больше продаж.</div>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
+    <thead><tr>
+      <th style="background:var(--gray-mid);font-size:.48rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);padding:8px 12px;text-align:left;">Категория</th>
+      <th style="background:var(--gray-mid);font-size:.48rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);padding:8px 12px;text-align:left;">Старт % 1RM</th>
+      <th style="background:var(--gray-mid);font-size:.48rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);padding:8px 12px;text-align:left;">Шаг кг/нед</th>
+      <th style="background:var(--gray-mid);font-size:.48rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);padding:8px 12px;text-align:left;">Пример 1RM=110кг</th>
+    </tr></thead>
+    <tbody id="catTbody">
+      <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:0"><input type="text" value="Муж до 75 кг" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:0"><input type="number" value="65" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" oninput="calcCatEx(this)" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:0"><input type="number" value="2.5" step="0.5" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:9px 12px;font-size:.62rem;color:var(--gray-light);">→ нед.1 <b style="color:var(--gold)">71.5 кг</b></td></tr>
+      <tr style="background:rgba(61,220,132,.02);border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:0"><input type="text" value="Муж 83–93 кг ✓" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:0"><input type="number" value="70" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" oninput="calcCatEx(this)" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:0"><input type="number" value="2.5" step="0.5" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:9px 12px;font-size:.62rem;color:var(--gray-light);">→ нед.1 <b style="color:var(--gold)">77 кг</b></td></tr>
+      <tr><td style="padding:0"><input type="text" value="Муж 100+ кг" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:0"><input type="number" value="72" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" oninput="calcCatEx(this)" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:0"><input type="number" value="2.5" step="0.5" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" onfocus="this.style.background='rgba(232,38,11,.04)'" onblur="this.style.background='transparent'"></td><td style="padding:9px 12px;font-size:.62rem;color:var(--gray-light);">→ нед.1 <b style="color:var(--gold)">79.2 кг</b></td></tr>
+    </tbody>
+  </table>
+  <button class="add-week-btn" onclick="addCatRow()" style="margin-bottom:0;">+ Добавить категорию</button>
+</div>
+
+<!-- ══ SCREEN 3: СТРУКТУРА ══ -->
+<div class="screen" id="sc3">
+  <div class="fs-tag">Шаг 3 из 5</div>
+  <div class="fs-title">Структура программы</div>
+  <div class="fs-desc">Организуй программу по блокам. Каждый блок содержит недели, каждая неделя — дни, каждый день — упражнения с заданным типом нагрузки.</div>
+  <div class="inline-alert">💡 Заполни первую неделю подробно → скопируй → отредактируй следующие.</div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div style="font-size:.62rem;color:var(--gray-light);"><b id="totalWeeksLbl" style="color:var(--white)">3</b> недели</div>
+    <div style="display:flex;gap:6px;">
+      <button class="wc-btn" onclick="addBlock()">+ Блок</button>
+    </div>
+  </div>
+
+  <div class="blocks-list" id="blocksList"></div>
+</div>
+
+<!-- ══ SCREEN 4: ПРАВИЛА ══ -->
+<div class="screen" id="sc4">
+  <div class="fs-tag">Шаг 4 из 5</div>
+  <div class="fs-title">Правила коррекции весов</div>
+  <div class="fs-desc">Дневник применяет эти правила автоматически. Разгрузочные недели — автор отмечает вручную в структуре.</div>
+
+  <div class="rule-block">
+    <div class="rb-head red">⛔ Вес не пошёл</div>
+    <div class="rule-row">
+      <div class="rr-txt">Не выполнил план<small>тренировок подряд → повтори неделю</small></div>
+      <div class="rr-inputs"><input type="number" value="2"><span>трен.</span></div>
+    </div>
+    <div class="rule-row">
+      <div class="rr-txt">Провалов подряд<small>→ откат на % и начни блок заново</small></div>
+      <div class="rr-inputs"><input type="number" value="3"><span>нед</span></div>
+      <div class="rr-inputs"><input type="number" value="10"><span>%</span></div>
+    </div>
+    <div class="rule-row">
+      <div class="rr-txt">Критерий провала подхода<small>выполнил менее X из Y повторений</small></div>
+      <div class="rr-inputs"><input type="number" value="4"><span>из</span><input type="number" value="5"><span>повт.</span></div>
+    </div>
+  </div>
+
+  <div class="rule-block">
+    <div class="rb-head gold">📅 Пропуск тренировки</div>
+    <div class="rule-row">
+      <div class="rr-txt">Пропустил 1 тренировку<small>→ продолжай по плану</small></div>
+      <div style="font-size:.58rem;color:var(--green);font-weight:700;">Авто</div>
+    </div>
+    <div class="rule-row">
+      <div class="rr-txt">Пропустил подряд<small>→ повтори предыдущую неделю</small></div>
+      <div class="rr-inputs"><input type="number" value="2"><span>трен.</span></div>
+    </div>
+    <div class="rule-row">
+      <div class="rr-txt">Перерыв дней и более<small>→ откат на % от текущих весов</small></div>
+      <div class="rr-inputs"><input type="number" value="7"><span>дней</span></div>
+      <div class="rr-inputs"><input type="number" value="15"><span>%</span></div>
+    </div>
+  </div>
+
+  <div class="rule-block">
+    <div class="rb-head green">⬆️ Атлет опережает план</div>
+    <div class="rule-row">
+      <div class="rr-txt">Выполнил все повторения с запасом<small>→ разрешить добавить вес досрочно</small></div>
+      <div class="pill-group">
+        <button class="pill sel-green sel" onclick="tPill(this)">Разрешить</button>
+        <button class="pill" onclick="tPill(this)">Строго по плану</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5: ЦЕНА ══ -->
+<div class="screen" id="sc5">
+  <div class="fs-tag">Шаг 5 из 5</div>
+  <div class="fs-title">Цена и публикация</div>
+
+  <div class="price-opts">
+    <div class="price-opt" onclick="setPM(this,'free')">
+      <div class="po-icon">🆓</div><div class="po-name">Бесплатно</div><div class="po-desc">Привлечь аудиторию и набрать первые отзывы</div>
+    </div>
+    <div class="price-opt sel" onclick="setPM(this,'paid')">
+      <div class="po-icon">💰</div><div class="po-name">Платная</div><div class="po-desc">Единоразовый платёж · Доступ навсегда</div>
+    </div>
+    <div class="price-opt" onclick="setPM(this,'live')">
+      <div class="po-icon">🔴</div><div class="po-name">Живая (подписка)</div><div class="po-desc">Ежемесячная оплата + поддержка автора</div>
+    </div>
+  </div>
+
+  <div id="priceBlock">
+    <div class="field">
+      <div class="field-label">Цена (USD) <span class="req">*</span></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gray-light);">$</span>
+        <input type="number" id="fPrice" value="29" min="1" oninput="updComm()" style="width:80px;font-size:1.1rem;font-family:'Bebas Neue',sans-serif;padding:9px 12px;">
+      </div>
+      <div class="field-hint">Средняя цена на FitoRank: $15–49. Верифицированные продаются дороже.</div>
+    </div>
+    <div class="commission-box">
+      <div class="cb-title">Калькулятор дохода · Легенда — комиссия 15%</div>
+      <div class="cb-row"><div class="cb-label">Цена программы</div><div class="cb-val" id="cbPrice">$29.00</div></div>
+      <div class="cb-row"><div class="cb-label">Комиссия FitoRank (15%)</div><div class="cb-val red" id="cbPlatform">−$4.35</div></div>
+      <div class="cb-row"><div class="cb-label">Эквайринг (2.9% + $0.30)</div><div class="cb-val red" id="cbStripe">−$1.14</div></div>
+      <div class="cb-row"><div class="cb-label" style="font-weight:700;color:var(--white);">Твой доход с продажи</div><div class="cb-val big" id="cbAuthor">$23.51</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div style="font-size:.72rem;font-weight:700;margin-bottom:12px;">Дополнительно</div>
+  <div style="display:flex;flex-direction:column;gap:7px;">
+    <div style="background:var(--gray);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:.68rem;font-weight:700;">📄 PDF для скачивания</div><div style="font-size:.56rem;color:var(--gray-light);margin-top:1px;">Генерируется автоматически. Всегда актуален.</div></div>
+      <div class="pill-group"><button class="pill sel-green sel" onclick="tPill(this)">Включить</button><button class="pill" onclick="tPill(this)">Нет</button></div>
+    </div>
+    <div style="background:var(--gray);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:.68rem;font-weight:700;">🔒 Гарантия возврата</div><div style="font-size:.56rem;color:var(--gray-light);margin-top:1px;">7 дней = +23% к конверсии по данным платформы</div></div>
+      <select style="width:120px;font-size:.62rem;padding:6px 8px;">
+        <option>Без гарантии</option>
+        <option selected>7 дней</option>
+        <option>14 дней</option>
+        <option>30 дней</option>
+      </select>
+    </div>
+    <div style="background:var(--gray);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:.68rem;font-weight:700;">👥 Лимит (Живая)</div><div style="font-size:.56rem;color:var(--gray-light);margin-top:1px;">Ограничь чтобы успевать отвечать каждому</div></div>
+      <div style="display:flex;align-items:center;gap:6px;"><input type="number" value="20" style="width:52px;font-size:.72rem;padding:6px 8px;"><span style="font-size:.58rem;color:var(--gray-light);">мест</span></div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="checklist">
+    <div class="cl-title">Чеклист перед публикацией</div>
+    <div class="cl-item">
+      <div class="cl-icon" id="cl1icon">✅</div>
+      <div class="cl-text">Название и питч заполнены</div>
+      <div class="cl-status ok" id="cl1status">Готово</div>
+    </div>
+    <div class="cl-item">
+      <div class="cl-icon" id="cl2icon">⚠️</div>
+      <div class="cl-text">Целевое упражнение выбрано из базы</div>
+      <div class="cl-status warn" id="cl2status">Не выбрано</div>
+    </div>
+    <div class="cl-item">
+      <div class="cl-icon" id="cl3icon">✅</div>
+      <div class="cl-text">Система весов настроена</div>
+      <div class="cl-status ok" id="cl3status">Готово</div>
+    </div>
+    <div class="cl-item">
+      <div class="cl-icon" id="cl4icon">⚠️</div>
+      <div class="cl-text">Структура заполнена (хотя бы 1 блок с неделями)</div>
+      <div class="cl-status warn" id="cl4status">Пустая</div>
+    </div>
+    <div class="cl-item">
+      <div class="cl-icon" id="cl5icon">✅</div>
+      <div class="cl-text">Правила коррекции установлены</div>
+      <div class="cl-status ok" id="cl5status">Готово</div>
+    </div>
+    <div class="cl-item">
+      <div class="cl-icon" id="cl6icon">✅</div>
+      <div class="cl-text">Цена установлена</div>
+      <div class="cl-status ok" id="cl6status">$29</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 6: ПУБЛИКАЦИЯ ══ -->
+<div class="screen" id="sc6">
+  <div class="fs-tag">Финал</div>
+  <div class="fs-title">Предпросмотр и публикация</div>
+  <div class="fs-desc">Проверь как выглядит программа для покупателя перед публикацией.</div>
+  <button class="btn-preview-bar" style="width:100%;padding:14px;font-size:.65rem;margin-bottom:20px;" onclick="openPreview()">👁 Открыть полный предпросмотр</button>
+  <div style="background:var(--gray);padding:16px;border:1px solid rgba(61,220,132,.15);text-align:center;">
+    <div style="font-size:.52rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin-bottom:6px;">Готово к публикации?</div>
+    <div style="font-size:.72rem;color:rgba(245,242,238,.6);margin-bottom:14px;">Программа пройдёт автоматическую проверку и появится в каталоге в течение 24–48 часов.</div>
+    <button class="btn-next btn-publish" id="publishBtn" style="clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);padding:14px 48px;font-size:.7rem;" onclick="publishProgram()" disabled>🚀 Опубликовать программу</button>
+    <div style="font-size:.58rem;color:var(--red);margin-top:8px;" id="publishHint">Заполни все обязательные пункты чеклиста</div>
+  </div>
+</div>
+
+</div><!-- /form-area -->
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+
+  <!-- PREVIEW CARD -->
+  <div class="sb-preview">
+    <div class="sb-preview-label">👁 Превью карточки</div>
+    <div class="sb-preview-body">
+      <div class="sbp-tags">
+        <span class="sbp-tag" style="color:var(--green);border-color:rgba(61,220,132,.25);">НАТУРАЛ</span>
+        <span class="sbp-tag" style="color:var(--red);border-color:rgba(232,38,11,.25);">ЖИВАЯ</span>
+      </div>
+      <div class="sbp-title" id="sbTitle">Введи название...</div>
+      <div class="sbp-meta" id="sbMeta">12 нед · 3 тр/нед · Натурал</div>
+      <div class="sbp-price" id="sbPrice">$29</div>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="sb-status">
+    <div class="sb-status-title">Статус черновика</div>
+    <div class="sb-status-row"><div class="sb-status-key">Паспорт</div><div class="sb-status-val" style="color:var(--green);" id="sbSt1">✓ Готов</div></div>
+    <div class="sb-status-row"><div class="sb-status-key">Веса</div><div class="sb-status-val" style="color:var(--green);" id="sbSt2">✓ % 1RM</div></div>
+    <div class="sb-status-row"><div class="sb-status-key">Структура</div><div class="sb-status-val" style="color:var(--gold);" id="sbSt3">⚠ Пусто</div></div>
+    <div class="sb-status-row"><div class="sb-status-key">Правила</div><div class="sb-status-val" style="color:var(--green);" id="sbSt4">✓ Готовы</div></div>
+    <div class="sb-status-row"><div class="sb-status-key">Публикация</div><div class="sb-status-val" style="color:var(--gold);" id="sbSt5">⚠ Не готов</div></div>
+  </div>
+
+  <!-- TIP -->
+  <div class="sb-tip" id="sbTipBlock">
+    <div class="sb-tip-icon">💡</div>
+    <div class="sb-tip-title" id="sbTipTitle">Совет по паспорту</div>
+    <div class="sb-tip-text" id="sbTipText">Программы с конкретным результатом в названии продаются на 67% лучше чем с общим описанием.</div>
+  </div>
+
+  <!-- REP -->
+  <div class="sb-rep">
+    <div class="sb-rep-title">⚡ REP за программу</div>
+    <div class="sb-rep-row"><div class="sb-rep-label">За публикацию</div><div class="sb-rep-val">+50</div></div>
+    <div class="sb-rep-row"><div class="sb-rep-label">За каждую продажу</div><div class="sb-rep-val">+10</div></div>
+    <div class="sb-rep-row"><div class="sb-rep-label">За отзыв 5★</div><div class="sb-rep-val">+5</div></div>
+    <div class="sb-rep-row"><div class="sb-rep-label">Бонус топ-10</div><div class="sb-rep-val">+100</div></div>
+    <div style="font-size:.55rem;color:rgba(245,242,238,.35);margin-top:8px;line-height:1.5;">REP начисляется бесконечно — каждая продажа работает на твой уровень</div>
+  </div>
+
+</div><!-- /sidebar -->
+
+</div><!-- /creator-wrap -->
+</div><!-- /app -->
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="bb-left">
+    <button class="nav-draft" onclick="saveDraft()">💾 Черновик</button>
+    <div class="nav-autosave">✓ Автосохранение</div>
+  </div>
+  <div class="bb-right">
+    <button class="btn-back" id="bBack" style="display:none" onclick="prevStep()">← Назад</button>
+    <button class="btn-preview-bar" onclick="openPreview()">👁 Предпросмотр</button>
+    <button class="btn-next" id="bNext" onclick="nextStep()">Далее →</button>
+  </div>
+</div>
+
+<!-- PREVIEW OVERLAY -->
+<div class="preview-overlay" id="prevOverlay">
+  <div class="preview-bar">
+    <div class="pb-label">👁 Предпросмотр <span>· Так видит покупатель</span></div>
+    <button class="pb-close" onclick="closePreview()">← Вернуться к редактированию</button>
+  </div>
+  <div class="prev-content">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+      <span style="font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(61,220,132,.08);color:var(--green);border:1px solid rgba(61,220,132,.2);">✅ Верифицированная</span>
+      <span style="font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(74,158,255,.08);color:var(--blue);border:1px solid rgba(74,158,255,.2);" id="pvMethod">📋 Линейная периодизация</span>
+      <span style="font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(61,220,132,.08);color:var(--green);border:1px solid rgba(61,220,132,.2);">🌿 Натурал</span>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:.93;margin-bottom:10px;" id="pvTitle">Жим 170+ кг за 6 месяцев</div>
+    <div style="font-size:.78rem;color:rgba(245,242,238,.7);line-height:1.7;max-width:500px;margin-bottom:18px;" id="pvPitch">Заполни поле «Питч» чтобы увидеть его здесь</div>
+    <div style="background:var(--gray);padding:14px 18px;display:inline-flex;gap:22px;margin-bottom:20px;border:1px solid var(--gray-mid);">
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--red);" id="pvGoal">170 кг</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Цель</div></div>
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;" id="pvWeeks">12</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Недели</div></div>
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--green);">+?</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Прирост</div></div>
+      <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--gold);" id="pvPrice">$29</div><div style="font-size:.48rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.1em;">Цена</div></div>
+    </div>
+    <div style="font-size:.68rem;color:var(--gray-light);line-height:1.7;padding:14px;background:var(--gray);border-left:3px solid var(--gray-mid);" id="pvDesc">Описание появится здесь...</div>
+  </div>
+</div>
+
+<!-- EXERCISE MODAL -->
+<div class="ex-modal" id="exModal">
+  <div class="ex-inner">
+    <div class="em-head">
+      <div class="em-top"><div class="em-title">База упражнений</div><button class="em-close" onclick="closeExModal()">✕</button></div>
+      <input class="em-search" placeholder="Поиск по названию или категории..." oninput="renderEx(this.value)">
+      <div class="em-filters">
+        <button class="em-f active" onclick="setExFilter(this,'all')">Все</button>
+        <button class="em-f" onclick="setExFilter(this,'gold')">🏆 Золотой стандарт</button>
+        <button class="em-f" onclick="setExFilter(this,'rec')">⭐ Признанные</button>
+        <button class="em-f" onclick="setExFilter(this,'niche')">🔬 Нишевые</button>
+        <button class="em-f" onclick="setExFilter(this,'circus')">🎪 Цирк силы</button>
+      </div>
+    </div>
+    <div class="em-list" id="emList"></div>
+  </div>
+</div>
+
+<script>
+// ═══ CURSOR ═══
+const C=document.getElementById('cursor'),T=document.getElementById('trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;C.style.left=mx+'px';C.style.top=my+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;T.style.left=tx+'px';T.style.top=ty+'px';requestAnimationFrame(loop);})();
+
+// ═══ MODE ═══
+let mode='s';
+function setMode(m){
+  mode=m;
+  document.getElementById('modeS1').style.display=m==='s'?'block':'none';
+  document.getElementById('modeF1').style.display=m==='f'?'block':'none';
+  document.getElementById('btnS').classList.toggle('active',m==='s');
+  document.getElementById('btnF').classList.toggle('active',m==='f');
+}
+
+// ═══ STEPS ═══
+let step=1,total=5;
+const TIPS={
+  1:{t:'Совет по паспорту',x:'Программы с конкретным результатом в названии продаются на 67% лучше.'},
+  2:{t:'Совет по весам',x:'Комбинируй форматы: основные упражнения в % 1RM, изоляция в RPE. Так программа адаптируется под каждого атлета.'},
+  3:{t:'Совет по структуре',x:'Первая неделя первого блока — образец для покупателя. Заполни её максимально детально.'},
+  4:{t:'Совет по правилам',x:'Разгрузочные недели отмечай вручную прямо в структуре — это даёт полный контроль над программой.'},
+  5:{t:'Совет по цене',x:'$29–39 — оптимальный диапазон для первой программы. После 10 продаж и отзывов можно поднять до $49+.'},
+};
+
+function updSteps(){
+  for(let i=1;i<=6;i++){
+    const el=document.getElementById('s'+i);
+    if(!el)continue;
+    el.classList.remove('active','done');
+    if(i<step)el.classList.add('done');
+    else if(i===step)el.classList.add('active');
+  }
+  document.getElementById('spf').style.width=((step-1)/5*100+17)+'%';
+  document.getElementById('bBack').style.display=step>1?'inline-block':'none';
+  const bn=document.getElementById('bNext');
+  if(step===6){bn.style.display='none';}
+  else if(step===5){bn.textContent='Предпросмотр →';bn.className='btn-next';}
+  else{bn.style.display='inline-block';bn.textContent='Далее →';bn.className='btn-next';}
+  document.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===step-1));
+  // tip
+  const tip=TIPS[Math.min(step,5)];
+  document.getElementById('sbTipTitle').textContent=tip.t;
+  document.getElementById('sbTipText').textContent=tip.x;
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateChecklist();
+}
+function nextStep(){if(step<6){step++;updSteps();}}
+function prevStep(){if(step>1){step--;updSteps();}}
+
+// ═══ PILLS ═══
+function tPill(el){el.classList.toggle('sel');}
+function selDays(el){document.querySelectorAll('#pgDays .pill').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');}
+function selWM(el,type){document.querySelectorAll('.wm-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');document.getElementById('sbSt2').textContent='✓ '+el.querySelector('.wm-name').textContent;}
+function toggleLiveAlert(el){document.getElementById('liveAlert').style.display=el.classList.contains('sel')?'flex':'none';}
+
+// ═══ COMMISSION ═══
+function updComm(){
+  const p=parseFloat(document.getElementById('fPrice').value)||0;
+  const comm=p*0.15, stripe=p*0.029+0.30, net=Math.max(0,p-comm-stripe);
+  document.getElementById('cbPrice').textContent='$'+p.toFixed(2);
+  document.getElementById('cbPlatform').textContent='−$'+comm.toFixed(2);
+  document.getElementById('cbStripe').textContent='−$'+stripe.toFixed(2);
+  document.getElementById('cbAuthor').textContent='$'+net.toFixed(2);
+  document.getElementById('pvPrice').textContent='$'+p;
+  document.getElementById('sbPrice').textContent='$'+p;
+  document.getElementById('cl6status').textContent='$'+p;
+}
+function setPM(el,m){
+  document.querySelectorAll('.price-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('priceBlock').style.display=m==='paid'||m==='live'?'block':'none';
+  if(m==='free'){document.getElementById('sbPrice').textContent='БЕСПЛАТНО';}
+}
+
+// ═══ PREVIEW ═══
+function syncPreview(){
+  const t=document.getElementById('fTitle').value;
+  const p=document.getElementById('fPitch').value;
+  const d=document.getElementById('fDesc').value;
+  const g=document.getElementById('fGoal').value;
+  const w=document.getElementById('fWeeks').value;
+  const pr=document.getElementById('fPrice').value;
+  document.getElementById('pvTitle').textContent=t||'Название программы';
+  document.getElementById('pvPitch').textContent=p||'Заполни поле «Питч»...';
+  document.getElementById('pvDesc').textContent=d||'Описание появится здесь...';
+  document.getElementById('pvGoal').textContent=(g||'?')+' кг';
+  document.getElementById('pvWeeks').textContent=w||'?';
+  document.getElementById('pvPrice').textContent='$'+(pr||'?');
+  const sbT=document.getElementById('sbTitle');
+  sbT.textContent=t||'Введи название...';
+  sbT.className=t?'sbp-title':'sbp-title ph';
+  document.getElementById('sbMeta').textContent=(w||'12')+' нед · 3 тр/нед · Натурал';
+  updateChecklist();
+}
+function openPreview(){syncPreview();document.getElementById('prevOverlay').classList.add('vis');}
+function closePreview(){document.getElementById('prevOverlay').classList.remove('vis');}
+
+// ═══ CHECKLIST ═══
+function updateChecklist(){
+  const title=document.getElementById('fTitle').value.trim();
+  const pitch=document.getElementById('fPitch').value.trim();
+  const exSel=document.getElementById('exSelTag').style.display!=='none';
+  const hasBlocks=document.querySelectorAll('.block-card').length>0;
+  const price=document.getElementById('fPrice').value;
+
+  setCL(1,title&&pitch,'Готово','Заполни название и питч');
+  setCL(2,exSel,'Выбрано','Не выбрано');
+  setCL(3,true,'Готово','');
+  setCL(4,hasBlocks,'Есть блоки','Пустая');
+  setCL(5,true,'Готово','');
+  setCL(6,!!price,'$'+price,'Не указана');
+
+  const allOk=title&&pitch&&exSel&&hasBlocks&&price;
+  const pb=document.getElementById('publishBtn');
+  const ph=document.getElementById('publishHint');
+  pb.disabled=!allOk;
+  if(allOk){pb.className='btn-next btn-publish';ph.textContent='Всё готово — можно публиковать 🚀';ph.style.color='var(--green)';}
+  else{pb.className='btn-next btn-publish';ph.style.color='var(--red)';ph.textContent='Заполни все обязательные пункты чеклиста';}
+
+  // sidebar
+  document.getElementById('sbSt1').textContent=title&&pitch?'✓ Готов':'⚠ Неполный';
+  document.getElementById('sbSt1').style.color=title&&pitch?'var(--green)':'var(--gold)';
+  document.getElementById('sbSt3').textContent=hasBlocks?'✓ Заполнена':'⚠ Пусто';
+  document.getElementById('sbSt3').style.color=hasBlocks?'var(--green)':'var(--gold)';
+  document.getElementById('sbSt5').textContent=allOk?'✓ Готов':'⚠ Не готов';
+  document.getElementById('sbSt5').style.color=allOk?'var(--green)':'var(--gold)';
+}
+function setCL(n,ok,okTxt,errTxt){
+  document.getElementById('cl'+n+'icon').textContent=ok?'✅':'⚠️';
+  const s=document.getElementById('cl'+n+'status');
+  s.textContent=ok?okTxt:errTxt;
+  s.className='cl-status '+(ok?'ok':'warn');
+}
+
+// ═══ EXERCISE DB ═══
+const EXDB=[
+  {n:'Жим лёжа',lvl:'gold',cat:'Жим · Грудь',m:'🏆 Золотой стандарт'},
+  {n:'Жим лёжа узкий хват',lvl:'gold',cat:'Жим · Трицепс',m:'🏆 Золотой стандарт'},
+  {n:'Жим стоя (Милитари)',lvl:'rec',cat:'Жим · Плечи',m:'⭐ Признанное'},
+  {n:'Жим гантелей лёжа',lvl:'rec',cat:'Жим · Грудь',m:'⭐ Признанное'},
+  {n:'Приседания со штангой',lvl:'gold',cat:'Присед · Ноги',m:'🏆 Золотой стандарт'},
+  {n:'Фронтальные приседания',lvl:'rec',cat:'Присед · Квадрицепс',m:'⭐ Признанное'},
+  {n:'Становая тяга классика',lvl:'gold',cat:'Тяга · Спина',m:'🏆 Золотой стандарт'},
+  {n:'Становая тяга сумо',lvl:'gold',cat:'Тяга · Спина',m:'🏆 Золотой стандарт'},
+  {n:'Румынская тяга',lvl:'rec',cat:'Тяга · Хамстринг',m:'⭐ Признанное'},
+  {n:'Подтягивания прямой хват',lvl:'gold',cat:'Подтягивания · Спина',m:'🏆 Золотой стандарт'},
+  {n:'Подтягивания обратный хват',lvl:'gold',cat:'Подтягивания · Бицепс',m:'🏆 Золотой стандарт'},
+  {n:'Подтягивания из-за головы',lvl:'niche',cat:'Подтягивания · Нишевое',m:'🔬 Авторское'},
+  {n:'Отжимания на брусьях',lvl:'rec',cat:'Жим · Трицепс',m:'⭐ Признанное'},
+  {n:'Отжимания на 3 пальцах',lvl:'circus',cat:'Цирк силы · Хват',m:'🎪 Цирк силы'},
+  {n:'Подтягивания на 2 пальцах',lvl:'circus',cat:'Цирк силы · Хват',m:'🎪 Цирк силы'},
+];
+const LVL_C={gold:'var(--gold)',rec:'var(--blue)',niche:'var(--green)',circus:'var(--red)'};
+const LVL_ICO={gold:'🏆',rec:'⭐',niche:'🔬',circus:'🎪'};
+let exFilter='all', exTarget='passport', exTargetWi=-1, exTargetDi=-1;
+
+function renderEx(q=''){
+  const l=document.getElementById('emList');
+  const filtered=EXDB.filter(e=>(exFilter==='all'||e.lvl===exFilter)&&(e.n.toLowerCase().includes(q.toLowerCase())||e.cat.toLowerCase().includes(q.toLowerCase())));
+  l.innerHTML=filtered.map(e=>`
+    <div class="em-item" onclick="pickEx('${e.n}','${e.lvl}','${e.cat}','${e.m}')">
+      <div><div class="em-item-name">${e.n}</div><div class="em-item-meta">${e.cat}</div></div>
+      <span class="em-lvl" style="color:${LVL_C[e.lvl]};border:1px solid ${LVL_C[e.lvl]}33;background:${LVL_C[e.lvl]}11;">${e.m}</span>
+    </div>`).join('');
+}
+function setExFilter(btn,lvl){document.querySelectorAll('.em-f').forEach(b=>b.classList.remove('active'));btn.classList.add('active');exFilter=lvl;renderEx();}
+function openExModal(target,wi,di){
+  exTarget=target||'passport';exTargetWi=wi!=null?wi:-1;exTargetDi=di!=null?di:-1;
+  renderEx();document.getElementById('exModal').classList.add('vis');
+}
+function closeExModal(){document.getElementById('exModal').classList.remove('vis');}
+function pickEx(name,lvl,cat,m){
+  if(exTarget==='passport'){
+    document.getElementById('fExercise').value=name;
+    document.getElementById('exSelTag').style.display='flex';
+    document.getElementById('exSelName').textContent=name;
+    document.getElementById('exSelCat').textContent=cat;
+    const badge=document.getElementById('exSelBadge');
+    badge.textContent=m;badge.style.color=LVL_C[lvl];badge.style.borderColor=LVL_C[lvl]+'44';badge.style.background=LVL_C[lvl]+'11';
+    updateChecklist();
+  } else if(exTarget==='day'&&exTargetWi>=0&&exTargetDi>=0){
+    addExToDay(exTargetWi,exTargetDi,name,lvl);
+  }
+  closeExModal();
+}
+function clearEx(){
+  document.getElementById('fExercise').value='';
+  document.getElementById('exSelTag').style.display='none';
+  updateChecklist();
+}
+
+// ═══ BLOCKS / WEEKS ═══
+let blocks=[];
+function initBlocks(){
+  blocks=[{id:1,title:'Блок 1 — Накопление объёма',weeks:[
+    {id:1,title:'Вводная неделя',deload:false,open:true,days:[
+      {id:1,label:'День 1',exs:[{name:'Жим лёжа',lvl:'gold',sets:'5×5',wtype:'pct',weight:'70%',rest:'3 мин'}]},
+      {id:2,label:'День 2',exs:[]},
+    ]},
+    {id:2,title:'',deload:false,open:false,days:[{id:1,label:'День 1',exs:[]}]},
+    {id:3,title:'',deload:false,open:false,days:[{id:1,label:'День 1',exs:[]}]},
+  ],open:true}];
+  renderBlocks();
+}
+function renderBlocks(){
+  const totalWeeks=blocks.reduce((s,b)=>s+b.weeks.length,0);
+  document.getElementById('totalWeeksLbl').textContent=totalWeeks;
+  document.getElementById('blocksList').innerHTML=blocks.map((b,bi)=>`
+    <div class="block-card ${b.open?'open':''}" id="block${bi}">
+      <div class="bc-head" onclick="togBlock(${bi})">
+        <div class="bc-num">Блок ${bi+1}</div>
+        <input class="bc-title-input" type="text" value="${b.title}" placeholder="Название блока (напр. Накопление, Интенсификация, Пик...)" onclick="event.stopPropagation()" oninput="blocks[${bi}].title=this.value">
+        <div class="bc-meta">${b.weeks.length} нед</div>
+        ${bi>0?`<button class="wc-btn danger" onclick="event.stopPropagation();delBlock(${bi})" style="font-size:.48rem;padding:3px 8px;">✕</button>`:'<div></div>'}
+        <span class="bc-arr ${b.open?'open':''}">▼</span>
+      </div>
+      <div class="bc-body ${b.open?'open':''}">
+        <div class="weeks-list">
+          ${b.weeks.map((w,wi)=>`
+            <div class="week-card ${w.open?'open':''} ${w.deload?'deload':''}">
+              <div class="wc-head" onclick="togWeek(${bi},${wi})">
+                <div class="wc-n">Нед ${wi+1}</div>
+                <div class="wc-ti"><input type="text" value="${w.title}" placeholder="${w.deload?'💤 Разгрузочная':'Название недели...'}" onclick="event.stopPropagation()" oninput="blocks[${bi}].weeks[${wi}].title=this.value"></div>
+                <button class="wc-deload-btn ${w.deload?'deload':'normal'}" onclick="event.stopPropagation();togDeload(${bi},${wi})">${w.deload?'💤 Разгрузка':'Обычная'}</button>
+                ${wi>0?`<button class="wc-btn danger" onclick="event.stopPropagation();delWeek(${bi},${wi})" style="font-size:.44rem;padding:2px 6px;">✕</button>`:'<div></div>'}
+                <span class="wc-arr ${w.open?'open':''}">▼</span>
+              </div>
+              <div class="wc-body ${w.open?'open':''}">
+                <div class="days-list">
+                  ${w.days.map((d,di)=>`
+                    <div class="day-card">
+                      <div class="day-header">
+                        <input class="day-label-input" type="text" value="${d.label}" oninput="blocks[${bi}].weeks[${wi}].days[${di}].label=this.value">
+                        <div class="day-actions">
+                          <button class="day-add-ex" onclick="openExModal('day',${bi}*100+${wi},${di})">+ Упражнение</button>
+                          ${di>0?`<button class="day-del" onclick="delDay(${bi},${wi},${di})">✕</button>`:''}
+                        </div>
+                      </div>
+                      ${d.exs.length?`
+                        <div class="ex-row-header">
+                          <span>Упражнение</span><span>Сеты</span><span>Тип / Вес</span><span>Отдых</span><span></span>
+                        </div>
+                        <div class="ex-rows">
+                          ${d.exs.map((ex,ei)=>`
+                            <div class="ex-row">
+                              <div class="ex-row-name"><span class="ex-lvl-dot">${LVL_ICO[ex.lvl]||'•'}</span>${ex.name}</div>
+                              <input type="text" value="${ex.sets}" placeholder="5×5" oninput="blocks[${bi}].weeks[${wi}].days[${di}].exs[${ei}].sets=this.value">
+                              <div style="display:flex;gap:4px;">
+                                <select class="wt-select" style="width:50px;" onchange="blocks[${bi}].weeks[${wi}].days[${di}].exs[${ei}].wtype=this.value">
+                                  <option value="pct" ${ex.wtype==='pct'?'selected':''}>%</option>
+                                  <option value="rpe" ${ex.wtype==='rpe'?'selected':''}>RPE</option>
+                                  <option value="kg" ${ex.wtype==='kg'?'selected':''}>кг</option>
+                                </select>
+                                <input type="text" value="${ex.weight}" placeholder="${ex.wtype==='rpe'?'8':'70%'}" style="flex:1;" oninput="blocks[${bi}].weeks[${wi}].days[${di}].exs[${ei}].weight=this.value">
+                              </div>
+                              <input type="text" value="${ex.rest}" placeholder="2 мин" oninput="blocks[${bi}].weeks[${wi}].days[${di}].exs[${ei}].rest=this.value">
+                              <button class="ex-row-del" onclick="delEx(${bi},${wi},${di},${ei})">✕</button>
+                            </div>
+                          `).join('')}
+                        </div>
+                      `:''}
+                    </div>
+                  `).join('')}
+                </div>
+                <button class="add-day-btn" onclick="addDay(${bi},${wi})">+ Добавить день</button>
+                <div class="wc-footer">
+                  <button class="wc-btn" onclick="copyWeek(${bi},${wi})">Скопировать неделю</button>
+                  ${wi>0?`<button class="wc-btn danger" onclick="delWeek(${bi},${wi})">Удалить</button>`:''}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <button class="add-week-btn" onclick="addWeek(${bi})" style="margin:8px 12px 12px;width:calc(100% - 24px);">+ Добавить неделю</button>
+      </div>
+    </div>
+  `).join('');
+  updateChecklist();
+}
+
+function togBlock(bi){blocks[bi].open=!blocks[bi].open;renderBlocks();}
+function togWeek(bi,wi){blocks[bi].weeks[wi].open=!blocks[bi].weeks[wi].open;renderBlocks();}
+function togDeload(bi,wi){blocks[bi].weeks[wi].deload=!blocks[bi].weeks[wi].deload;renderBlocks();}
+function addBlock(){blocks.push({id:Date.now(),title:'',weeks:[{id:Date.now(),title:'',deload:false,open:true,days:[{id:1,label:'День 1',exs:[]}]}],open:true});renderBlocks();}
+function delBlock(bi){if(blocks.length>1){blocks.splice(bi,1);renderBlocks();}}
+function addWeek(bi){blocks[bi].weeks.push({id:Date.now(),title:'',deload:false,open:false,days:[{id:1,label:'День 1',exs:[]}]});renderBlocks();}
+function delWeek(bi,wi){if(blocks[bi].weeks.length>1){blocks[bi].weeks.splice(wi,1);renderBlocks();}}
+function copyWeek(bi,wi){const c=JSON.parse(JSON.stringify(blocks[bi].weeks[wi]));c.id=Date.now();c.open=false;blocks[bi].weeks.splice(wi+1,0,c);renderBlocks();}
+function addDay(bi,wi){const days=blocks[bi].weeks[wi].days;days.push({id:Date.now(),label:'День '+(days.length+1),exs:[]});renderBlocks();}
+function delDay(bi,wi,di){if(blocks[bi].weeks[wi].days.length>1){blocks[bi].weeks[wi].days.splice(di,1);renderBlocks();}}
+function addExToDay(bwKey,di,name,lvl){
+  const bi=Math.floor(bwKey/100),wi=bwKey%100;
+  blocks[bi].weeks[wi].days[di].exs.push({name,lvl,sets:'5×5',wtype:'pct',weight:'70%',rest:'3 мин'});
+  renderBlocks();
+}
+function delEx(bi,wi,di,ei){blocks[bi].weeks[wi].days[di].exs.splice(ei,1);renderBlocks();}
+function addWeekBtn(bi){addWeek(bi);}
+
+// ═══ CAT TABLE ═══
+function addCatRow(){
+  const tb=document.getElementById('catTbody');
+  const tr=document.createElement('tr');
+  tr.style.borderBottom='1px solid rgba(255,255,255,.04)';
+  tr.innerHTML=`<td style="padding:0"><input type="text" placeholder="Новая категория" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;"></td><td style="padding:0"><input type="number" value="68" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;" oninput="calcCatEx(this)"></td><td style="padding:0"><input type="number" value="2.5" step="0.5" style="background:transparent;border:none;border-right:1px solid var(--gray-mid);padding:9px 12px;width:100%;cursor:none;"></td><td style="padding:9px 12px;font-size:.62rem;color:var(--gray-light);">→ нед.1 <b style="color:var(--gold)" class="catEx">74.8 кг</b> <button onclick="this.closest('tr').remove()" style="background:transparent;border:none;color:var(--gray-light);cursor:none;margin-left:6px;font-size:.65rem;">✕</button></td>`;
+  tb.appendChild(tr);
+}
+function calcCatEx(input){
+  const pct=parseFloat(input.value)||0;
+  const ex=input.closest('tr').querySelector('.catEx');
+  if(ex)ex.textContent=((110*pct/100)+2.5).toFixed(1)+' кг';
+}
+
+// ═══ CHEATSHEET ═══
+function toggleCheatsheet(){
+  const body=document.getElementById('csBody');
+  const tgl=document.getElementById('csTgl');
+  const open=body.classList.toggle('open');
+  tgl.textContent=open?'▲ Свернуть':'▼ Развернуть';
+}
+
+// ═══ DRAFT / PUBLISH ═══
+function saveDraft(){
+  const ind=document.getElementById('autosaveIndicator');
+  ind.textContent='💾 Сохранено';
+  setTimeout(()=>ind.textContent='✓ Автосохранение',2000);
+}
+function publishProgram(){
+  alert('🚀 Программа отправлена на верификацию!\n\nСредний срок: 24–48 часов.\nТы получишь уведомление когда программа будет опубликована.\n\n+50 REP за публикацию зачислено!');
+}
+
+// ═══ FREE EDITOR ═══
+function ins(b,a){const el=document.getElementById('fFreeEditor');const s=el.selectionStart,e=el.selectionEnd;el.value=el.value.substring(0,s)+b+el.value.substring(s,e)+a+el.value.substring(e);el.focus();}
+
+// ═══ INIT ═══
+initBlocks();
+updSteps();
+syncPreview();
+</script>
+</body>
+</html>

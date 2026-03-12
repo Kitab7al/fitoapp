@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Каталог программ</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:10px;height:10px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);}
+.cursor-trail{width:32px;height:32px;border:1px solid rgba(232,38,11,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .14s ease;transform:translate(-50%,-50%);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;cursor:none;}
+.logo span{color:var(--red);}
+.nav-tabs{display:flex;align-items:stretch;}
+.nav-tab{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:0 18px;color:var(--gray-light);text-decoration:none;cursor:none;transition:color .2s;display:flex;align-items:center;border-bottom:2px solid transparent;}
+.nav-tab:hover{color:var(--white);}
+.nav-tab.active{color:var(--white);border-bottom-color:var(--red);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-create{background:var(--red);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;cursor:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:background .2s;}
+.btn-create:hover{background:var(--red-dark);}
+
+/* ── HERO ── */
+.hero{padding-top:65px;background:linear-gradient(180deg,rgba(232,38,11,.06) 0%,transparent 100%);border-bottom:1px solid var(--gray-mid);}
+.hero-inner{padding:32px 40px 24px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;}
+.hero-tag{font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:.93;margin-bottom:8px;}
+.hero-desc{font-size:.67rem;color:rgba(245,242,238,.55);line-height:1.6;max-width:480px;}
+.hero-stats{display:flex;gap:20px;margin-top:16px;}
+.hs-item{text-align:center;}
+.hs-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;}
+.hs-val.red{color:var(--red);}
+.hs-val.green{color:var(--green);}
+.hs-val.gold{color:var(--gold);}
+.hs-label{font-size:.46rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);}
+.hero-right{text-align:right;}
+.hr-suggest{font-size:.56rem;color:var(--gray-light);margin-bottom:6px;}
+.hr-suggest b{color:var(--white);}
+
+/* ── FILTER ROW ── */
+.filter-row{position:sticky;top:65px;z-index:100;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);padding:10px 40px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.fr-search{flex:1;min-width:200px;max-width:280px;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.68rem;padding:8px 12px;outline:none;transition:border-color .2s;cursor:none;}
+.fr-search:focus{border-color:var(--red);}
+.fr-search::placeholder{color:var(--gray-light);font-style:italic;}
+.fr-sep{width:1px;height:28px;background:var(--gray-mid);}
+.fr-btn{font-size:.54rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--gray-mid);background:transparent;color:var(--gray-light);cursor:none;transition:all .2s;white-space:nowrap;}
+.fr-btn:hover{color:var(--white);border-color:var(--gray-light);}
+.fr-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
+.fr-btn.free-btn.active{background:var(--green);border-color:var(--green);color:var(--black);}
+.fr-btn.live-btn.active{background:rgba(232,38,11,.15);border-color:var(--red);color:var(--red);}
+.fr-sort{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.58rem;padding:7px 10px;outline:none;cursor:none;margin-left:auto;}
+.fr-sort option{background:var(--gray);}
+.fr-count{font-size:.56rem;color:var(--gray-light);white-space:nowrap;}
+
+/* ── LAYOUT ── */
+.page-body{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 65px - 120px);}
+
+/* ── SIDEBAR FILTERS ── */
+.filters-panel{padding:24px 20px;border-right:1px solid var(--gray-mid);position:sticky;top:120px;height:calc(100vh - 120px);overflow-y:auto;}
+.fp-section{margin-bottom:22px;}
+.fp-title{font-size:.5rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+.fp-options{display:flex;flex-direction:column;gap:4px;}
+.fp-opt{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:none;transition:background .15s;}
+.fp-opt:hover{background:rgba(255,255,255,.03);}
+.fp-opt input[type=checkbox]{accent-color:var(--red);cursor:none;width:13px;height:13px;}
+.fp-opt-label{font-size:.6rem;color:rgba(245,242,238,.7);flex:1;}
+.fp-opt-count{font-size:.52rem;color:var(--gray-light);}
+.fp-range{display:flex;flex-direction:column;gap:6px;}
+.fp-range-row{display:flex;gap:6px;align-items:center;}
+.fp-range-row input[type=number]{width:70px;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.65rem;padding:5px 8px;outline:none;cursor:none;}
+.fp-range-row input:focus{border-color:var(--red);}
+.fp-range-sep{font-size:.58rem;color:var(--gray-light);}
+.fp-reset{background:none;border:none;font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);cursor:none;transition:color .2s;padding:0;margin-top:4px;}
+.fp-reset:hover{color:var(--red);}
+.fp-divider{height:1px;background:var(--gray-mid);margin:16px 0;}
+
+/* ── CATALOG ── */
+.catalog{padding:24px 32px;}
+
+/* FEATURED */
+.featured-section{margin-bottom:28px;}
+.feat-label{font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.feat-label::after{content:'';flex:1;height:1px;background:rgba(245,200,66,.15);}
+.featured-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+
+.prog-card-feat{background:var(--gray);border:1px solid var(--gray-mid);padding:20px;position:relative;overflow:hidden;cursor:none;transition:border-color .2s;}
+.prog-card-feat:hover{border-color:rgba(245,242,238,.15);}
+.prog-card-feat.gold-card{border-color:rgba(245,200,66,.2);background:linear-gradient(135deg,rgba(245,200,66,.04) 0%,var(--gray) 60%);}
+.pcf-bg{position:absolute;right:-15px;top:-5px;font-family:'Bebas Neue',sans-serif;font-size:8rem;line-height:1;color:rgba(255,255,255,.022);pointer-events:none;user-select:none;}
+.pcf-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;position:relative;}
+.pcf-badges{display:flex;gap:5px;flex-wrap:wrap;}
+.pcf-badge{font-size:.44rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid;}
+.pcf-badge.verified{color:var(--green);border-color:rgba(61,220,132,.25);background:rgba(61,220,132,.06);}
+.pcf-badge.live{color:var(--red);border-color:rgba(232,38,11,.25);background:rgba(232,38,11,.06);}
+.pcf-badge.free{color:var(--green);border-color:rgba(61,220,132,.3);background:rgba(61,220,132,.1);}
+.pcf-badge.top{color:var(--gold);border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.08);}
+.pcf-badge.nat{color:var(--blue);border-color:rgba(74,158,255,.25);}
+.pcf-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--green);line-height:1;}
+.pcf-price.free{color:var(--green);font-size:1.1rem;}
+.pcf-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1;margin-bottom:3px;position:relative;}
+.pcf-pitch{font-size:.6rem;color:rgba(245,242,238,.55);line-height:1.5;margin-bottom:12px;}
+
+/* Author row */
+.pcf-author{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.pcf-avatar{width:24px;height:24px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(3px 0%,100% 0%,100% calc(100% - 3px),calc(100% - 3px) 100%,0% 100%,0% 3px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.55rem;color:var(--black);flex-shrink:0;}
+.pcf-author-name{font-size:.58rem;font-weight:700;}
+.pcf-author-rep{font-size:.5rem;color:var(--gold);}
+.pcf-author-level{font-size:.46rem;color:var(--gray-light);}
+
+/* Stats row */
+.pcf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;background:var(--black);padding:10px;}
+.pcf-stat{text-align:center;}
+.pcf-stat-val{font-family:'Bebas Neue',sans-serif;font-size:.95rem;line-height:1;}
+.pcf-stat-val.green{color:var(--green);}
+.pcf-stat-val.gold{color:var(--gold);}
+.pcf-stat-val.red{color:var(--red);}
+.pcf-stat-label{font-size:.42rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-light);margin-top:1px;}
+.pcf-btn{width:100%;background:var(--red);border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px;clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);cursor:none;transition:background .2s;}
+.pcf-btn:hover{background:var(--red-dark);}
+.pcf-btn.free-btn-card{background:var(--green);color:var(--black);}
+.pcf-btn.free-btn-card:hover{background:#2ab868;}
+
+/* ── MAIN GRID ── */
+.catalog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ch-label{font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);}
+.ch-label b{color:var(--white);}
+
+.programs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+
+/* REGULAR CARD */
+.prog-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;position:relative;overflow:hidden;cursor:none;transition:all .2s;display:flex;flex-direction:column;}
+.prog-card:hover{border-color:rgba(245,242,238,.12);transform:translateY(-1px);}
+.prog-card.verified{border-color:rgba(61,220,132,.1);}
+.pc-bg{position:absolute;right:-8px;top:-4px;font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1;color:rgba(255,255,255,.02);pointer-events:none;user-select:none;}
+.pc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;position:relative;}
+.pc-badges{display:flex;gap:4px;flex-wrap:wrap;}
+.pc-badge{font-size:.42rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:1px 6px;border:1px solid;}
+.pc-badge.verified{color:var(--green);border-color:rgba(61,220,132,.2);}
+.pc-badge.live{color:var(--red);border-color:rgba(232,38,11,.2);}
+.pc-badge.free{color:var(--green);border-color:rgba(61,220,132,.25);background:rgba(61,220,132,.08);}
+.pc-badge.nat{color:var(--blue);border-color:rgba(74,158,255,.2);}
+.pc-price{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--green);line-height:1;flex-shrink:0;}
+.pc-price.free{font-size:.75rem;color:var(--green);}
+.pc-title{font-size:.75rem;font-weight:700;line-height:1.25;margin-bottom:3px;position:relative;}
+.pc-pitch{font-size:.57rem;color:rgba(245,242,238,.5);line-height:1.5;margin-bottom:10px;flex:1;}
+
+/* Author mini */
+.pc-author{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.pc-avatar{width:20px;height:20px;clip-path:polygon(2px 0%,100% 0%,100% calc(100% - 2px),calc(100% - 2px) 100%,0% 100%,0% 2px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.5rem;color:var(--black);flex-shrink:0;}
+.pc-author-name{font-size:.55rem;font-weight:700;flex:1;}
+.pc-author-rep{font-size:.48rem;}
+
+/* Stats mini */
+.pc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--gray-mid);margin-bottom:10px;}
+.pc-stat{background:var(--black);padding:6px;text-align:center;}
+.pc-stat-val{font-family:'Bebas Neue',sans-serif;font-size:.85rem;line-height:1;}
+.pc-stat-val.green{color:var(--green);}
+.pc-stat-val.gold{color:var(--gold);}
+.pc-stat-val.red{color:var(--red);}
+.pc-stat-label{font-size:.4rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-light);}
+.pc-btn{width:100%;background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.54rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px;cursor:none;transition:all .2s;margin-top:auto;}
+.pc-btn:hover{background:var(--red);border-color:var(--red);color:var(--white);}
+.pc-btn.free{border-color:rgba(61,220,132,.2);color:var(--green);}
+.pc-btn.free:hover{background:var(--green);color:var(--black);}
+
+/* Goal tag */
+.pc-goal{font-size:.52rem;color:var(--gray-light);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.pc-goal-val{font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:var(--red);}
+.pc-goal-delta{font-size:.5rem;color:var(--green);font-weight:700;}
+
+/* EMPTY / LOAD MORE */
+.load-more-row{display:flex;justify-content:center;margin-top:20px;}
+.load-more{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px 32px;cursor:none;transition:all .2s;}
+.load-more:hover{border-color:var(--white);color:var(--white);}
+
+/* NO RESULTS */
+.no-results{text-align:center;padding:60px 20px;color:var(--gray-light);}
+.nr-icon{font-size:3rem;margin-bottom:12px;}
+.nr-title{font-size:.8rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.nr-desc{font-size:.63rem;line-height:1.6;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.prog-card,.prog-card-feat{animation:fadeUp .3s ease both;}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-tabs">
+    <a href="fitorank-feed.html" class="nav-tab">Лента</a>
+    <a href="fitorank-diary-home.html" class="nav-tab">Дневник</a>
+    <a href="fitorank-leaderboard.html" class="nav-tab">Рекорды</a>
+    <a href="fitorank-profile-v2.html" class="nav-tab">Профиль</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-create" onclick="window.location='fitorank-program-create-v2.html'">+ Создать программу</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Каталог программ</div>
+      <div class="hero-title">Программы от<br>реальных атлетов</div>
+      <div class="hero-desc">Только верифицированные результаты. Каждая программа привязана к рекордам — видишь реальный прирост участников.</div>
+      <div class="hero-stats">
+        <div class="hs-item"><div class="hs-val red">147</div><div class="hs-label">Программ</div></div>
+        <div class="hs-item"><div class="hs-val green">4 820</div><div class="hs-label">Атлетов тренируются</div></div>
+        <div class="hs-item"><div class="hs-val gold">+38 кг</div><div class="hs-label">Средний прирост</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hr-suggest">Подбор под тебя:</div>
+      <div style="font-size:.65rem;color:rgba(245,242,238,.6);line-height:1.7;">Жим лёжа · 83 кг · Натурал<br>1RM: 120 кг → <b style="color:var(--white)">Цель: 170 кг</b></div>
+      <button style="margin-top:10px;background:transparent;border:1px solid rgba(74,158,255,.3);color:var(--blue);font-family:'Montserrat',sans-serif;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 14px;cursor:none;transition:all .2s;" onmouseover="this.style.background='rgba(74,158,255,.08)'" onmouseout="this.style.background='transparent'">✦ Показать подходящие</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER ROW -->
+<div class="filter-row">
+  <input class="fr-search" type="text" placeholder="Поиск по названию, упражнению, автору..." oninput="filterCards(this.value)">
+  <div class="fr-sep"></div>
+  <button class="fr-btn active" onclick="setExFilter(this,'all')">Все</button>
+  <button class="fr-btn" onclick="setExFilter(this,'bench')">Жим лёжа</button>
+  <button class="fr-btn" onclick="setExFilter(this,'deadlift')">Становая</button>
+  <button class="fr-btn" onclick="setExFilter(this,'squat')">Присед</button>
+  <button class="fr-btn" onclick="setExFilter(this,'ohp')">Жим стоя</button>
+  <button class="fr-btn free-btn" onclick="toggleFree(this)">🆓 Бесплатные</button>
+  <button class="fr-btn live-btn" onclick="toggleLive(this)">🔴 Живые</button>
+  <div class="fr-sep"></div>
+  <select class="fr-sort" onchange="sortCards(this.value)">
+    <option value="popular">По популярности</option>
+    <option value="rating">По рейтингу</option>
+    <option value="growth">По приросту</option>
+    <option value="new">Новые</option>
+    <option value="price_asc">Цена ↑</option>
+    <option value="price_desc">Цена ↓</option>
+  </select>
+  <div class="fr-count" id="frCount"><b>147</b> программ</div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+
+  <!-- SIDEBAR FILTERS -->
+  <div class="filters-panel">
+
+    <div class="fp-section">
+      <div class="fp-title">Упражнение</div>
+      <div class="fp-options">
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">🏆 Жим лёжа</span><span class="fp-opt-count">48</span></label>
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">🏆 Становая тяга</span><span class="fp-opt-count">34</span></label>
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">🏆 Приседания</span><span class="fp-opt-count">29</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">⭐ Жим стоя</span><span class="fp-opt-count">18</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">🏆 Подтягивания</span><span class="fp-opt-count">11</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">🎪 Цирк силы</span><span class="fp-opt-count">7</span></label>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-section">
+      <div class="fp-title">Тип программы</div>
+      <div class="fp-options">
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">📋 Стандартная</span><span class="fp-opt-count">98</span></label>
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">✅ Верифицированная</span><span class="fp-opt-count">63</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">🔴 Живая</span><span class="fp-opt-count">24</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">🆓 Бесплатные</span><span class="fp-opt-count">19</span></label>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-section">
+      <div class="fp-title">Уровень автора</div>
+      <div class="fp-options">
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">🔥 Легенда</span><span class="fp-opt-count">31</span></label>
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">💪 Мастер</span><span class="fp-opt-count">48</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">⚡ Эксперт</span><span class="fp-opt-count">54</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">🌱 Авторитет</span><span class="fp-opt-count">14</span></label>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-section">
+      <div class="fp-title">Натурал / Открытая</div>
+      <div class="fp-options">
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">🌿 Натурал</span><span class="fp-opt-count">112</span></label>
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">⚗️ Открытая</span><span class="fp-opt-count">35</span></label>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-section">
+      <div class="fp-title">Цена (USD)</div>
+      <div class="fp-range">
+        <div class="fp-range-row">
+          <input type="number" placeholder="0" min="0" id="priceMin">
+          <span class="fp-range-sep">—</span>
+          <input type="number" placeholder="99" max="999" id="priceMax">
+        </div>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-section">
+      <div class="fp-title">Длительность (нед)</div>
+      <div class="fp-range">
+        <div class="fp-range-row">
+          <input type="number" placeholder="4" min="1" id="weeksMin">
+          <span class="fp-range-sep">—</span>
+          <input type="number" placeholder="52" max="52" id="weeksMax">
+        </div>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-section">
+      <div class="fp-title">Стаж атлета</div>
+      <div class="fp-options">
+        <label class="fp-opt"><input type="checkbox" onchange="applyFilters()"><span class="fp-opt-label">1–2 года</span><span class="fp-opt-count">28</span></label>
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">3–5 лет</span><span class="fp-opt-count">61</span></label>
+        <label class="fp-opt"><input type="checkbox" checked onchange="applyFilters()"><span class="fp-opt-label">5+ лет</span><span class="fp-opt-count">58</span></label>
+      </div>
+    </div>
+
+    <button class="fp-reset" onclick="resetFilters()">↺ Сбросить фильтры</button>
+
+  </div>
+
+  <!-- CATALOG MAIN -->
+  <div class="catalog">
+
+    <!-- FEATURED -->
+    <div class="featured-section">
+      <div class="feat-label">⭐ Рекомендуется для тебя</div>
+      <div class="featured-grid">
+
+        <div class="prog-card-feat gold-card">
+          <div class="pcf-bg">ЖИМ</div>
+          <div class="pcf-top">
+            <div class="pcf-badges">
+              <span class="pcf-badge verified">✅ Верифицированная</span>
+              <span class="pcf-badge live">🔴 Живая</span>
+              <span class="pcf-badge top">⭐ Топ-1 жим</span>
+              <span class="pcf-badge nat">🌿 Натурал</span>
+            </div>
+            <div class="pcf-price">$49</div>
+          </div>
+          <div class="pcf-title">Жим 170+ кг за 6 месяцев</div>
+          <div class="pcf-pitch">Линейная периодизация для натуралов. 184 атлета уже прошли — средний прирост +43 кг.</div>
+          <div class="pcf-author">
+            <div class="pcf-avatar" style="background:linear-gradient(135deg,var(--gold),#805000);">АК</div>
+            <div>
+              <div class="pcf-author-name">Алексей Коваленко</div>
+              <div style="display:flex;gap:6px;"><span class="pcf-author-rep">🔥 Легенда · 2547 REP</span></div>
+            </div>
+          </div>
+          <div class="pcf-stats">
+            <div class="pcf-stat"><div class="pcf-stat-val green">184</div><div class="pcf-stat-label">Купили</div></div>
+            <div class="pcf-stat"><div class="pcf-stat-val gold">4.9★</div><div class="pcf-stat-label">Рейтинг</div></div>
+            <div class="pcf-stat"><div class="pcf-stat-val red">+43 кг</div><div class="pcf-stat-label">Ср. прирост</div></div>
+            <div class="pcf-stat"><div class="pcf-stat-val">24 нед</div><div class="pcf-stat-label">Длительность</div></div>
+          </div>
+          <button class="pcf-btn" onclick="window.location='fitorank-program.html'">Подробнее → $49</button>
+        </div>
+
+        <div class="prog-card-feat">
+          <div class="pcf-bg">СТАН</div>
+          <div class="pcf-top">
+            <div class="pcf-badges">
+              <span class="pcf-badge verified">✅ Верифицированная</span>
+              <span class="pcf-badge free">🆓 Бесплатная</span>
+              <span class="pcf-badge nat">🌿 Натурал</span>
+            </div>
+            <div class="pcf-price free">БЕСПЛАТНО</div>
+          </div>
+          <div class="pcf-title">Становая 200 кг · Блоковая · 16 нед</div>
+          <div class="pcf-pitch">Блоковая периодизация с акцентом на технику. Подходит для 5+ лет стажа. 97 атлетов.</div>
+          <div class="pcf-author">
+            <div class="pcf-avatar" style="background:linear-gradient(135deg,var(--blue),#003080);">СМ</div>
+            <div>
+              <div class="pcf-author-name">Сергей Михайлов</div>
+              <div style="display:flex;gap:6px;"><span class="pcf-author-rep">💪 Мастер · 1840 REP</span></div>
+            </div>
+          </div>
+          <div class="pcf-stats">
+            <div class="pcf-stat"><div class="pcf-stat-val green">97</div><div class="pcf-stat-label">Скачали</div></div>
+            <div class="pcf-stat"><div class="pcf-stat-val gold">4.7★</div><div class="pcf-stat-label">Рейтинг</div></div>
+            <div class="pcf-stat"><div class="pcf-stat-val red">+31 кг</div><div class="pcf-stat-label">Ср. прирост</div></div>
+            <div class="pcf-stat"><div class="pcf-stat-val">16 нед</div><div class="pcf-stat-label">Длительность</div></div>
+          </div>
+          <button class="pcf-btn free-btn-card" onclick="window.location='fitorank-program.html'">Добавить бесплатно</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="catalog-header">
+      <div class="ch-label">Все программы · <b id="countLbl">147</b> результатов</div>
+    </div>
+
+    <div class="programs-grid" id="programsGrid">
+
+      <!-- CARD 1 -->
+      <div class="prog-card verified" data-ex="bench" data-free="false" data-live="false">
+        <div class="pc-bg">ЖИМ</div>
+        <div class="pc-top">
+          <div class="pc-badges">
+            <span class="pc-badge verified">✅</span>
+            <span class="pc-badge nat">🌿 Натурал</span>
+          </div>
+          <div class="pc-price">$29</div>
+        </div>
+        <div class="pc-title">Жим стоя 100 кг · 12 нед</div>
+        <div class="pc-goal"><span>Цель:</span><span class="pc-goal-val">100 кг</span><span class="pc-goal-delta">↑ ср. +18 кг</span></div>
+        <div class="pc-pitch">Блоковая периодизация. Для атлетов 70–90 кг жим стоя.</div>
+        <div class="pc-author">
+          <div class="pc-avatar" style="background:linear-gradient(135deg,var(--gold),#805000);">АК</div>
+          <div class="pc-author-name">Алексей К.</div>
+          <div class="pc-author-rep" style="color:var(--gold);">🔥 2547 REP</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat"><div class="pc-stat-val green">56</div><div class="pc-stat-label">Купили</div></div>
+          <div class="pc-stat"><div class="pc-stat-val gold">4.7★</div><div class="pc-stat-label">Рейтинг</div></div>
+          <div class="pc-stat"><div class="pc-stat-val">12 нед</div><div class="pc-stat-label">Длина</div></div>
+        </div>
+        <button class="pc-btn" onclick="window.location='fitorank-program.html'">Подробнее · $29</button>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="prog-card" data-ex="squat" data-free="false" data-live="true">
+        <div class="pc-bg">ПРИСЕД</div>
+        <div class="pc-top">
+          <div class="pc-badges">
+            <span class="pc-badge live">🔴 Живая</span>
+            <span class="pc-badge nat">🌿 Натурал</span>
+          </div>
+          <div class="pc-price">$39</div>
+        </div>
+        <div class="pc-title">Приседания 180 кг · Шейко · 12 нед</div>
+        <div class="pc-goal"><span>Цель:</span><span class="pc-goal-val">180 кг</span><span class="pc-goal-delta">↑ ср. +22 кг</span></div>
+        <div class="pc-pitch">Классика пауэрлифтинга. Автор отвечает в 48ч. Лимит 20 мест.</div>
+        <div class="pc-author">
+          <div class="pc-avatar" style="background:linear-gradient(135deg,#4a9eff,#003080);">ИП</div>
+          <div class="pc-author-name">Иван П.</div>
+          <div class="pc-author-rep" style="color:var(--gold);">💪 1890 REP</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat"><div class="pc-stat-val green">43</div><div class="pc-stat-label">Купили</div></div>
+          <div class="pc-stat"><div class="pc-stat-val gold">4.8★</div><div class="pc-stat-label">Рейтинг</div></div>
+          <div class="pc-stat"><div class="pc-stat-val red">17/20</div><div class="pc-stat-label">Мест</div></div>
+        </div>
+        <button class="pc-btn" onclick="window.location='fitorank-program.html'">Подробнее · $39</button>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="prog-card" data-ex="deadlift" data-free="true" data-live="false">
+        <div class="pc-bg">ТЯГ</div>
+        <div class="pc-top">
+          <div class="pc-badges">
+            <span class="pc-badge free">🆓 Бесплатно</span>
+            <span class="pc-badge nat">🌿 Натурал</span>
+          </div>
+          <div class="pc-price free">FREE</div>
+        </div>
+        <div class="pc-title">Становая для новичков · 8 нед</div>
+        <div class="pc-goal"><span>Цель:</span><span class="pc-goal-val">120 кг</span><span class="pc-goal-delta">↑ ср. +20 кг</span></div>
+        <div class="pc-pitch">Техника + базовая прогрессия. Идеально для стажа 1–2 года.</div>
+        <div class="pc-author">
+          <div class="pc-avatar" style="background:linear-gradient(135deg,var(--green),#007040);">МД</div>
+          <div class="pc-author-name">Михаил Д.</div>
+          <div class="pc-author-rep" style="color:var(--blue);">⚡ 1120 REP</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat"><div class="pc-stat-val green">211</div><div class="pc-stat-label">Скачали</div></div>
+          <div class="pc-stat"><div class="pc-stat-val gold">4.6★</div><div class="pc-stat-label">Рейтинг</div></div>
+          <div class="pc-stat"><div class="pc-stat-val">8 нед</div><div class="pc-stat-label">Длина</div></div>
+        </div>
+        <button class="pc-btn free" onclick="window.location='fitorank-program.html'">Добавить бесплатно</button>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="prog-card verified" data-ex="bench" data-free="false" data-live="false">
+        <div class="pc-bg">ЖИМ</div>
+        <div class="pc-top">
+          <div class="pc-badges">
+            <span class="pc-badge verified">✅</span>
+            <span class="pc-badge nat">⚗️ Открытая</span>
+          </div>
+          <div class="pc-price">$59</div>
+        </div>
+        <div class="pc-title">Жим 200 кг · Конъюгат · 20 нед</div>
+        <div class="pc-goal"><span>Цель:</span><span class="pc-goal-val">200 кг</span><span class="pc-goal-delta">↑ ср. +55 кг</span></div>
+        <div class="pc-pitch">Сопряжённый метод. Открытая категория. Для опытных лифтёров 150+ кг.</div>
+        <div class="pc-author">
+          <div class="pc-avatar" style="background:linear-gradient(135deg,var(--red),#800000);">ВС</div>
+          <div class="pc-author-name">Виктор С.</div>
+          <div class="pc-author-rep" style="color:var(--gold);">🔥 3120 REP</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat"><div class="pc-stat-val green">29</div><div class="pc-stat-label">Купили</div></div>
+          <div class="pc-stat"><div class="pc-stat-val gold">4.9★</div><div class="pc-stat-label">Рейтинг</div></div>
+          <div class="pc-stat"><div class="pc-stat-val">20 нед</div><div class="pc-stat-label">Длина</div></div>
+        </div>
+        <button class="pc-btn" onclick="window.location='fitorank-program.html'">Подробнее · $59</button>
+      </div>
+
+      <!-- CARD 5 -->
+      <div class="prog-card" data-ex="ohp" data-free="false" data-live="false">
+        <div class="pc-bg">ОХП</div>
+        <div class="pc-top">
+          <div class="pc-badges">
+            <span class="pc-badge nat">🌿 Натурал</span>
+          </div>
+          <div class="pc-price">$19</div>
+        </div>
+        <div class="pc-title">Жим стоя 80 кг · Волновая · 8 нед</div>
+        <div class="pc-goal"><span>Цель:</span><span class="pc-goal-val">80 кг</span><span class="pc-goal-delta">↑ ср. +12 кг</span></div>
+        <div class="pc-pitch">Линейно-волновая нагрузка. Для атлетов с базой 60–70 кг жим стоя.</div>
+        <div class="pc-author">
+          <div class="pc-avatar" style="background:linear-gradient(135deg,#888,#333);">НК</div>
+          <div class="pc-author-name">Николай К.</div>
+          <div class="pc-author-rep" style="color:var(--blue);">⚡ 980 REP</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat"><div class="pc-stat-val green">67</div><div class="pc-stat-label">Купили</div></div>
+          <div class="pc-stat"><div class="pc-stat-val gold">4.5★</div><div class="pc-stat-label">Рейтинг</div></div>
+          <div class="pc-stat"><div class="pc-stat-val">8 нед</div><div class="pc-stat-label">Длина</div></div>
+        </div>
+        <button class="pc-btn" onclick="window.location='fitorank-program.html'">Подробнее · $19</button>
+      </div>
+
+      <!-- CARD 6 -->
+      <div class="prog-card" data-ex="squat" data-free="true" data-live="false">
+        <div class="pc-bg">ПРИСЕД</div>
+        <div class="pc-top">
+          <div class="pc-badges">
+            <span class="pc-badge free">🆓 Бесплатно</span>
+            <span class="pc-badge verified">✅</span>
+          </div>
+          <div class="pc-price free">FREE</div>
+        </div>
+        <div class="pc-title">Приседания 140 кг · Линейная · 10 нед</div>
+        <div class="pc-goal"><span>Цель:</span><span class="pc-goal-val">140 кг</span><span class="pc-goal-delta">↑ ср. +15 кг</span></div>
+        <div class="pc-pitch">Базовая линейная прогрессия. Верифицированные результаты 88 атлетов.</div>
+        <div class="pc-author">
+          <div class="pc-avatar" style="background:linear-gradient(135deg,var(--gold),#805000);">ДВ</div>
+          <div class="pc-author-name">Дмитрий В.</div>
+          <div class="pc-author-rep" style="color:var(--gold);">💪 1560 REP</div>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat"><div class="pc-stat-val green">88</div><div class="pc-stat-label">Скачали</div></div>
+          <div class="pc-stat"><div class="pc-stat-val gold">4.6★</div><div class="pc-stat-label">Рейтинг</div></div>
+          <div class="pc-stat"><div class="pc-stat-val">10 нед</div><div class="pc-stat-label">Длина</div></div>
+        </div>
+        <button class="pc-btn free">Добавить бесплатно</button>
+      </div>
+
+    </div>
+
+    <div class="load-more-row">
+      <button class="load-more" onclick="alert('Загрузка следующих программ...')">Показать ещё программы</button>
+    </div>
+
+  </div><!-- /catalog -->
+
+</div><!-- /page-body -->
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),trail=document.getElementById('trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx+'px';trail.style.top=ty+'px';requestAnimationFrame(loop);})();
+
+// FILTER STATE
+let activeEx='all', showFreeOnly=false, showLiveOnly=false;
+
+function setExFilter(btn,ex){
+  document.querySelectorAll('.fr-btn:not(.free-btn):not(.live-btn)').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  activeEx=ex;
+  applyFilters();
+}
+function toggleFree(btn){
+  showFreeOnly=!showFreeOnly;
+  btn.classList.toggle('active',showFreeOnly);
+  applyFilters();
+}
+function toggleLive(btn){
+  showLiveOnly=!showLiveOnly;
+  btn.classList.toggle('active',showLiveOnly);
+  applyFilters();
+}
+function filterCards(q){applyFilters(q);}
+
+function applyFilters(q=''){
+  const cards=document.querySelectorAll('#programsGrid .prog-card');
+  let visible=0;
+  cards.forEach(c=>{
+    const exMatch=activeEx==='all'||c.dataset.ex===activeEx;
+    const freeMatch=!showFreeOnly||c.dataset.free==='true';
+    const liveMatch=!showLiveOnly||c.dataset.live==='true';
+    const searchMatch=!q||c.textContent.toLowerCase().includes(q.toLowerCase());
+    const show=exMatch&&freeMatch&&liveMatch&&searchMatch;
+    c.style.display=show?'flex':'none';
+    if(show)visible++;
+  });
+  document.getElementById('countLbl').textContent=visible;
+  document.getElementById('frCount').innerHTML=`<b>${visible}</b> программ`;
+}
+
+function sortCards(val){
+  // Visual sort feedback — in real app would re-fetch from API
+  const grid=document.getElementById('programsGrid');
+  const cards=[...grid.querySelectorAll('.prog-card')];
+  grid.innerHTML='';
+  cards.forEach(c=>grid.appendChild(c));
+}
+
+function resetFilters(){
+  activeEx='all';showFreeOnly=false;showLiveOnly=false;
+  document.querySelectorAll('.fr-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.fr-btn').classList.add('active');
+  document.querySelectorAll('.fp-opt input').forEach(i=>i.checked=true);
+  applyFilters();
+}
+
+function applyFilters(){
+  const q=document.querySelector('.fr-search').value;
+  const cards=document.querySelectorAll('#programsGrid .prog-card');
+  let visible=0;
+  cards.forEach(c=>{
+    const exMatch=activeEx==='all'||c.dataset.ex===activeEx;
+    const freeMatch=!showFreeOnly||c.dataset.free==='true';
+    const liveMatch=!showLiveOnly||c.dataset.live==='true';
+    const searchMatch=!q||c.textContent.toLowerCase().includes(q.toLowerCase());
+    const show=exMatch&&freeMatch&&liveMatch&&searchMatch;
+    c.style.display=show?'flex':'none';
+    if(show)visible++;
+  });
+  document.getElementById('countLbl').textContent=visible;
+  document.getElementById('frCount').innerHTML=`<b>${visible}</b> программ`;
+}
+</script>
+</body>
+</html>

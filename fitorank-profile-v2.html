@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Мой профиль</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:10px;height:10px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);}
+.cursor-trail{width:32px;height:32px;border:1px solid rgba(232,38,11,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .14s ease;transform:translate(-50%,-50%);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;cursor:none;}
+.logo span{color:var(--red);}
+.nav-tabs{display:flex;align-items:stretch;}
+.nav-tab{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:0 18px;color:var(--gray-light);text-decoration:none;cursor:none;transition:color .2s;display:flex;align-items:center;border-bottom:2px solid transparent;}
+.nav-tab:hover{color:var(--white);}
+.nav-tab.active{color:var(--white);border-bottom-color:var(--red);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-edit{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 14px;cursor:none;transition:all .2s;}
+.nav-edit:hover{border-color:var(--white);color:var(--white);}
+
+/* ── HERO ── */
+.hero{padding-top:65px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,38,11,.07) 0%,rgba(245,200,66,.04) 50%,transparent 100%);}
+.hero-bg-num{position:absolute;right:-20px;top:-10px;font-family:'Bebas Neue',sans-serif;font-size:22rem;line-height:1;color:rgba(255,255,255,.018);pointer-events:none;user-select:none;}
+.hero-inner{position:relative;z-index:1;padding:36px 40px 28px;}
+
+/* GRACE PERIOD BANNER */
+.grace-banner{background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.2);padding:12px 16px;display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+.gb-icon{font-size:1.4rem;flex-shrink:0;}
+.gb-text{flex:1;}
+.gb-title{font-size:.62rem;font-weight:700;color:var(--gold);margin-bottom:2px;}
+.gb-desc{font-size:.58rem;color:rgba(245,242,238,.6);line-height:1.5;}
+.gb-timer{text-align:right;flex-shrink:0;}
+.gb-days{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;}
+.gb-days-label{font-size:.46rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,200,66,.6);}
+.gb-progress{height:2px;background:rgba(245,200,66,.15);margin-top:8px;}
+.gb-progress-fill{height:100%;background:var(--gold);transition:width .6s ease;}
+
+/* PROFILE TOP */
+.profile-top{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:flex-start;}
+.avatar-wrap{position:relative;}
+.avatar{width:80px;height:80px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--black);}
+.avatar-rank{position:absolute;bottom:-6px;right:-6px;background:var(--red);clip-path:polygon(3px 0%,100% 0%,calc(100% - 3px) 100%,0% 100%);font-size:.46rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;color:var(--white);}
+
+.profile-info{}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1;margin-bottom:4px;}
+.profile-handle{font-size:.62rem;color:var(--gray-light);margin-bottom:8px;}
+.profile-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.ptag{font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border:1px solid;}
+.ptag.nat{color:var(--green);border-color:rgba(61,220,132,.25);background:rgba(61,220,132,.06);}
+.ptag.cat{color:var(--blue);border-color:rgba(74,158,255,.25);background:rgba(74,158,255,.06);}
+.ptag.age{color:var(--gray-light);border-color:var(--gray-mid);}
+.ptag.freak{color:var(--red);border-color:rgba(232,38,11,.25);background:rgba(232,38,11,.06);}
+.profile-bio{font-size:.65rem;color:rgba(245,242,238,.6);line-height:1.6;max-width:480px;}
+
+/* REP BLOCK */
+.rep-block{text-align:right;}
+.rb-level{font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.rb-val{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;line-height:1;color:var(--gold);}
+.rb-label{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:8px;}
+.rb-next{font-size:.54rem;color:var(--gray-light);margin-bottom:6px;}
+.rb-next b{color:var(--white);}
+
+/* REP PROGRESS BAR */
+.rep-bar-wrap{width:180px;margin-left:auto;}
+.rep-bar{height:4px;background:var(--gray-mid);position:relative;margin-bottom:3px;}
+.rep-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),#e8a800);transition:width .8s ease;}
+.rep-bar-labels{display:flex;justify-content:space-between;font-size:.46rem;color:var(--gray-light);}
+
+/* QUICK STATS ROW */
+.quick-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--gray-mid);margin-top:24px;}
+.qs-item{background:var(--black);padding:14px 16px;text-align:center;}
+.qs-val{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1;margin-bottom:2px;}
+.qs-val.red{color:var(--red);}
+.qs-val.green{color:var(--green);}
+.qs-val.gold{color:var(--gold);}
+.qs-val.blue{color:var(--blue);}
+.qs-label{font-size:.46rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);}
+
+/* ── TABS ── */
+.tabs-bar{background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);padding:0 40px;display:flex;gap:0;position:sticky;top:65px;z-index:100;}
+.tab-btn{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:14px 20px;color:var(--gray-light);background:none;border:none;border-bottom:2px solid transparent;cursor:none;transition:all .2s;white-space:nowrap;}
+.tab-btn:hover{color:rgba(245,242,238,.7);}
+.tab-btn.active{color:var(--white);border-bottom-color:var(--red);}
+.tab-count{font-size:.48rem;background:var(--gray-mid);color:var(--gray-light);padding:1px 5px;margin-left:5px;}
+.tab-btn.active .tab-count{background:var(--red);color:var(--white);}
+
+/* ── CONTENT ── */
+.content{padding:32px 40px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;display:flex;align-items:center;gap:14px;}
+.sec-title::after{content:'';display:block;width:60px;height:1px;background:var(--gray-mid);}
+.sec-tag{font-size:.5rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--red);}
+.sec-action{font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);background:none;border:1px solid var(--gray-mid);padding:5px 12px;cursor:none;transition:all .2s;}
+.sec-action:hover{color:var(--white);border-color:var(--gray-light);}
+
+/* ── RECORDS ── */
+.records-section{margin-bottom:40px;}
+.records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.rec-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;position:relative;overflow:hidden;cursor:none;transition:border-color .2s;}
+.rec-card:hover{border-color:rgba(245,242,238,.15);}
+.rec-card.top{border-color:rgba(245,200,66,.2);}
+.rec-card-bg{position:absolute;right:-8px;bottom:-8px;font-size:4.5rem;opacity:.05;pointer-events:none;}
+.rc-rank{font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+.rc-rank.gold{color:var(--gold);}
+.rc-rank.silver{color:#aaa;}
+.rc-rank.bronze{color:#cd7f32;}
+.rc-ex{font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.rc-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;margin-bottom:2px;}
+.rc-date{font-size:.52rem;color:var(--gray-light);}
+.rc-date span{color:var(--blue);}
+.rc-delta{font-size:.56rem;font-weight:700;color:var(--green);margin-top:4px;}
+.rc-cat{font-size:.48rem;color:var(--gray-light);margin-top:2px;}
+
+/* Freak section */
+.freak-section{margin-bottom:40px;}
+.freak-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.freak-title-wrap{display:flex;align-items:center;gap:10px;}
+.freak-badge{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;background:rgba(232,38,11,.1);border:1px solid rgba(232,38,11,.2);color:var(--red);}
+
+/* ── BADGES ── */
+.badges-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:32px;}
+.badge-card{background:var(--gray);border:1px solid var(--gray-mid);padding:14px;text-align:center;position:relative;cursor:none;transition:all .2s;}
+.badge-card:hover{border-color:rgba(245,242,238,.15);}
+.badge-card.locked{opacity:.35;filter:grayscale(1);}
+.badge-icon{font-size:1.8rem;margin-bottom:6px;}
+.badge-name{font-size:.54rem;font-weight:700;color:var(--white);margin-bottom:2px;}
+.badge-desc{font-size:.48rem;color:var(--gray-light);line-height:1.4;}
+.badge-date{font-size:.46rem;color:var(--gray-light);margin-top:4px;}
+.badge-new{position:absolute;top:6px;right:6px;font-size:.42rem;font-weight:700;letter-spacing:.08em;background:var(--red);color:var(--white);padding:1px 5px;}
+
+.quests-section{margin-bottom:32px;}
+.quest-list{display:flex;flex-direction:column;gap:6px;}
+.quest-item{background:var(--gray);border:1px solid var(--gray-mid);padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;}
+.qi-icon{font-size:1.4rem;}
+.qi-info{}
+.qi-name{font-size:.68rem;font-weight:700;margin-bottom:3px;}
+.qi-desc{font-size:.56rem;color:var(--gray-light);line-height:1.4;}
+.qi-bar{height:2px;background:var(--gray-mid);margin-top:6px;}
+.qi-bar-fill{height:100%;background:var(--red);transition:width .6s ease;}
+.qi-right{text-align:right;flex-shrink:0;}
+.qi-rep{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold);}
+.qi-rep-label{font-size:.46rem;color:var(--gold);opacity:.6;}
+.qi-progress{font-size:.52rem;color:var(--gray-light);margin-top:3px;}
+.qi-done{font-size:.56rem;font-weight:700;color:var(--green);}
+
+/* ── PROGRAMS (author) ── */
+.my-programs{display:flex;flex-direction:column;gap:8px;}
+.mp-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;cursor:none;transition:border-color .2s;}
+.mp-card:hover{border-color:rgba(245,242,238,.12);}
+.mp-title{font-size:.78rem;font-weight:700;margin-bottom:4px;}
+.mp-meta{font-size:.56rem;color:var(--gray-light);margin-bottom:8px;}
+.mp-stats{display:flex;gap:14px;}
+.mps-item{font-size:.58rem;}
+.mps-val{font-family:'Bebas Neue',sans-serif;font-size:.9rem;}
+.mps-val.green{color:var(--green);}
+.mps-val.gold{color:var(--gold);}
+.mps-label{font-size:.46rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.08em;}
+.mp-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.mp-price{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--green);}
+.mp-status{font-size:.48rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid;}
+.mp-status.live{color:var(--green);border-color:rgba(61,220,132,.25);}
+.mp-status.draft{color:var(--gray-light);border-color:var(--gray-mid);}
+.mp-earnings{font-size:.58rem;color:var(--gray-light);}
+.mp-earnings b{color:var(--green);}
+
+/* ── STATS TAB ── */
+.stats-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.stats-card{background:var(--gray);border:1px solid var(--gray-mid);padding:18px;}
+.sc-title{font-size:.52rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;}
+.stats-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.stats-row:last-child{border-bottom:none;}
+.sr-label{font-size:.63rem;color:rgba(245,242,238,.7);}
+.sr-val{font-size:.68rem;font-weight:700;}
+.sr-val.green{color:var(--green);}
+.sr-val.gold{color:var(--gold);}
+.sr-val.red{color:var(--red);}
+
+/* heatmap */
+.heatmap-wrap{background:var(--gray);border:1px solid var(--gray-mid);padding:18px;margin-bottom:16px;}
+.hm-title{font-size:.52rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+.hm-grid{display:flex;gap:3px;flex-wrap:wrap;}
+.hm-cell{width:12px;height:12px;background:var(--gray-mid);transition:background .2s;}
+.hm-cell.l1{background:rgba(232,38,11,.25);}
+.hm-cell.l2{background:rgba(232,38,11,.5);}
+.hm-cell.l3{background:rgba(232,38,11,.75);}
+.hm-cell.l4{background:var(--red);}
+.hm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.5rem;color:var(--gray-light);}
+.hm-legend-cell{width:10px;height:10px;}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-tabs">
+    <a href="fitorank-feed.html" class="nav-tab">Лента</a>
+    <a href="fitorank-diary-home.html" class="nav-tab">Дневник</a>
+    <a href="fitorank-leaderboard.html" class="nav-tab">Рекорды</a>
+    <a href="#" class="nav-tab active">Профиль</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-edit">✏️ Редактировать</button>
+    <a href="fitorank-public-profile.html" style="font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);text-decoration:none;border:1px solid var(--gray-mid);padding:7px 14px;cursor:none;transition:all .2s;" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--gray-light)'">👁 Как видят другие</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-num">АК</div>
+  <div class="hero-inner">
+
+    <!-- GRACE PERIOD BANNER -->
+    <div class="grace-banner">
+      <div class="gb-icon">⏳</div>
+      <div class="gb-text">
+        <div class="gb-title">Grace Period — Легенда под угрозой</div>
+        <div class="gb-desc">Порог уровня Легенда повышен с 2500 до 3000 REP. У тебя есть время набрать недостающие <b style="color:var(--gold)">453 REP</b> — тренируйся, публикуй рекорды, продавай программы.</div>
+        <div class="gb-progress" style="margin-top:8px;"><div class="gb-progress-fill" style="width:74%"></div></div>
+      </div>
+      <div class="gb-timer">
+        <div class="gb-days">47</div>
+        <div class="gb-days-label">дней осталось</div>
+      </div>
+    </div>
+
+    <!-- PROFILE TOP -->
+    <div class="profile-top">
+      <div class="avatar-wrap">
+        <div class="avatar">АК</div>
+        <div class="avatar-rank">Легенда</div>
+      </div>
+
+      <div class="profile-info">
+        <div class="profile-name">Алексей Коваленко</div>
+        <div class="profile-handle">@alexkovalenko · Москва · В FitoRank с января 2024</div>
+        <div class="profile-tags">
+          <span class="ptag nat">🌿 Натурал</span>
+          <span class="ptag cat">83 кг</span>
+          <span class="ptag age">29 лет</span>
+          <span class="ptag freak">🎪 Фрик-чемпион</span>
+        </div>
+        <div class="profile-bio">Пауэрлифтинг 7 лет. Специализация — жим лёжа. Автор 2 программ, суммарно 240+ атлетов. Верю в технику и терпение.</div>
+      </div>
+
+      <div class="rep-block">
+        <div class="rb-level">🔥 Легенда · Grace Period</div>
+        <div class="rb-val">2547</div>
+        <div class="rb-label">REP</div>
+        <div class="rb-next">До <b>3000 REP</b> осталось <b style="color:var(--gold)">453</b></div>
+        <div class="rep-bar-wrap">
+          <div class="rep-bar"><div class="rep-bar-fill" style="width:74%"></div></div>
+          <div class="rep-bar-labels"><span>2500</span><span>2547</span><span>3000</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK STATS -->
+    <div class="quick-stats">
+      <div class="qs-item">
+        <div class="qs-val red">47</div>
+        <div class="qs-label">Рекордов</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-val green">240</div>
+        <div class="qs-label">Купили программы</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-val gold">$3 840</div>
+        <div class="qs-label">Заработано</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-val blue">312</div>
+        <div class="qs-label">Подписчиков</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-val" style="color:var(--white);">14</div>
+        <div class="qs-label">Серия дней 🔥</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab(this,'records')">Рекорды <span class="tab-count">47</span></button>
+  <button class="tab-btn" onclick="switchTab(this,'badges')">Бейджи и квесты <span class="tab-count">12</span></button>
+  <button class="tab-btn" onclick="switchTab(this,'programs')">Мои программы <span class="tab-count">2</span></button>
+  <button class="tab-btn" onclick="switchTab(this,'stats')">Статистика</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ═══ RECORDS TAB ═══ -->
+  <div class="tab-panel active" id="tab-records">
+
+    <!-- ОСНОВНЫЕ РЕКОРДЫ -->
+    <div class="records-section">
+      <div class="sec-header">
+        <div>
+          <div class="sec-tag">Основные рекорды</div>
+          <div class="sec-title">Золотой стандарт</div>
+        </div>
+        <button class="sec-action" onclick="window.location='fitorank-add-record.html'">+ Добавить рекорд</button>
+      </div>
+      <div class="records-grid">
+
+        <div class="rec-card top">
+          <div class="rec-card-bg">🏆</div>
+          <div class="rc-rank gold">🥇 #3 в категории 83 кг · Натурал</div>
+          <div class="rc-ex"><span>🏆</span> Жим лёжа</div>
+          <div class="rc-val" style="color:var(--gold)">135 кг</div>
+          <div class="rc-date">8 марта 2026 · <span>Возраст 29 лет</span></div>
+          <div class="rc-cat">Категория 83 кг · Натурал · Москва</div>
+          <div class="rc-delta">↑ +15 кг за 8 недель программы</div>
+        </div>
+
+        <div class="rec-card">
+          <div class="rec-card-bg">🏆</div>
+          <div class="rc-rank silver">🥈 #8 в категории 83 кг · Натурал</div>
+          <div class="rc-ex"><span>🏆</span> Становая тяга классика</div>
+          <div class="rc-val">175 кг</div>
+          <div class="rc-date">6 марта 2026 · <span>Возраст 29 лет</span></div>
+          <div class="rc-cat">Категория 83 кг · Натурал · Москва</div>
+          <div class="rc-delta">↑ +25 кг за 3 недели</div>
+        </div>
+
+        <div class="rec-card">
+          <div class="rec-card-bg">🏆</div>
+          <div class="rc-rank">Топ-20 в категории 83 кг</div>
+          <div class="rc-ex"><span>🏆</span> Приседания со штангой</div>
+          <div class="rc-val">160 кг</div>
+          <div class="rc-date">15 февраля 2026 · <span>Возраст 29 лет</span></div>
+          <div class="rc-cat">Категория 83 кг · Натурал · Москва</div>
+          <div class="rc-delta">= Без изменений 6 недель</div>
+        </div>
+
+        <div class="rec-card">
+          <div class="rec-card-bg">⭐</div>
+          <div class="rc-rank">Топ-15 · Признанные</div>
+          <div class="rc-ex"><span>⭐</span> Жим стоя</div>
+          <div class="rc-val">95 кг</div>
+          <div class="rc-date">10 марта 2026 · <span>Возраст 29 лет</span></div>
+          <div class="rc-cat">Категория 83 кг · Натурал</div>
+          <div class="rc-delta">↑ +5 кг за месяц</div>
+        </div>
+
+        <div class="rec-card">
+          <div class="rec-card-bg">⭐</div>
+          <div class="rc-rank">Топ-30</div>
+          <div class="rc-ex"><span>⭐</span> Подтягивания (макс. повторений)</div>
+          <div class="rc-val">24 раза</div>
+          <div class="rc-date">1 февраля 2026 · <span>Возраст 28 лет</span></div>
+          <div class="rc-cat">Категория 83 кг · Натурал</div>
+          <div class="rc-delta">↑ +3 повторения</div>
+        </div>
+
+        <div class="rec-card" style="border:1px dashed var(--gray-mid);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;">
+          <div style="font-size:1.4rem;color:var(--gray-mid);">＋</div>
+          <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);">Добавить рекорд</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ЦИРК СИЛЫ -->
+    <div class="freak-section">
+      <div class="sec-header">
+        <div>
+          <div class="sec-tag">Цирк силы</div>
+          <div class="freak-title-wrap">
+            <div class="sec-title">Фрик-рекорды</div>
+            <span class="freak-badge">🎪 Фрик-чемпион</span>
+          </div>
+        </div>
+        <button class="sec-action">+ Фрик-рекорд</button>
+      </div>
+      <div style="background:rgba(232,38,11,.04);border:1px solid rgba(232,38,11,.12);padding:10px 14px;font-size:.6rem;color:rgba(245,242,238,.55);margin-bottom:12px;line-height:1.6;">
+        🎪 Фрик-рекорды — отдельная вселенная. Не влияют на основной рейтинг. REP начисляется после 7 дней без побития рекорда.
+      </div>
+      <div class="records-grid">
+
+        <div class="rec-card pr" style="border-left:3px solid var(--red);">
+          <div class="rec-card-bg">🎪</div>
+          <div class="rc-rank" style="color:var(--red);">🥇 #1 в мире · Цирк силы</div>
+          <div class="rc-ex"><span>🎪</span> Подтягивания на 2 пальцах</div>
+          <div class="rc-val" style="color:var(--red)">7 раз</div>
+          <div class="rc-date">20 февраля 2026 · <span>Возраст 29 лет</span></div>
+          <div style="font-size:.52rem;color:var(--green);margin-top:6px;font-weight:700;">✓ REP зачтён · +30 REP · Топ-3 90+ дней</div>
+        </div>
+
+        <div class="rec-card" style="border-left:3px solid rgba(232,38,11,.3);">
+          <div class="rec-card-bg">🎪</div>
+          <div class="rc-rank" style="color:var(--red);">🥈 #2 в мире · Цирк силы</div>
+          <div class="rc-ex"><span>🎪</span> Отжимания на 3 пальцах</div>
+          <div class="rc-val">32 раза</div>
+          <div class="rc-date">5 марта 2026 · <span>Возраст 29 лет</span></div>
+          <div style="font-size:.52rem;color:var(--gold);margin-top:6px;font-weight:700;">⏳ REP-карантин · День 6 из 7</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ BADGES TAB ═══ -->
+  <div class="tab-panel" id="tab-badges">
+
+    <!-- БЕЙДЖИ -->
+    <div class="sec-header">
+      <div>
+        <div class="sec-tag">Достижения</div>
+        <div class="sec-title">Бейджи</div>
+      </div>
+    </div>
+
+    <div class="badges-grid">
+      <div class="badge-card">
+        <div class="badge-new">NEW</div>
+        <div class="badge-icon">🔥</div>
+        <div class="badge-name">Серия 14 дней</div>
+        <div class="badge-desc">14 тренировок подряд без пропусков</div>
+        <div class="badge-date">Сегодня</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">🏆</div>
+        <div class="badge-name">Топ-3 жим</div>
+        <div class="badge-desc">#3 в категории 83 кг · Натурал</div>
+        <div class="badge-date">8 марта 2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">🎪</div>
+        <div class="badge-name">Фрик-чемпион</div>
+        <div class="badge-desc">#1 в мире · Подтягивания на 2 пальцах</div>
+        <div class="badge-date">20 фев 2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">💰</div>
+        <div class="badge-name">Первая продажа</div>
+        <div class="badge-desc">Программу купил первый атлет</div>
+        <div class="badge-date">15 апр 2024</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">📈</div>
+        <div class="badge-name">+100 покупателей</div>
+        <div class="badge-desc">100 атлетов купили программу</div>
+        <div class="badge-date">3 дек 2024</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">⚡</div>
+        <div class="badge-name">Легенда</div>
+        <div class="badge-desc">Достигнут уровень Легенда (2500 REP)</div>
+        <div class="badge-date">10 янв 2026</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="badge-icon">🌍</div>
+        <div class="badge-name">Топ-1 в мире</div>
+        <div class="badge-desc">#1 в любом упражнении глобально</div>
+        <div class="badge-date">Не получен</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="badge-icon">💎</div>
+        <div class="badge-name">$10 000</div>
+        <div class="badge-desc">Заработано на программах</div>
+        <div class="badge-date">$3 840 / $10 000</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="badge-icon">🧪</div>
+        <div class="badge-name">Основатель движения</div>
+        <div class="badge-desc">Добавил упражнение + 10 рекордов от других</div>
+        <div class="badge-date">Не получен</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="badge-icon">👑</div>
+        <div class="badge-name">Серия 30 дней</div>
+        <div class="badge-desc">30 тренировок подряд без пропусков</div>
+        <div class="badge-date">14 / 30 дней</div>
+      </div>
+    </div>
+
+    <!-- КВЕСТЫ -->
+    <div class="quests-section">
+      <div class="sec-header">
+        <div>
+          <div class="sec-tag">В процессе</div>
+          <div class="sec-title">Активные квесты</div>
+        </div>
+      </div>
+      <div class="quest-list">
+
+        <div class="quest-item">
+          <div class="qi-icon">🔥</div>
+          <div class="qi-info">
+            <div class="qi-name">Серия 30 дней подряд</div>
+            <div class="qi-desc">Тренируйся 30 дней без пропусков → бейдж + +200 REP</div>
+            <div class="qi-bar"><div class="qi-bar-fill" style="width:47%"></div></div>
+          </div>
+          <div class="qi-right">
+            <div class="qi-rep">+200</div>
+            <div class="qi-rep-label">REP</div>
+            <div class="qi-progress">14 / 30 дней</div>
+          </div>
+        </div>
+
+        <div class="quest-item">
+          <div class="qi-icon">💰</div>
+          <div class="qi-info">
+            <div class="qi-name">$10 000 на программах</div>
+            <div class="qi-desc">Суммарный заработок с продаж программ → бейдж Легенда-продавец</div>
+            <div class="qi-bar"><div class="qi-bar-fill" style="width:38%;background:var(--green)"></div></div>
+          </div>
+          <div class="qi-right">
+            <div class="qi-rep" style="color:var(--green);">+500</div>
+            <div class="qi-rep-label" style="color:var(--green);">REP</div>
+            <div class="qi-progress">$3 840 / $10 000</div>
+          </div>
+        </div>
+
+        <div class="quest-item">
+          <div class="qi-icon">🎪</div>
+          <div class="qi-info">
+            <div class="qi-name">Основатель движения</div>
+            <div class="qi-desc">Предложи новое упражнение и получи 10 рекордов от других атлетов → именной бейдж</div>
+            <div class="qi-bar"><div class="qi-bar-fill" style="width:0%;background:var(--red)"></div></div>
+          </div>
+          <div class="qi-right">
+            <div class="qi-rep">+100</div>
+            <div class="qi-rep-label">REP</div>
+            <div class="qi-progress">0 / 10 рекордов</div>
+          </div>
+        </div>
+
+        <div class="quest-item" style="border-color:rgba(61,220,132,.2);background:rgba(61,220,132,.03);">
+          <div class="qi-icon">🏆</div>
+          <div class="qi-info">
+            <div class="qi-name">Топ-3 жим лёжа · Выполнено</div>
+            <div class="qi-desc">Занял #3 место в категории 83 кг · Натурал</div>
+            <div class="qi-bar"><div class="qi-bar-fill" style="width:100%;background:var(--green)"></div></div>
+          </div>
+          <div class="qi-right">
+            <div class="qi-done">✓ +150 REP</div>
+            <div class="qi-progress" style="color:var(--green);">8 марта 2026</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ PROGRAMS TAB ═══ -->
+  <div class="tab-panel" id="tab-programs">
+
+    <div class="sec-header">
+      <div>
+        <div class="sec-tag">Я — автор</div>
+        <div class="sec-title">Мои программы</div>
+      </div>
+      <button class="sec-action" onclick="window.location='fitorank-program-create-v2.html'">+ Создать программу</button>
+    </div>
+
+    <div class="my-programs">
+
+      <div class="mp-card">
+        <div>
+          <div class="mp-title">Жим 170+ кг за 6 месяцев</div>
+          <div class="mp-meta">Жим лёжа · 24 недели · Линейная периодизация · Натурал · Верифицированная</div>
+          <div class="mp-stats">
+            <div class="mps-item">
+              <div class="mps-val green">184</div>
+              <div class="mps-label">Купили</div>
+            </div>
+            <div class="mps-item">
+              <div class="mps-val gold">4.9 ★</div>
+              <div class="mps-label">Рейтинг</div>
+            </div>
+            <div class="mps-item">
+              <div class="mps-val">+43 кг</div>
+              <div class="mps-label">Ср. прирост</div>
+            </div>
+            <div class="mps-item">
+              <div class="mps-val" style="color:var(--blue)">78%</div>
+              <div class="mps-label">Завершили</div>
+            </div>
+          </div>
+        </div>
+        <div class="mp-right">
+          <div class="mp-price">$29</div>
+          <div class="mp-status live">● Активна</div>
+          <div class="mp-earnings">Заработано: <b>$2 987</b></div>
+        </div>
+      </div>
+
+      <div class="mp-card">
+        <div>
+          <div class="mp-title">Жим стоя 100 кг · 12 недель</div>
+          <div class="mp-meta">Жим стоя · 12 недель · Блоковая периодизация · Натурал</div>
+          <div class="mp-stats">
+            <div class="mps-item">
+              <div class="mps-val green">56</div>
+              <div class="mps-label">Купили</div>
+            </div>
+            <div class="mps-item">
+              <div class="mps-val gold">4.7 ★</div>
+              <div class="mps-label">Рейтинг</div>
+            </div>
+            <div class="mps-item">
+              <div class="mps-val">+18 кг</div>
+              <div class="mps-label">Ср. прирост</div>
+            </div>
+            <div class="mps-item">
+              <div class="mps-val" style="color:var(--blue)">65%</div>
+              <div class="mps-label">Завершили</div>
+            </div>
+          </div>
+        </div>
+        <div class="mp-right">
+          <div class="mp-price">$19</div>
+          <div class="mp-status live">● Активна</div>
+          <div class="mp-earnings">Заработано: <b>$853</b></div>
+        </div>
+      </div>
+
+      <div class="mp-card" style="opacity:.6;">
+        <div>
+          <div class="mp-title">Становая 200+ кг · Блоковая</div>
+          <div class="mp-meta">Становая тяга · 16 недель · В разработке</div>
+          <div class="mp-stats">
+            <div class="mps-item"><div class="mps-val" style="color:var(--gray-light)">—</div><div class="mps-label">Купили</div></div>
+          </div>
+        </div>
+        <div class="mp-right">
+          <div class="mp-price" style="color:var(--gray-light)">$?</div>
+          <div class="mp-status draft">Черновик</div>
+          <div class="mp-earnings" style="color:var(--gray-light)">Не опубликовано</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ═══ STATS TAB ═══ -->
+  <div class="tab-panel" id="tab-stats">
+
+    <!-- HEATMAP -->
+    <div class="heatmap-wrap">
+      <div class="hm-title">Тренировочная активность — последние 6 месяцев</div>
+      <div class="hm-grid" id="heatmap"></div>
+      <div class="hm-legend">
+        <span>Меньше</span>
+        <div class="hm-cell hm-legend-cell" style="background:var(--gray-mid)"></div>
+        <div class="hm-cell hm-legend-cell l1"></div>
+        <div class="hm-cell hm-legend-cell l2"></div>
+        <div class="hm-cell hm-legend-cell l3"></div>
+        <div class="hm-cell hm-legend-cell l4"></div>
+        <span>Больше</span>
+      </div>
+    </div>
+
+    <div class="stats-layout">
+      <div class="stats-card">
+        <div class="sc-title">Тренировки</div>
+        <div class="stats-row"><div class="sr-label">Всего тренировок</div><div class="sr-val green">284</div></div>
+        <div class="stats-row"><div class="sr-label">За последние 30 дней</div><div class="sr-val">28</div></div>
+        <div class="stats-row"><div class="sr-label">Средняя длительность</div><div class="sr-val">68 мин</div></div>
+        <div class="stats-row"><div class="sr-label">Лучшая серия</div><div class="sr-val gold">14 дней 🔥</div></div>
+        <div class="stats-row"><div class="sr-label">Пропусков всего</div><div class="sr-val red">12</div></div>
+        <div class="stats-row"><div class="sr-label">% выполнения плана</div><div class="sr-val green">96%</div></div>
+      </div>
+
+      <div class="stats-card">
+        <div class="sc-title">Рекорды</div>
+        <div class="stats-row"><div class="sr-label">Всего рекордов</div><div class="sr-val green">47</div></div>
+        <div class="stats-row"><div class="sr-label">Золотой стандарт</div><div class="sr-val gold">5</div></div>
+        <div class="stats-row"><div class="sr-label">Признанные</div><div class="sr-val">18</div></div>
+        <div class="stats-row"><div class="sr-label">Цирк силы</div><div class="sr-val red">2</div></div>
+        <div class="stats-row"><div class="sr-label">Топ-3 позиций</div><div class="sr-val gold">2</div></div>
+        <div class="stats-row"><div class="sr-label">Мировых #1</div><div class="sr-val red">1 🎪</div></div>
+      </div>
+
+      <div class="stats-card">
+        <div class="sc-title">Программы (автор)</div>
+        <div class="stats-row"><div class="sr-label">Опубликовано программ</div><div class="sr-val">2</div></div>
+        <div class="stats-row"><div class="sr-label">Всего покупателей</div><div class="sr-val green">240</div></div>
+        <div class="stats-row"><div class="sr-label">Средний рейтинг</div><div class="sr-val gold">4.85 ★</div></div>
+        <div class="stats-row"><div class="sr-label">Средний прирост у атлетов</div><div class="sr-val green">+31 кг</div></div>
+        <div class="stats-row"><div class="sr-label">Суммарный заработок</div><div class="sr-val green">$3 840</div></div>
+        <div class="stats-row"><div class="sr-label">REP от программ</div><div class="sr-val gold">+2400</div></div>
+      </div>
+
+      <div class="stats-card">
+        <div class="sc-title">REP и уровень</div>
+        <div class="stats-row"><div class="sr-label">Текущий REP</div><div class="sr-val gold">2547</div></div>
+        <div class="stats-row"><div class="sr-label">Уровень</div><div class="sr-val" style="color:var(--gold)">Легенда ⏳</div></div>
+        <div class="stats-row"><div class="sr-label">Grace Period</div><div class="sr-val red">47 дней</div></div>
+        <div class="stats-row"><div class="sr-label">REP за рекорды</div><div class="sr-val">+847</div></div>
+        <div class="stats-row"><div class="sr-label">REP за программы</div><div class="sr-val">+2400</div></div>
+        <div class="stats-row"><div class="sr-label">REP за Цирк силы</div><div class="sr-val red">+45</div></div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /content -->
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),trail=document.getElementById('trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx+'px';trail.style.top=ty+'px';requestAnimationFrame(loop);})();
+
+// TABS
+function switchTab(btn,id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// HEATMAP
+function renderHeatmap(){
+  const levels=['','l1','l2','l3','l4'];
+  const cells=180;
+  let html='';
+  for(let i=0;i<cells;i++){
+    const trained=Math.random()>.3;
+    const lvl=trained?levels[Math.floor(Math.random()*4)+1]:'';
+    html+=`<div class="hm-cell ${lvl}" title="День ${i+1}"></div>`;
+  }
+  document.getElementById('heatmap').innerHTML=html;
+}
+renderHeatmap();
+</script>
+</body>
+</html>

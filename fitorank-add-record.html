@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Добавить рекорд</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+  .cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;}
+  .cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all 0.12s ease;}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,8,8,0.97);border-bottom:1px solid var(--gray-mid);}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:0.1em;color:var(--white);text-decoration:none;}
+  .logo span{color:var(--red);}
+  .nav-right{display:flex;align-items:center;gap:20px;}
+  .nav-back{display:flex;align-items:center;gap:8px;color:var(--gray-light);font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;transition:color 0.2s;cursor:none;}
+  .nav-back:hover{color:var(--white);}
+  .nav-avatar{width:34px;height:34px;background:var(--gray-mid);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);}
+
+  /* LAYOUT */
+  .page{display:grid;grid-template-columns:1fr 400px;gap:0;padding-top:72px;min-height:100vh;position:relative;z-index:1;}
+
+  /* MAIN FORM */
+  main{padding:40px 48px;border-right:1px solid var(--gray-mid);}
+  .page-header{margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--gray-mid);}
+  .page-tag{font-size:0.58rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+  .page-title{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;margin-bottom:8px;}
+  .page-sub{font-size:0.75rem;color:var(--gray-light);line-height:1.6;}
+
+  /* SECTIONS */
+  .form-section{margin-bottom:36px;}
+  .fs-title{font-size:0.6rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--gray-light);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .fs-title::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+  .fs-num{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);}
+
+  /* EXERCISE GRID */
+  .exercise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+  .ex-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;cursor:none;transition:all 0.2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px;}
+  .ex-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;transition:height 0.3s;}
+  .ex-card:hover{border-color:var(--gray-light);}
+  .ex-card.selected{border-color:var(--red);background:rgba(232,38,11,0.07);}
+  .ex-card.selected::before{height:100%;background:var(--red);}
+  .ex-icon{font-size:1.4rem;}
+  .ex-name{font-size:0.78rem;font-weight:700;}
+  .ex-muscle{font-size:0.6rem;color:var(--gray-light);}
+  .ex-custom{grid-column:1/-1;display:flex;gap:8px;align-items:center;}
+  .ex-custom-input{flex:1;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:600;padding:12px 14px;outline:none;transition:border-color 0.2s;cursor:none;}
+  .ex-custom-input::placeholder{color:var(--gray-light);font-weight:400;}
+  .ex-custom-input:focus{border-color:var(--red);}
+
+  /* PR TYPE */
+  .pr-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pr-type-card{background:var(--gray);border:1px solid var(--gray-mid);padding:20px;cursor:none;transition:all 0.2s;position:relative;overflow:hidden;}
+  .pr-type-card::before{content:'';position:absolute;bottom:0;left:0;width:0;height:3px;transition:width 0.3s;}
+  .pr-type-card:hover{border-color:var(--gray-light);}
+  .pr-type-card.selected{border-color:var(--red);background:rgba(232,38,11,0.07);}
+  .pr-type-card.selected::before{width:100%;background:var(--red);}
+  .ptc-tag{font-size:0.55rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+  .ptc-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:4px;}
+  .ptc-desc{font-size:0.65rem;color:var(--gray-light);line-height:1.5;}
+  .ptc-example{font-size:0.62rem;background:var(--black);padding:5px 8px;margin-top:8px;font-family:monospace;color:var(--white);}
+
+  /* RESULT INPUTS */
+  .result-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .result-row.single{grid-template-columns:1fr;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field-label{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gray-light);}
+  .field-input{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.88rem;font-weight:600;padding:13px 16px;outline:none;transition:border-color 0.2s;cursor:none;-webkit-appearance:none;}
+  .field-input::placeholder{color:var(--gray-light);font-weight:400;}
+  .field-input:focus{border-color:var(--red);}
+  .field-input.filled{border-color:rgba(61,220,132,0.35);}
+  .field-hint{font-size:0.6rem;color:var(--gray-light);}
+  .field-unit{position:relative;}
+  .field-unit .field-input{padding-right:48px;}
+  .unit-label{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:0.7rem;font-weight:700;color:var(--gray-light);pointer-events:none;}
+
+  /* DATE OF RECORD */
+  .date-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:0;}
+  .age-result{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.15);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+  .age-result.hidden{display:none;}
+  .age-icon{font-size:1.4rem;flex-shrink:0;}
+  .age-body{}
+  .age-label{font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+  .age-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;color:var(--white);}
+  .age-sub{font-size:.56rem;color:rgba(245,242,238,.55);line-height:1.5;margin-top:2px;}
+  .age-note{font-size:.54rem;font-style:italic;color:var(--gold);margin-left:auto;text-align:right;line-height:1.5;max-width:160px;}
+  .date-warn{background:rgba(232,38,11,.06);border:1px solid rgba(232,38,11,.15);padding:10px 14px;font-size:.6rem;color:rgba(245,242,238,.6);line-height:1.6;display:none;}
+  .date-warn.show{display:block;}
+
+  /* TECHNIQUE */
+  .technique-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .tech-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px 18px;cursor:none;transition:all 0.2s;display:flex;align-items:center;gap:12px;}
+  .tech-card:hover{border-color:var(--gray-light);}
+  .tech-card.selected-clean{border-color:var(--green);background:rgba(61,220,132,0.06);}
+  .tech-card.selected-cheat{border-color:var(--gold);background:rgba(245,200,66,0.06);}
+  .tech-icon{font-size:1.3rem;flex-shrink:0;}
+  .tech-body{}
+  .tech-name{font-size:0.8rem;font-weight:700;margin-bottom:2px;}
+  .tech-desc{font-size:0.62rem;color:var(--gray-light);line-height:1.4;}
+  .tech-radio{width:16px;height:16px;border:2px solid var(--gray-mid);border-radius:50%;flex-shrink:0;margin-left:auto;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
+  .tech-card.selected-clean .tech-radio{border-color:var(--green);background:var(--green);}
+  .tech-card.selected-clean .tech-radio::after{content:'';width:5px;height:5px;background:var(--black);border-radius:50%;}
+  .tech-card.selected-cheat .tech-radio{border-color:var(--gold);background:var(--gold);}
+  .tech-card.selected-cheat .tech-radio::after{content:'';width:5px;height:5px;background:var(--black);border-radius:50%;}
+
+  /* VIDEO */
+  .video-input-wrap{position:relative;}
+  .video-input-wrap .field-input{padding-right:100px;}
+  .video-platform{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;border-radius:2px;pointer-events:none;transition:all 0.2s;}
+  .video-platform.tiktok{background:rgba(232,38,11,0.15);color:var(--red);}
+  .video-platform.youtube{background:rgba(232,38,11,0.15);color:var(--red);}
+  .video-platform.instagram{background:rgba(245,200,66,0.15);color:var(--gold);}
+  .video-platform.other{background:var(--gray-mid);color:var(--gray-light);}
+  .video-preview{background:var(--gray);border:1px solid var(--gray-mid);padding:14px 16px;margin-top:8px;display:none;align-items:center;gap:12px;}
+  .video-preview.show{display:flex;}
+  .vp-icon{font-size:1.4rem;flex-shrink:0;}
+  .vp-text{font-size:0.72rem;color:var(--green);}
+  .vp-url{font-size:0.62rem;color:var(--gray-light);margin-top:2px;word-break:break-all;}
+
+  /* DESCRIPTION */
+  .field-textarea{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:400;padding:13px 16px;outline:none;transition:border-color 0.2s;cursor:none;resize:vertical;min-height:90px;line-height:1.6;width:100%;}
+  .field-textarea::placeholder{color:var(--gray-light);}
+  .field-textarea:focus{border-color:var(--red);}
+  .char-count{font-size:0.58rem;color:var(--gray-light);text-align:right;margin-top:4px;}
+
+  /* SUBMIT */
+  .form-submit{margin-top:32px;padding-top:24px;border-top:1px solid var(--gray-mid);}
+  .btn-submit{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:18px;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);cursor:none;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:12px;}
+  .btn-submit:hover{background:var(--red-dark);}
+  .btn-submit:disabled{background:var(--gray-mid);color:var(--gray-light);cursor:not-allowed;}
+  .submit-hint{font-size:0.62rem;color:var(--gray-light);text-align:center;margin-top:10px;line-height:1.5;}
+
+  /* RIGHT SIDEBAR — PREVIEW */
+  .sidebar{padding:32px 28px;position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto;display:flex;flex-direction:column;gap:24px;}
+
+  /* RANK PREVIEW */
+  .rank-preview{background:var(--gray);padding:20px;}
+  .rp-tag{font-size:0.58rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:12px;}
+  .rp-empty{font-size:0.72rem;color:var(--gray-light);line-height:1.6;}
+  .rp-result{display:none;flex-direction:column;gap:0;}
+  .rp-result.show{display:flex;}
+  .rp-exercise{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+  .rp-number{font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;color:var(--white);}
+  .rp-unit{font-size:0.7rem;color:var(--gray-light);}
+  .rp-rank-block{margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-mid);}
+  .rp-rank-label{font-size:0.58rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+  .rp-rank-value{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;}
+  .rp-rank-sub{font-size:0.65rem;color:var(--gray-light);margin-top:4px;line-height:1.4;}
+  .rp-percentile{margin-top:10px;}
+  .rp-pct-bar{height:6px;background:var(--gray-mid);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+  .rp-pct-fill{height:100%;background:linear-gradient(to right,var(--red),var(--gold));border-radius:3px;transition:width 0.6s ease;width:0%;}
+  .rp-pct-text{font-size:0.65rem;color:var(--white);}
+  .rp-pct-text b{color:var(--green);}
+
+  /* TIPS */
+  .tips-block{background:var(--gray);padding:20px;}
+  .tb-title{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:12px;}
+  .tip-item{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+  .tip-item:last-child{margin-bottom:0;}
+  .tip-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+  .tip-text{font-size:0.68rem;color:var(--gray-light);line-height:1.5;}
+  .tip-text b{color:var(--white);font-weight:700;}
+
+  /* CATEGORY BADGE */
+  .category-badge{background:var(--black);border:1px solid var(--gray-mid);padding:14px 16px;}
+  .cb-label{font-size:0.55rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+  .cb-value{font-family:'Bebas Neue',sans-serif;font-size:1rem;line-height:1.2;color:var(--white);}
+  .cb-league{display:inline-flex;align-items:center;gap:4px;font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;margin-top:6px;}
+  .cb-league.amateur{background:rgba(74,158,255,0.12);color:#4a9eff;border:1px solid rgba(74,158,255,0.2);}
+  .cb-league.pro{background:rgba(245,200,66,0.12);color:var(--gold);border:1px solid rgba(245,200,66,0.2);}
+
+  /* SUCCESS OVERLAY */
+  .success-overlay{position:fixed;inset:0;background:rgba(8,8,8,0.95);z-index:900;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:40px;}
+  .success-overlay.show{display:flex;animation:fadeIn 0.3s ease;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .so-icon{font-size:4rem;animation:popIn 0.5s ease;}
+  @keyframes popIn{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .so-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:0.05em;}
+  .so-sub{font-size:0.82rem;color:var(--gray-light);line-height:1.6;max-width:400px;}
+  .so-result{background:var(--gray);padding:20px 32px;margin:8px 0;}
+  .so-result-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1;color:var(--white);}
+  .so-result-label{font-size:0.65rem;color:var(--gray-light);margin-top:4px;}
+  .so-rank{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);margin-top:8px;}
+  .so-actions{display:flex;gap:10px;margin-top:8px;}
+  .so-btn{background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:14px 28px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background 0.2s;text-decoration:none;display:flex;align-items:center;}
+  .so-btn:hover{background:var(--red-dark);}
+  .so-btn.outline{background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);}
+  .so-btn.outline:hover{border-color:var(--white);color:var(--white);}
+
+  /* MOBILE */
+  @media(max-width:768px){
+    body{cursor:auto;}
+    .cursor,.cursor-trail{display:none;}
+    nav{padding:12px 16px;}
+    .logo{font-size:1.8rem;}
+    .page{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    main{padding:20px 16px;border-right:none;}
+    .page-title{font-size:2.2rem;}
+    .exercise-grid{grid-template-columns:1fr 1fr;}
+    .pr-type-grid,.technique-grid,.result-row{grid-template-columns:1fr;}
+    .so-actions{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="so-icon">🔥</div>
+  <div class="so-title">РЕКОРД ДОБАВЛЕН!</div>
+  <div class="so-sub">Твой результат отправлен в ленту. Сообщество уже может голосовать.</div>
+  <div class="so-result">
+    <div class="so-result-num" id="so-num">—</div>
+    <div class="so-result-label" id="so-label">—</div>
+    <div class="so-rank" id="so-rank">—</div>
+    <div id="so-age" style="font-size:.62rem;color:var(--gold);margin-top:6px;opacity:.8;"></div>
+  </div>
+  <div class="so-actions">
+    <a href="fitorank-feed.html" class="so-btn">Перейти в ленту →</a>
+    <a href="fitorank-add-record.html" class="so-btn outline">Добавить ещё</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-right">
+    <a href="fitorank-feed.html" class="nav-back">← Вернуться в ленту</a>
+    <div class="nav-avatar">Z</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- MAIN FORM -->
+  <main>
+    <div class="page-header">
+      <div class="page-tag">Новый рекорд</div>
+      <div class="page-title">ДОБАВИТЬ РЕКОРД</div>
+      <div class="page-sub">Зафикируй результат, прикрепи видео — и сообщество оценит честность твоего достижения.</div>
+    </div>
+
+    <!-- SECTION 1: EXERCISE -->
+    <div class="form-section">
+      <div class="fs-title"><span class="fs-num">01</span> Упражнение</div>
+      <div class="exercise-grid">
+        <div class="ex-card" onclick="selectExercise(this,'Подтягивания','🏋️','Спина, бицепс')">
+          <div class="ex-icon">🏋️</div>
+          <div class="ex-name">Подтягивания</div>
+          <div class="ex-muscle">Спина · Бицепс</div>
+        </div>
+        <div class="ex-card" onclick="selectExercise(this,'Жим лёжа','💪','Грудь, трицепс')">
+          <div class="ex-icon">💪</div>
+          <div class="ex-name">Жим лёжа</div>
+          <div class="ex-muscle">Грудь · Трицепс</div>
+        </div>
+        <div class="ex-card" onclick="selectExercise(this,'Приседания','🦵','Квадрицепс, ягодицы')">
+          <div class="ex-icon">🦵</div>
+          <div class="ex-name">Приседания</div>
+          <div class="ex-muscle">Квадрицепс · Ягодицы</div>
+        </div>
+        <div class="ex-card" onclick="selectExercise(this,'Становая тяга','⚡','Спина, ягодицы')">
+          <div class="ex-icon">⚡</div>
+          <div class="ex-name">Становая тяга</div>
+          <div class="ex-muscle">Спина · Ягодицы</div>
+        </div>
+        <div class="ex-card" onclick="selectExercise(this,'Брусья','🔱','Грудь, трицепс')">
+          <div class="ex-icon">🔱</div>
+          <div class="ex-name">Брусья</div>
+          <div class="ex-muscle">Грудь · Трицепс</div>
+        </div>
+        <div class="ex-card" onclick="selectExercise(this,'Жим стоя','🙌','Плечи, трицепс')">
+          <div class="ex-icon">🙌</div>
+          <div class="ex-name">Жим стоя</div>
+          <div class="ex-muscle">Плечи · Трицепс</div>
+        </div>
+      </div>
+      <div class="ex-custom">
+        <input class="ex-custom-input" id="customEx" type="text" placeholder="Другое упражнение — введи название..." oninput="handleCustomEx(this)">
+      </div>
+    </div>
+
+    <!-- SECTION 2: PR TYPE -->
+    <div class="form-section">
+      <div class="fs-title"><span class="fs-num">02</span> Тип рекорда</div>
+      <div class="pr-type-grid">
+        <div class="pr-type-card" id="pt-1rm" onclick="selectPRType('1rm')">
+          <div class="ptc-tag">1RM · One Rep Max</div>
+          <div class="ptc-name">Одноповторный максимум</div>
+          <div class="ptc-desc">Максимальный вес на одно повторение. Классика силовых видов спорта.</div>
+          <div class="ptc-example">Жим лёжа → 120 кг × 1</div>
+        </div>
+        <div class="pr-type-card" id="pt-rep" onclick="selectPRType('rep')">
+          <div class="ptc-tag">Rep Max</div>
+          <div class="ptc-name">Максимум повторений</div>
+          <div class="ptc-desc">Максимальное количество повторений. Безопаснее, не нужна страховка.</div>
+          <div class="ptc-example">Подтягивания → 18 повт. / Жим 80 кг → 12 повт.</div>
+        </div>
+      </div>
+
+      <!-- RESULT INPUTS — shown after type selection -->
+      <div id="resultInputs" style="display:none;margin-top:16px;">
+        <div class="result-row" id="resultRow">
+          <div class="field field-unit">
+            <div class="field-label" id="weightLabel">Вес</div>
+            <input class="field-input" id="f-weight" type="number" placeholder="0" min="0" max="500" oninput="updatePreview()">
+            <span class="unit-label">кг</span>
+          </div>
+          <div class="field field-unit" id="repsWrap">
+            <div class="field-label">Повторения</div>
+            <input class="field-input" id="f-reps" type="number" placeholder="0" min="1" max="1000" oninput="updatePreview()">
+            <span class="unit-label">повт.</span>
+          </div>
+        </div>
+        <!-- Calculated 1RM hint for rep max -->
+        <div id="calc1rm" style="display:none;background:rgba(245,200,66,0.06);border:1px solid rgba(245,200,66,0.15);padding:10px 14px;margin-top:8px;">
+          <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);">Расчётный 1RM (формула Эпли): </span>
+          <span id="calc1rmVal" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--white);">—</span>
+          <span style="font-size:0.6rem;color:var(--gray-light);"> кг (приблизительно)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: DATE OF RECORD -->
+    <div class="form-section">
+      <div class="fs-title"><span class="fs-num">03</span> Дата достижения</div>
+      <div style="font-size:.65rem;color:rgba(245,242,238,.55);margin-bottom:14px;line-height:1.6;">
+        Укажи дату когда ты <b style="color:var(--white)">фактически установил рекорд</b> — не дату загрузки. Возраст в момент достижения фиксируется навсегда и используется для возрастных категорий.
+      </div>
+      <div class="date-row">
+        <div class="field">
+          <div class="field-label">Дата рекорда</div>
+          <input class="field-input" id="f-date" type="date" oninput="handleDateChange(this)" style="color-scheme:dark;">
+          <div class="field-hint">Можно указать прошедшую дату</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Дата рождения <span style="color:var(--gray-light);font-weight:300">(из профиля)</span></div>
+          <input class="field-input" id="f-dob" type="date" value="1996-08-15" oninput="handleDateChange()" style="color-scheme:dark;opacity:.6;" readonly>
+          <div class="field-hint">Изменить в настройках профиля</div>
+        </div>
+      </div>
+      <div class="age-result hidden" id="ageResult">
+        <div class="age-icon">🎂</div>
+        <div class="age-body">
+          <div class="age-label">Возраст на дату рекорда</div>
+          <div class="age-val" id="ageVal">—</div>
+          <div class="age-sub" id="ageSub">Зафиксирован навсегда · Используется для категории</div>
+        </div>
+        <div class="age-note" id="ageNote">Категория:<br><span id="ageCat" style="color:var(--gold);font-weight:700;">—</span></div>
+      </div>
+      <div class="date-warn" id="dateWarn"></div>
+    </div>
+
+    <!-- SECTION 4: TECHNIQUE -->
+    <div class="form-section">
+      <div class="fs-title"><span class="fs-num">04</span> Техника выполнения</div>
+      <div class="technique-grid">
+        <div class="tech-card" id="tc-clean" onclick="selectTech('clean')">
+          <div class="tech-icon">✅</div>
+          <div class="tech-body">
+            <div class="tech-name">Чистая техника</div>
+            <div class="tech-desc">Полная амплитуда, без нарушений. Результат засчитывается в официальный рейтинг.</div>
+          </div>
+          <div class="tech-radio"></div>
+        </div>
+        <div class="tech-card" id="tc-cheat" onclick="selectTech('cheat')">
+          <div class="tech-icon">⚡</div>
+          <div class="tech-body">
+            <div class="tech-name">С читингом</div>
+            <div class="tech-desc">Частичная амплитуда или нарушения. Честно — но идёт в отдельный рейтинг.</div>
+          </div>
+          <div class="tech-radio"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: VIDEO -->
+    <div class="form-section">
+      <div class="fs-title"><span class="fs-num">05</span> Видео-подтверждение</div>
+      <div class="field">
+        <div class="field-label">Ссылка на видео <span style="color:var(--gray-light);font-weight:300">(рекомендуем)</span></div>
+        <div class="video-input-wrap">
+          <input class="field-input" id="f-video" type="url" placeholder="https://tiktok.com / youtube.com / instagram.com" oninput="handleVideo(this)">
+          <span class="video-platform other" id="videoPlatform">URL</span>
+        </div>
+        <div class="video-preview" id="videoPreview">
+          <div class="vp-icon" id="vpIcon">🎬</div>
+          <div>
+            <div class="vp-text">Видео прикреплено</div>
+            <div class="vp-url" id="vpUrl"></div>
+          </div>
+        </div>
+        <div class="field-hint" style="margin-top:6px;">Без видео рекорд получит меньше доверия от сообщества. TikTok, YouTube, Instagram — всё подходит.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: DESCRIPTION -->
+    <div class="form-section">
+      <div class="fs-title"><span class="fs-num">06</span> Твой комментарий</div>
+      <div class="field">
+        <div class="field-label">Расскажи о рекорде <span style="color:var(--gray-light);font-weight:300">(необязательно)</span></div>
+        <textarea class="field-textarea" id="f-desc" placeholder="Как шла подготовка? Что чувствовал? Почему это важно для тебя?" maxlength="280" oninput="updateCharCount(this)"></textarea>
+        <div class="char-count"><span id="charCount">0</span> / 280</div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="form-submit">
+      <button class="btn-submit" id="submitBtn" onclick="submitRecord()">
+        <span>🔥</span>
+        <span>Опубликовать рекорд</span>
+      </button>
+      <div class="submit-hint">После публикации сообщество сможет проголосовать за честность результата.<br>Редактирование после публикации невозможно.</div>
+    </div>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- CATEGORY -->
+    <div class="category-badge">
+      <div class="cb-label">Твоя категория</div>
+      <div class="cb-value">Муж · 40–44 · 95–101 кг · 175–179 см</div>
+      <div class="cb-league amateur">💪 Любительская лига</div>
+    </div>
+
+    <!-- RANK PREVIEW -->
+    <div class="rank-preview">
+      <div class="rp-tag">Предварительный рейтинг</div>
+      <div class="rp-empty" id="rpEmpty">Введи результат — и я покажу твой предварительный ранг в категории.</div>
+      <div class="rp-result" id="rpResult">
+        <div class="rp-exercise" id="rpEx">—</div>
+        <div class="rp-number" id="rpNum">—</div>
+        <div class="rp-unit" id="rpUnt">—</div>
+        <div class="rp-rank-block">
+          <div class="rp-rank-label">Твой ранг в категории</div>
+          <div class="rp-rank-value" id="rpRank">—</div>
+          <div class="rp-rank-sub" id="rpRankSub">—</div>
+          <div class="rp-percentile" id="rpPctBlock">
+            <div class="rp-pct-bar"><div class="rp-pct-fill" id="rpPctFill"></div></div>
+            <div class="rp-pct-text" id="rpPctText">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPS -->
+    <div class="tips-block">
+      <div class="tb-title">💡 Советы для высокого доверия</div>
+      <div class="tip-item">
+        <div class="tip-icon">🎬</div>
+        <div class="tip-text"><b>Снимай с хорошего угла.</b> Видно полную амплитуду — сообщество доверяет больше.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">✍️</div>
+        <div class="tip-text"><b>Расскажи историю.</b> Рекорды с контекстом получают в 3× больше голосов «Верю».</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">⚖️</div>
+        <div class="tip-text"><b>Честно про читинг.</b> Лучше отметить — чем сообщество поставит под сомнение.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon">📅</div>
+        <div class="tip-text"><b>Обновляй рекорды.</b> Когда тебе исполнится 41 — FitoRank напомнит обновить результат.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Cursor
+  const cur=document.getElementById('cursor'),trail=document.getElementById('cursorTrail');
+  let mx=0,my=0,tx=0,ty=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    cur.style.left=mx-6+'px';cur.style.top=my-6+'px';
+  });
+  (function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop);})();
+
+  // State
+  const state = { exercise:null, prType:null, technique:null, weight:null, reps:null };
+
+  // ─── EXERCISE ─────────────────────────────────────────────────
+  function selectExercise(el, name, icon, muscle) {
+    document.querySelectorAll('.ex-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.exercise = name;
+    document.getElementById('customEx').value = '';
+    updatePreview();
+  }
+
+  function handleCustomEx(el) {
+    if(el.value.trim()) {
+      document.querySelectorAll('.ex-card').forEach(c=>c.classList.remove('selected'));
+      state.exercise = el.value.trim();
+      updatePreview();
+    }
+  }
+
+  // ─── PR TYPE ──────────────────────────────────────────────────
+  function selectPRType(type) {
+    state.prType = type;
+    document.getElementById('pt-1rm').classList.toggle('selected', type==='1rm');
+    document.getElementById('pt-rep').classList.toggle('selected', type==='rep');
+    document.getElementById('resultInputs').style.display = 'block';
+
+    const repsWrap = document.getElementById('repsWrap');
+    const weightLabel = document.getElementById('weightLabel');
+    const calc1rm = document.getElementById('calc1rm');
+    const resultRow = document.getElementById('resultRow');
+
+    if(type === '1rm') {
+      repsWrap.style.display = 'none';
+      weightLabel.textContent = 'Вес (максимум × 1)';
+      calc1rm.style.display = 'none';
+      resultRow.className = 'result-row single';
+    } else {
+      repsWrap.style.display = 'flex';
+      weightLabel.textContent = 'Вес (0 если без веса)';
+      calc1rm.style.display = 'block';
+      resultRow.className = 'result-row';
+    }
+    updatePreview();
+  }
+
+  // ─── TECHNIQUE ────────────────────────────────────────────────
+  function selectTech(t) {
+    state.technique = t;
+    document.getElementById('tc-clean').className = 'tech-card' + (t==='clean'?' selected-clean':'');
+    document.getElementById('tc-cheat').className = 'tech-card' + (t==='cheat'?' selected-cheat':'');
+  }
+
+  // ─── VIDEO ────────────────────────────────────────────────────
+  function handleVideo(el) {
+    const val = el.value.trim();
+    const platform = document.getElementById('videoPlatform');
+    const preview = document.getElementById('videoPreview');
+    const vpUrl = document.getElementById('vpUrl');
+    const vpIcon = document.getElementById('vpIcon');
+
+    if(!val) {
+      platform.className = 'video-platform other';
+      platform.textContent = 'URL';
+      preview.classList.remove('show');
+      return;
+    }
+
+    if(val.includes('tiktok')) {
+      platform.className = 'video-platform tiktok'; platform.textContent = 'TikTok';
+      vpIcon.textContent = '🎵';
+    } else if(val.includes('youtube') || val.includes('youtu.be')) {
+      platform.className = 'video-platform youtube'; platform.textContent = 'YouTube';
+      vpIcon.textContent = '▶️';
+    } else if(val.includes('instagram')) {
+      platform.className = 'video-platform instagram'; platform.textContent = 'Instagram';
+      vpIcon.textContent = '📸';
+    } else {
+      platform.className = 'video-platform other'; platform.textContent = 'Видео';
+      vpIcon.textContent = '🎬';
+    }
+
+    if(val.startsWith('http')) {
+      preview.classList.add('show');
+      vpUrl.textContent = val.length > 50 ? val.substring(0,50)+'...' : val;
+    }
+  }
+
+  // ─── CHAR COUNT ───────────────────────────────────────────────
+  function updateCharCount(el) {
+    document.getElementById('charCount').textContent = el.value.length;
+  }
+
+  // ─── PREVIEW ──────────────────────────────────────────────────
+  function updatePreview() {
+    const w = parseFloat(document.getElementById('f-weight')?.value)||0;
+    const r = parseInt(document.getElementById('f-reps')?.value)||0;
+    state.weight = w; state.reps = r;
+
+    // Calc 1RM (Epley formula)
+    if(state.prType === 'rep' && w > 0 && r > 0) {
+      const est = Math.round(w * (1 + r/30));
+      document.getElementById('calc1rmVal').textContent = est;
+    }
+
+    const rpEmpty = document.getElementById('rpEmpty');
+    const rpResult = document.getElementById('rpResult');
+
+    if(!state.exercise || !state.prType || w === 0) {
+      rpEmpty.style.display = 'block';
+      rpResult.classList.remove('show');
+      return;
+    }
+
+    rpEmpty.style.display = 'none';
+    rpResult.classList.add('show');
+
+    // Display
+    document.getElementById('rpEx').textContent = state.exercise.toUpperCase();
+
+    if(state.prType === '1rm') {
+      document.getElementById('rpNum').textContent = w;
+      document.getElementById('rpUnt').textContent = 'кг × 1 повт.';
+    } else {
+      document.getElementById('rpNum').textContent = r || w;
+      document.getElementById('rpUnt').textContent = r > 0 ? `повт. при ${w} кг` : `кг`;
+    }
+
+    // Simulate rank
+    const effectiveWeight = state.prType === '1rm' ? w : Math.round(w * (1 + (r||1)/30));
+    const rank = getRank(state.exercise, effectiveWeight);
+    document.getElementById('rpRank').textContent = rank.label;
+    document.getElementById('rpRankSub').textContent = rank.sub;
+    document.getElementById('rpPctFill').style.width = rank.pct + '%';
+    document.getElementById('rpPctText').innerHTML = `Ты лучше чем <b>${rank.pct}%</b> участников в своей категории`;
+  }
+
+  function getRank(ex, kg) {
+    // Simulated rank based on exercise and weight
+    const benchmarks = {
+      'Жим лёжа':      [40,60,80,100,120,140,160],
+      'Приседания':     [50,70,90,110,130,155,180],
+      'Становая тяга':  [60,80,100,120,150,180,210],
+      'Подтягивания':   [3,5,8,10,13,16,20],
+      'Брусья':         [3,5,8,12,16,20,25],
+      'Жим стоя':       [25,35,45,60,75,90,105],
+    };
+    const ranks = ['Начинающий','III разряд','II разряд','I разряд','КМС','МС','МСМК'];
+    const pcts =  [5, 15, 35, 60, 78, 90, 97];
+    const subs = [
+      'Продолжай — прогресс будет виден быстро',
+      'Хорошее начало для любительской лиги',
+      'Крепкий результат в своей категории',
+      'Топовый любитель — ты в элите',
+      'Кандидат в мастера — серьёзный уровень',
+      'Мастер спорта — ты в профи-зоне',
+      'Мастер спорта международного класса',
+    ];
+
+    const bench = benchmarks[ex] || benchmarks['Жим лёжа'];
+    let idx = 0;
+    for(let i=0;i<bench.length;i++){
+      if(kg >= bench[i]) idx = i;
+    }
+    return { label: ranks[idx], sub: subs[idx], pct: pcts[idx] };
+  }
+
+  // ─── DATE & AGE ───────────────────────────────────────────────
+  function handleDateChange() {
+    const dateVal = document.getElementById('f-date').value;
+    const dobVal  = document.getElementById('f-dob').value;
+    const ageResult = document.getElementById('ageResult');
+    const dateWarn  = document.getElementById('dateWarn');
+
+    if (!dateVal || !dobVal) {
+      ageResult.classList.add('hidden');
+      dateWarn.classList.remove('show');
+      return;
+    }
+
+    const recordDate = new Date(dateVal);
+    const dob        = new Date(dobVal);
+    const today      = new Date();
+
+    // Future date check
+    if (recordDate > today) {
+      dateWarn.textContent = '⚠️ Дата рекорда не может быть в будущем.';
+      dateWarn.classList.add('show');
+      ageResult.classList.add('hidden');
+      return;
+    }
+
+    // Too old check (>10 years)
+    const yearsAgo = (today - recordDate) / (1000*60*60*24*365.25);
+    if (yearsAgo > 10) {
+      dateWarn.textContent = '⚠️ Рекорды старше 10 лет требуют дополнительного подтверждения от Эксперта.';
+      dateWarn.classList.add('show');
+    } else {
+      dateWarn.classList.remove('show');
+    }
+
+    // Calculate age at record date
+    let age = recordDate.getFullYear() - dob.getFullYear();
+    const m = recordDate.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && recordDate.getDate() < dob.getDate())) age--;
+
+    // Age category
+    let cat = '';
+    if      (age < 18) cat = 'Юниор (до 18)';
+    else if (age <= 23) cat = 'U23 (18–23)';
+    else if (age <= 39) cat = 'Open (24–39)';
+    else if (age <= 49) cat = 'Masters 1 (40–49)';
+    else if (age <= 59) cat = 'Masters 2 (50–59)';
+    else if (age <= 69) cat = 'Masters 3 (60–69)';
+    else                cat = 'Masters 4 (70+)';
+
+    document.getElementById('ageVal').textContent  = age + ' лет';
+    document.getElementById('ageCat').textContent  = cat;
+
+    // Format record date nicely
+    const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    const formatted = recordDate.getDate() + ' ' + months[recordDate.getMonth()] + ' ' + recordDate.getFullYear();
+    document.getElementById('ageSub').textContent = formatted + ' · Зафиксирован навсегда';
+
+    ageResult.classList.remove('hidden');
+  }
+
+  // Set today as default date value
+  (function setDefaultDate(){
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth()+1).padStart(2,'0');
+    const d = String(today.getDate()).padStart(2,'0');
+    const input = document.getElementById('f-date');
+    if(input) { input.value = y+'-'+m+'-'+d; handleDateChange(); }
+  })();
+
+  // ─── SUBMIT ───────────────────────────────────────────────────
+  function submitRecord() {
+    const w = parseFloat(document.getElementById('f-weight')?.value)||0;
+
+    // Build success screen values
+    const rank = state.exercise && w ? getRank(state.exercise, w) : {label:'—', pct:0};
+    const num = state.prType==='1rm' ? w+'кг' : (document.getElementById('f-reps')?.value||'—')+' повт.';
+    const label = state.exercise || '—';
+
+    document.getElementById('so-num').textContent = num;
+    document.getElementById('so-label').textContent = label;
+    const ageEl = document.getElementById("ageVal"); if(ageEl && !ageEl.closest(".hidden")) document.getElementById("so-age").textContent = "Возраст на дату рекорда: " + ageEl.textContent;
+    document.getElementById('so-rank').textContent = rank.label + ' · Топ ' + (100-rank.pct) + '%';
+
+    document.getElementById('successOverlay').classList.add('show');
+  }
+</script>
+</body>
+</html>

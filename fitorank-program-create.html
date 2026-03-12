@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Создать программу</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;
+  --gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;
+  --green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);}
+.cursor-trail{width:36px;height:36px;border:1px solid rgba(232,38,11,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-bc{display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--gray-light);}
+.nav-bc a{color:var(--gray-light);text-decoration:none;cursor:none;transition:color .2s;}
+.nav-bc a:hover{color:var(--white);}
+.nav-sep{color:var(--gray-mid);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-save{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);border:1px solid var(--gray-mid);padding:6px 14px;background:none;cursor:none;transition:all .2s;}
+.nav-save:hover{color:var(--white);border-color:var(--gray-light);}
+.nav-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--black);}
+
+/* MODE SWITCHER */
+.mode-bar{margin-top:65px;background:var(--gray);border-bottom:1px solid var(--gray-mid);padding:0 40px;display:flex;align-items:center;gap:0;}
+.mode-tab{font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:14px 24px;color:var(--gray-light);border:none;background:none;cursor:none;transition:all .2s;border-bottom:2px solid transparent;position:relative;}
+.mode-tab.active{color:var(--white);border-bottom-color:var(--red);}
+.mode-tab:hover:not(.active){color:rgba(245,242,238,.6);}
+.mode-badge{font-size:.45rem;font-weight:700;letter-spacing:.08em;background:var(--gold);color:var(--black);padding:2px 6px;margin-left:6px;vertical-align:middle;}
+
+/* STEP PROGRESS */
+.step-bar{background:rgba(26,26,26,.98);border-bottom:1px solid var(--gray-mid);padding:16px 40px;display:flex;align-items:center;gap:0;position:sticky;top:113px;z-index:100;}
+.step-item{display:flex;align-items:center;gap:10px;cursor:none;}
+.step-num{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;background:var(--gray-mid);color:var(--gray-light);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);transition:all .3s;}
+.step-num.active{background:var(--red);color:var(--white);}
+.step-num.done{background:var(--green);color:var(--black);}
+.step-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);transition:color .3s;}
+.step-label.active{color:var(--white);}
+.step-label.done{color:var(--green);}
+.step-connector{flex:1;height:1px;background:var(--gray-mid);margin:0 12px;min-width:20px;}
+.step-connector.done{background:var(--green);}
+
+/* LAYOUT */
+.creator-layout{display:grid;grid-template-columns:1fr 360px;min-height:calc(100vh - 113px);}
+
+/* FORM AREA */
+.form-area{padding:40px;border-right:1px solid var(--gray-mid);}
+.step-panel{display:none;}
+.step-panel.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.step-header{margin-bottom:32px;}
+.step-header .step-tag{font-size:.52rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.step-header h2{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1;margin-bottom:8px;}
+.step-header .step-desc{font-size:.72rem;color:var(--gray-light);line-height:1.6;font-weight:300;}
+
+/* FORM FIELDS */
+.field-group{margin-bottom:24px;}
+.field-row{display:grid;gap:12px;margin-bottom:12px;}
+.field-row.col2{grid-template-columns:1fr 1fr;}
+.field-row.col3{grid-template-columns:1fr 1fr 1fr;}
+label{display:block;font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+label span.req{color:var(--red);}
+label span.tip{font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-light);opacity:.6;margin-left:4px;}
+
+input[type="text"],input[type="number"],textarea,select{
+  width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);
+  font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:400;padding:12px 14px;
+  outline:none;transition:border .2s;cursor:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--red);}
+select option{background:var(--gray);}
+textarea{resize:vertical;min-height:80px;line-height:1.6;}
+
+/* EXERCISE SEARCH */
+.ex-search-wrap{position:relative;}
+.ex-search-wrap input{padding-right:40px;}
+.ex-search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--gray-light);font-size:.8rem;}
+.ex-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--gray);border:1px solid var(--gray-mid);border-top:none;z-index:200;max-height:240px;overflow-y:auto;display:none;}
+.ex-dropdown.open{display:block;}
+.ex-item{padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:none;transition:background .2s;}
+.ex-item:hover{background:var(--gray-mid);}
+.ex-badge{font-size:.45rem;font-weight:700;letter-spacing:.08em;padding:2px 6px;border:1px solid;}
+.ex-badge.gold{background:rgba(245,200,66,.1);color:var(--gold);border-color:rgba(245,200,66,.2);}
+.ex-badge.star{background:rgba(74,158,255,.1);color:var(--blue);border-color:rgba(74,158,255,.2);}
+.ex-badge.auth{background:rgba(61,220,132,.1);color:var(--green);border-color:rgba(61,220,132,.2);}
+.ex-badge.freak{background:rgba(232,38,11,.1);color:var(--red);border-color:rgba(232,38,11,.2);}
+.ex-name{font-size:.72rem;font-weight:600;}
+.ex-cat{font-size:.58rem;color:var(--gray-light);}
+.ex-selected{background:rgba(61,220,132,.05);border:1px solid rgba(61,220,132,.2);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.ex-selected-name{font-size:.72rem;font-weight:700;color:var(--green);}
+.ex-clear{color:var(--gray-light);cursor:none;font-size:.7rem;transition:color .2s;}
+.ex-clear:hover{color:var(--red);}
+
+/* TAGS INPUT */
+.tags-wrap{background:var(--gray);border:1px solid var(--gray-mid);padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px;min-height:44px;align-items:center;}
+.tag-chip{font-size:.58rem;font-weight:700;letter-spacing:.08em;background:var(--gray-mid);color:var(--white);padding:4px 10px;display:flex;align-items:center;gap:6px;}
+.tag-chip .rm{cursor:none;color:var(--gray-light);transition:color .2s;}
+.tag-chip .rm:hover{color:var(--red);}
+.tag-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tag-sug{font-size:.55rem;font-weight:600;color:var(--gray-light);border:1px solid var(--gray-mid);padding:3px 9px;cursor:none;transition:all .2s;}
+.tag-sug:hover{color:var(--white);border-color:var(--gray-light);}
+
+/* CATEGORY WEIGHTS STEP */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.cat-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;transition:border .2s;}
+.cat-card:hover{border-color:rgba(245,242,238,.2);}
+.cat-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.cat-name{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.cat-coef{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);}
+.cat-field{margin-bottom:8px;}
+.cat-field label{font-size:.5rem;color:var(--gray-light);margin-bottom:4px;}
+.cat-field input{padding:8px 10px;font-size:.72rem;}
+.cat-calc{font-size:.58rem;color:var(--gray-light);margin-top:4px;}
+.cat-calc span{color:var(--white);font-weight:700;}
+
+/* RULES */
+.rules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.rule-card{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;}
+.rule-icon{font-size:1.4rem;margin-bottom:10px;}
+.rule-title{font-size:.65rem;font-weight:700;letter-spacing:.08em;color:var(--white);margin-bottom:12px;}
+.rule-field{margin-bottom:8px;}
+.rule-field label{font-size:.5rem;margin-bottom:4px;}
+.rule-field input{padding:8px 10px;font-size:.72rem;}
+
+/* STRUCTURE STEP */
+.week-list{display:flex;flex-direction:column;gap:8px;}
+.week-card{background:var(--gray);border:1px solid var(--gray-mid);overflow:hidden;transition:border .2s;}
+.week-card.open{border-color:rgba(245,242,238,.2);}
+.week-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:none;}
+.week-header:hover{background:rgba(245,242,238,.03);}
+.week-num{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gray-light);min-width:28px;}
+.week-title-input{flex:1;background:transparent;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;padding:0;outline:none;cursor:none;}
+.week-stats{font-size:.58rem;color:var(--gray-light);margin-right:8px;}
+.week-toggle{color:var(--gray-light);font-size:.8rem;transition:transform .3s;}
+.week-toggle.open{transform:rotate(180deg);}
+.week-body{display:none;padding:0 16px 16px;border-top:1px solid var(--gray-mid);}
+.week-body.open{display:block;}
+.day-list{display:flex;flex-direction:column;gap:6px;margin-top:12px;}
+.day-item{background:var(--black);border:1px solid var(--gray-mid);padding:12px 14px;}
+.day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.day-label{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);}
+.day-add-ex{font-size:.55rem;font-weight:700;letter-spacing:.1em;color:var(--blue);cursor:none;border:none;background:none;text-transform:uppercase;transition:color .2s;}
+.day-add-ex:hover{color:var(--white);}
+.ex-row{display:grid;grid-template-columns:1fr 80px 80px 80px auto;gap:8px;align-items:center;margin-bottom:6px;}
+.ex-row input{padding:7px 10px;font-size:.68rem;}
+.ex-row-name{font-size:.68rem;font-weight:600;}
+.ex-row .rm-ex{color:var(--gray-mid);cursor:none;font-size:.75rem;transition:color .2s;background:none;border:none;}
+.ex-row .rm-ex:hover{color:var(--red);}
+.week-add-btn{margin-top:12px;width:100%;background:none;border:1px dashed var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px;cursor:none;transition:all .2s;}
+.week-add-btn:hover{border-color:var(--gray-light);color:var(--white);}
+.add-week-btn{margin-top:8px;width:100%;background:none;border:1px dashed var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.add-week-btn:hover{border-color:rgba(232,38,11,.4);color:var(--red);}
+
+/* PRICING STEP */
+.pricing-types{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;}
+.price-type{background:var(--gray);border:2px solid var(--gray-mid);padding:16px;cursor:none;transition:all .2s;}
+.price-type.selected{border-color:var(--red);background:rgba(232,38,11,.05);}
+.pt-icon{font-size:1.6rem;margin-bottom:8px;}
+.pt-name{font-size:.68rem;font-weight:700;margin-bottom:4px;}
+.pt-desc{font-size:.58rem;color:var(--gray-light);line-height:1.5;}
+
+.commission-calc{background:var(--gray);border:1px solid var(--gray-mid);padding:20px;margin-top:16px;}
+.cc-title{font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;}
+.cc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-mid);}
+.cc-row:last-child{border-bottom:none;padding-top:12px;margin-top:4px;}
+.cc-label{font-size:.65rem;color:var(--gray-light);}
+.cc-val{font-size:.72rem;font-weight:700;}
+.cc-val.green{color:var(--green);}
+.cc-val.red{color:var(--red);}
+.cc-val.big{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--green);}
+
+/* SUBMIT AREA */
+.step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--gray-mid);}
+.btn-back{background:none;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:12px 24px;cursor:none;transition:all .2s;}
+.btn-back:hover{color:var(--white);border-color:var(--gray-light);}
+.btn-next{background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:12px 32px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background .2s;}
+.btn-next:hover{background:var(--red-dark);}
+.btn-next.publish{background:var(--green);color:var(--black);}
+.btn-next.publish:hover{background:#2db86f;}
+
+/* SIDEBAR */
+.creator-sidebar{background:rgba(14,14,14,.98);border-left:1px solid var(--gray-mid);padding:28px 24px;position:sticky;top:113px;height:calc(100vh - 113px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+
+/* PREVIEW CARD */
+.preview-card{background:var(--gray);border:1px solid var(--gray-mid);}
+.preview-label{font-size:.52rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding:10px 14px;border-bottom:1px solid var(--gray-mid);}
+.preview-hero{padding:14px;}
+.preview-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1;margin-bottom:6px;color:var(--white);}
+.preview-title.placeholder{color:var(--gray-mid);}
+.preview-meta{font-size:.58rem;color:var(--gray-light);line-height:1.5;}
+.preview-price{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--green);margin-top:10px;}
+.preview-price.free-tag{font-size:1.2rem;}
+
+/* STATUS */
+.status-block{background:var(--black);border:1px solid var(--gray-mid);padding:14px;}
+.status-title{font-size:.52rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;}
+.status-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.status-key{font-size:.6rem;color:var(--gray-light);}
+.status-val{font-size:.62rem;font-weight:700;}
+.status-val.ok{color:var(--green);}
+.status-val.warn{color:var(--gold);}
+.status-val.err{color:var(--red);}
+
+/* TIPS */
+.tip-block{background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);padding:14px;}
+.tip-icon{font-size:1rem;margin-bottom:6px;}
+.tip-title{font-size:.58rem;font-weight:700;color:var(--blue);margin-bottom:6px;}
+.tip-text{font-size:.6rem;color:rgba(245,242,238,.6);line-height:1.6;}
+
+/* REP REWARD */
+.rep-block{background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);padding:14px;}
+.rep-icon{font-size:1rem;margin-bottom:6px;}
+.rep-title{font-size:.58rem;font-weight:700;color:var(--gold);margin-bottom:8px;}
+.rep-row{display:flex;justify-content:space-between;font-size:.6rem;margin-bottom:4px;}
+.rep-label{color:rgba(245,242,238,.6);}
+.rep-val{font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--gold);}
+
+/* PREVIEW FULL SCREEN */
+.preview-overlay{position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:600;overflow-y:auto;transform:translateX(100%);transition:transform .4s ease;}
+.preview-overlay.open{transform:translateX(0);}
+.preview-bar{position:sticky;top:0;background:rgba(8,8,8,.98);border-bottom:1px solid var(--gray-mid);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;z-index:10;}
+.preview-bar-left{display:flex;align-items:center;gap:12px;}
+.preview-back{background:none;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;cursor:none;transition:all .2s;}
+.preview-back:hover{color:var(--white);border-color:var(--gray-light);}
+.preview-tag{font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);padding:5px 10px;}
+.preview-inner{padding:40px;max-width:1100px;margin:0 auto;}
+.preview-inner .pi-hero{margin-bottom:32px;}
+.pi-title{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;line-height:1;margin-bottom:10px;}
+.pi-pitch{font-size:.8rem;color:rgba(245,242,238,.7);line-height:1.7;max-width:600px;margin-bottom:16px;}
+.pi-tags{display:flex;gap:6px;margin-bottom:20px;}
+.pi-tag{font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border:1px solid;}
+.pi-tag.g{background:rgba(61,220,132,.08);color:var(--green);border-color:rgba(61,220,132,.2);}
+.pi-tag.b{background:rgba(74,158,255,.08);color:var(--blue);border-color:rgba(74,158,255,.2);}
+.pi-tag.r{background:rgba(232,38,11,.1);color:var(--red);border-color:rgba(232,38,11,.2);}
+.preview-buy{background:var(--green);color:var(--black);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;padding:14px 40px;border:none;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);margin-top:16px;}
+
+/* FREE MODE */
+#free-editor{display:none;}
+.free-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 113px);}
+.free-edit-pane{padding:40px;border-right:1px solid var(--gray-mid);}
+.free-preview-pane{padding:40px;background:rgba(14,14,14,.5);}
+.free-edit-pane h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:20px;}
+.free-editor-textarea{width:100%;background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.72rem;line-height:1.8;padding:16px;outline:none;min-height:400px;resize:vertical;}
+
+/* PROGRESS BAR */
+.progress-bar{height:2px;background:var(--gray-mid);position:fixed;top:113px;left:0;right:0;z-index:99;}
+.progress-fill{height:100%;background:var(--red);transition:width .4s ease;}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <a href="#" class="logo">Fito<span>Rank</span></a>
+    <div class="nav-bc">
+      <a href="#">Программы</a><span class="nav-sep">/</span>
+      <span style="color:var(--white)">Создать программу</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-save" onclick="saveDraft()">💾 Сохранить черновик</button>
+    <button class="nav-save" style="color:var(--blue);border-color:rgba(74,158,255,.3);" onclick="openPreview()">👁 Предпросмотр</button>
+    <div class="nav-avatar">АК</div>
+  </div>
+</nav>
+
+<!-- MODE BAR -->
+<div class="mode-bar">
+  <button class="mode-tab active" onclick="switchMode('structured',this)">
+    📋 Структурированный
+  </button>
+  <button class="mode-tab" onclick="switchMode('free',this)">
+    ✍️ Свободный <span class="mode-badge">ЭКСПЕРТ+</span>
+  </button>
+</div>
+
+<!-- STRUCTURED MODE -->
+<div id="structured-editor">
+
+  <!-- STEP BAR -->
+  <div class="step-bar">
+    <div class="step-item" onclick="goStep(1)">
+      <div class="step-num active" id="sn1">1</div>
+      <div class="step-label active" id="sl1">Паспорт</div>
+    </div>
+    <div class="step-connector" id="sc1"></div>
+    <div class="step-item" onclick="goStep(2)">
+      <div class="step-num" id="sn2">2</div>
+      <div class="step-label" id="sl2">Веса</div>
+    </div>
+    <div class="step-connector" id="sc2"></div>
+    <div class="step-item" onclick="goStep(3)">
+      <div class="step-num" id="sn3">3</div>
+      <div class="step-label" id="sl3">Правила</div>
+    </div>
+    <div class="step-connector" id="sc3"></div>
+    <div class="step-item" onclick="goStep(4)">
+      <div class="step-num" id="sn4">4</div>
+      <div class="step-label" id="sl4">Структура</div>
+    </div>
+    <div class="step-connector" id="sc4"></div>
+    <div class="step-item" onclick="goStep(5)">
+      <div class="step-num" id="sn5">5</div>
+      <div class="step-label" id="sl5">Публикация</div>
+    </div>
+  </div>
+
+  <div class="creator-layout">
+    <!-- FORM -->
+    <div class="form-area">
+
+      <!-- STEP 1: PASSPORT -->
+      <div class="step-panel active" id="step1">
+        <div class="step-header">
+          <div class="step-tag">Шаг 1 из 5</div>
+          <h2>Паспорт программы</h2>
+          <div class="step-desc">Базовая информация, которую видит покупатель на странице программы. Чем точнее — тем выше конверсия.</div>
+        </div>
+
+        <div class="field-group">
+          <label>Название программы <span class="req">*</span></label>
+          <input type="text" id="programTitle" placeholder="Например: Жим 170+ кг за 6 месяцев" oninput="updatePreview()" style="font-size:.85rem;font-weight:700;padding:14px;">
+        </div>
+
+        <div class="field-group">
+          <label>Питч <span class="req">*</span> <span class="tip">— одно предложение зачем эта программа</span></label>
+          <textarea id="programPitch" placeholder="Системная программа линейной прогрессии для пауэрлифтинга. Для тех кто застрял на одном весе больше 3 месяцев." oninput="updatePreview()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label>Целевое упражнение <span class="req">*</span></label>
+          <div class="ex-search-wrap">
+            <input type="text" id="exSearch" placeholder="Поиск упражнения..." oninput="searchEx(this.value)" onfocus="openExDropdown()">
+            <div class="ex-search-icon">🔍</div>
+            <div class="ex-dropdown" id="exDropdown">
+              <div class="ex-item" onclick="selectEx('Жим лёжа','Грудь · Горизонтальный жим','gold')">
+                <span class="ex-badge gold">🏆 Золотой</span>
+                <div><div class="ex-name">Жим лёжа</div><div class="ex-cat">Грудь · Горизонтальный жим</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Приседания со штангой','Ноги · Квадрицепс','gold')">
+                <span class="ex-badge gold">🏆 Золотой</span>
+                <div><div class="ex-name">Приседания со штангой</div><div class="ex-cat">Ноги · Квадрицепс</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Становая тяга классика','Спина · Задняя цепь','gold')">
+                <span class="ex-badge gold">🏆 Золотой</span>
+                <div><div class="ex-name">Становая тяга классика</div><div class="ex-cat">Спина · Задняя цепь</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Становая тяга сумо','Ноги · Задняя цепь','gold')">
+                <span class="ex-badge gold">🏆 Золотой</span>
+                <div><div class="ex-name">Становая тяга сумо</div><div class="ex-cat">Ноги · Задняя цепь</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Жим стоя','Плечи · Вертикальный жим','star')">
+                <span class="ex-badge star">⭐ Признанное</span>
+                <div><div class="ex-name">Жим стоя</div><div class="ex-cat">Плечи · Вертикальный жим</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Подтягивания','Спина · Вертикальная тяга','star')">
+                <span class="ex-badge star">⭐ Признанное</span>
+                <div><div class="ex-name">Подтягивания</div><div class="ex-cat">Спина · Вертикальная тяга</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Румынская тяга','Ноги · Хамстринг','star')">
+                <span class="ex-badge star">⭐ Признанное</span>
+                <div><div class="ex-name">Румынская тяга</div><div class="ex-cat">Ноги · Хамстринг</div></div>
+              </div>
+              <div class="ex-item" onclick="selectEx('Подтягивания на 2 пальцах','Цирк силы · Хват','freak')">
+                <span class="ex-badge freak">🎪 Цирк силы</span>
+                <div><div class="ex-name">Подтягивания на 2 пальцах</div><div class="ex-cat">Цирк силы · Хват</div></div>
+              </div>
+            </div>
+          </div>
+          <div id="exSelectedBlock" style="display:none;">
+            <div class="ex-selected">
+              <span class="ex-selected-name" id="exSelectedName"></span>
+              <span class="ex-clear" onclick="clearEx()">✕ Убрать</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row col3">
+          <div>
+            <label>Стартовый результат</label>
+            <input type="number" id="resultStart" placeholder="120" oninput="updatePreview()"> 
+          </div>
+          <div>
+            <label>Целевой результат</label>
+            <input type="number" id="resultTarget" placeholder="172" oninput="updatePreview()">
+          </div>
+          <div>
+            <label>Единица</label>
+            <select>
+              <option>кг</option>
+              <option>повторения</option>
+              <option>секунды</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row col3">
+          <div>
+            <label>Длительность</label>
+            <select id="programDuration" onchange="updatePreview()">
+              <option>4 недели</option>
+              <option>8 недель</option>
+              <option selected>12 недель</option>
+              <option>16 недель</option>
+              <option>24 недели</option>
+            </select>
+          </div>
+          <div>
+            <label>Стаж</label>
+            <select>
+              <option>Новичок 0–1 год</option>
+              <option selected>Средний 1–3 года</option>
+              <option>Продвинутый 3+ лет</option>
+              <option>Любой</option>
+            </select>
+          </div>
+          <div>
+            <label>Тренировок/нед</label>
+            <select>
+              <option>2–3</option>
+              <option selected>3–4</option>
+              <option>4–5</option>
+              <option>5–6</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row col2">
+          <div>
+            <label>Лига</label>
+            <select>
+              <option>Общая</option>
+              <option selected>Натурал</option>
+              <option>Без ограничений</option>
+            </select>
+          </div>
+          <div>
+            <label>Методология</label>
+            <select>
+              <option selected>Линейная прогрессия</option>
+              <option>Волновая нагрузка</option>
+              <option>Блоковая периодизация</option>
+              <option>ДУП</option>
+              <option>Сопряжённый метод</option>
+              <option>Другое</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Теги</label>
+          <div class="tags-wrap" id="tagsWrap">
+            <div class="tag-chip">Пауэрлифтинг <span class="rm" onclick="removeTag(this)">✕</span></div>
+            <div class="tag-chip">Силовой <span class="rm" onclick="removeTag(this)">✕</span></div>
+          </div>
+          <div class="tag-suggestions">
+            <span class="tag-sug" onclick="addTag(this)">Гипертрофия</span>
+            <span class="tag-sug" onclick="addTag(this)">Стритлифтинг</span>
+            <span class="tag-sug" onclick="addTag(this)">Без оборудования</span>
+            <span class="tag-sug" onclick="addTag(this)">Домашние</span>
+            <span class="tag-sug" onclick="addTag(this)">ОФП</span>
+            <span class="tag-sug" onclick="addTag(this)">Выносливость</span>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <div></div>
+          <button class="btn-next" onclick="nextStep()">Далее: Весовые категории →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: CATEGORIES -->
+      <div class="step-panel" id="step2">
+        <div class="step-header">
+          <div class="step-tag">Шаг 2 из 5</div>
+          <h2>Весовые категории</h2>
+          <div class="step-desc">Установи базовые веса для каждой весовой категории. Система автоматически пересчитает их для атлета через коэффициент от 1RM.</div>
+        </div>
+
+        <div class="cat-grid">
+          <div class="cat-card">
+            <div class="cat-card-header">
+              <div class="cat-name" style="color:var(--blue)">до 66 кг</div>
+              <div class="cat-coef">×0.72</div>
+            </div>
+            <div class="cat-field">
+              <label>Стартовый жим (кг)</label>
+              <input type="number" placeholder="86" oninput="calcCat(this,0.72)">
+              <div class="cat-calc">Цель: <span>124 кг</span></div>
+            </div>
+          </div>
+          <div class="cat-card">
+            <div class="cat-card-header">
+              <div class="cat-name" style="color:var(--green)">74 кг</div>
+              <div class="cat-coef">×0.86</div>
+            </div>
+            <div class="cat-field">
+              <label>Стартовый жим (кг)</label>
+              <input type="number" placeholder="103" oninput="calcCat(this,0.86)">
+              <div class="cat-calc">Цель: <span>148 кг</span></div>
+            </div>
+          </div>
+          <div class="cat-card">
+            <div class="cat-card-header">
+              <div class="cat-name" style="color:var(--white)">83 кг</div>
+              <div class="cat-coef">×1.00</div>
+            </div>
+            <div class="cat-field">
+              <label>Стартовый жим (кг)</label>
+              <input type="number" placeholder="120" oninput="calcCat(this,1.00)">
+              <div class="cat-calc">Цель: <span>172 кг</span></div>
+            </div>
+          </div>
+          <div class="cat-card">
+            <div class="cat-card-header">
+              <div class="cat-name" style="color:var(--gold)">93 кг</div>
+              <div class="cat-coef">×1.12</div>
+            </div>
+            <div class="cat-field">
+              <label>Стартовый жим (кг)</label>
+              <input type="number" placeholder="134" oninput="calcCat(this,1.12)">
+              <div class="cat-calc">Цель: <span>193 кг</span></div>
+            </div>
+          </div>
+          <div class="cat-card">
+            <div class="cat-card-header">
+              <div class="cat-name" style="color:var(--red)">105 кг</div>
+              <div class="cat-coef">×1.24</div>
+            </div>
+            <div class="cat-field">
+              <label>Стартовый жим (кг)</label>
+              <input type="number" placeholder="149">
+              <div class="cat-calc">Цель: <span>213 кг</span></div>
+            </div>
+          </div>
+          <div class="cat-card">
+            <div class="cat-card-header">
+              <div class="cat-name" style="color:var(--gold)">120+ кг</div>
+              <div class="cat-coef">×1.38</div>
+            </div>
+            <div class="cat-field">
+              <label>Стартовый жим (кг)</label>
+              <input type="number" placeholder="166">
+              <div class="cat-calc">Цель: <span>237 кг</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);padding:14px;font-size:.62rem;color:rgba(245,242,238,.6);line-height:1.6;">
+          💡 Коэффициенты рассчитаны на основе данных 50,000+ атлетов FitoRank. Введи базовые веса для категории 83 кг — остальные пересчитаются автоматически.
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep()">← Паспорт</button>
+          <button class="btn-next" onclick="nextStep()">Далее: Правила весов →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: RULES -->
+      <div class="step-panel" id="step3">
+        <div class="step-header">
+          <div class="step-tag">Шаг 3 из 5</div>
+          <h2>Правила коррекции</h2>
+          <div class="step-desc">Задай условия автоматической корректировки весов. Система применит их когда атлет выходит за пределы нормы.</div>
+        </div>
+
+        <div class="rules-grid">
+          <div class="rule-card">
+            <div class="rule-icon">⬆️</div>
+            <div class="rule-title">Прогрессия</div>
+            <div class="rule-field">
+              <label>Прирост за успешную тренировку</label>
+              <input type="number" placeholder="2.5"> 
+            </div>
+            <div class="rule-field">
+              <label>Макс. прирост за неделю (кг)</label>
+              <input type="number" placeholder="5">
+            </div>
+            <div style="font-size:.58rem;color:var(--gray-light);margin-top:8px;line-height:1.5;">
+              Успешно = все подходы выполнены без технических нарушений
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-icon">⬇️</div>
+            <div class="rule-title">Откат</div>
+            <div class="rule-field">
+              <label>Откат при провале (% от веса)</label>
+              <input type="number" placeholder="10">
+            </div>
+            <div class="rule-field">
+              <label>После N провалов подряд</label>
+              <input type="number" placeholder="3">
+            </div>
+            <div style="font-size:.58rem;color:var(--gray-light);margin-top:8px;line-height:1.5;">
+              Провал = не смог выполнить минимальное количество повторений
+            </div>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-icon">⏸</div>
+            <div class="rule-title">Плато</div>
+            <div class="rule-field">
+              <label>Плато = нет роста за N недель</label>
+              <input type="number" placeholder="2">
+            </div>
+            <div class="rule-field">
+              <label>Рекомендованный шаг деload (%)</label>
+              <input type="number" placeholder="15">
+            </div>
+            <div style="font-size:.58rem;color:var(--gray-light);margin-top:8px;line-height:1.5;">
+              Система уведомит атлета и предложит разгрузочную неделю
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <label>Примечания автора по коррекции</label>
+          <textarea placeholder="Дополнительные правила которые не покрываются стандартными параметрами. Например: если жим стоит 3 тренировки — замени на 5×3 вместо 5×5..."></textarea>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep()">← Категории</button>
+          <button class="btn-next" onclick="nextStep()">Далее: Структура →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: STRUCTURE -->
+      <div class="step-panel" id="step4">
+        <div class="step-header">
+          <div class="step-tag">Шаг 4 из 5</div>
+          <h2>Структура программы</h2>
+          <div class="step-desc">Построй план по неделям. Каждая неделя разворачивается — добавляй дни и упражнения. Веса пишутся как % от 1RM или фиксированные значения.</div>
+        </div>
+
+        <div class="week-list" id="weekList">
+
+          <div class="week-card open">
+            <div class="week-header" onclick="toggleWeek(this)">
+              <div class="week-num">01</div>
+              <input class="week-title-input" type="text" value="Вводная неделя — Техника и калибровка" onclick="e => e.stopPropagation()">
+              <div class="week-stats">3 дня · 9 упражнений</div>
+              <div class="week-toggle open">▼</div>
+            </div>
+            <div class="week-body open">
+              <div class="day-list">
+
+                <div class="day-item">
+                  <div class="day-header">
+                    <div class="day-label">День 1 — Понедельник</div>
+                    <button class="day-add-ex" onclick="addExRow(this)">+ Упражнение</button>
+                  </div>
+                  <div class="ex-rows">
+                    <div class="ex-row">
+                      <div class="ex-row-name">Жим лёжа <span style="font-size:.55rem;color:var(--gold)">🏆</span></div>
+                      <input type="text" placeholder="Сет" value="5×5">
+                      <input type="text" placeholder="Вес" value="75% 1RM">
+                      <input type="text" placeholder="Отдых" value="3 мин">
+                      <button class="rm-ex">✕</button>
+                    </div>
+                    <div class="ex-row">
+                      <div class="ex-row-name">Жим лёжа паузный <span style="font-size:.55rem;color:var(--blue)">⭐</span></div>
+                      <input type="text" placeholder="Сет" value="3×3">
+                      <input type="text" placeholder="Вес" value="65% 1RM">
+                      <input type="text" placeholder="Отдых" value="3 мин">
+                      <button class="rm-ex">✕</button>
+                    </div>
+                    <div class="ex-row">
+                      <div class="ex-row-name">Трицепс блок <span style="font-size:.55rem;color:var(--gray-light)">🔬</span></div>
+                      <input type="text" placeholder="Сет" value="4×12">
+                      <input type="text" placeholder="Вес" value="RPE 7">
+                      <input type="text" placeholder="Отдых" value="90 сек">
+                      <button class="rm-ex">✕</button>
+                    </div>
+                  </div>
+                  <button class="week-add-btn" onclick="addExRow(this)">+ Добавить упражнение</button>
+                </div>
+
+                <div class="day-item">
+                  <div class="day-header">
+                    <div class="day-label">День 3 — Среда</div>
+                    <button class="day-add-ex" onclick="addExRow(this)">+ Упражнение</button>
+                  </div>
+                  <div class="ex-rows">
+                    <div class="ex-row">
+                      <div class="ex-row-name">Жим стоя <span style="font-size:.55rem;color:var(--blue)">⭐</span></div>
+                      <input type="text" placeholder="Сет" value="5×5">
+                      <input type="text" placeholder="Вес" value="60% 1RM">
+                      <input type="text" placeholder="Отдых" value="2 мин">
+                      <button class="rm-ex">✕</button>
+                    </div>
+                  </div>
+                  <button class="week-add-btn" onclick="addExRow(this)">+ Добавить упражнение</button>
+                </div>
+
+              </div>
+              <button class="week-add-btn" style="margin-top:12px;border-color:rgba(74,158,255,.3);color:var(--blue);" onclick="addDay(this)">+ Добавить день</button>
+            </div>
+          </div>
+
+          <div class="week-card">
+            <div class="week-header" onclick="toggleWeek(this)">
+              <div class="week-num">02</div>
+              <input class="week-title-input" type="text" value="Наработка — +2.5 кг" onclick="e => e.stopPropagation()">
+              <div class="week-stats">3 дня · пусто</div>
+              <div class="week-toggle">▼</div>
+            </div>
+            <div class="week-body">
+              <div class="day-list">
+                <div class="day-item">
+                  <div class="day-header">
+                    <div class="day-label">День 1</div>
+                    <button class="day-add-ex">+ Упражнение</button>
+                  </div>
+                  <div class="ex-rows"></div>
+                  <button class="week-add-btn">+ Добавить упражнение</button>
+                </div>
+              </div>
+              <button class="week-add-btn" style="margin-top:12px;border-color:rgba(74,158,255,.3);color:var(--blue);">+ Добавить день</button>
+            </div>
+          </div>
+
+          <div class="week-card">
+            <div class="week-header" onclick="toggleWeek(this)">
+              <div class="week-num">03</div>
+              <input class="week-title-input" type="text" value="Неделя 3" onclick="e => e.stopPropagation()">
+              <div class="week-stats">пусто</div>
+              <div class="week-toggle">▼</div>
+            </div>
+            <div class="week-body">
+              <div class="day-list"></div>
+              <button class="week-add-btn" style="margin-top:12px;border-color:rgba(74,158,255,.3);color:var(--blue);">+ Добавить день</button>
+            </div>
+          </div>
+
+        </div>
+        <button class="add-week-btn" onclick="addWeek()" style="margin-top:12px;">
+          <span style="font-size:1rem;">+</span> Добавить неделю
+        </button>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep()">← Правила</button>
+          <button class="btn-next" onclick="nextStep()">Далее: Публикация →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: PUBLISH -->
+      <div class="step-panel" id="step5">
+        <div class="step-header">
+          <div class="step-tag">Шаг 5 из 5</div>
+          <h2>Тип и цена</h2>
+          <div class="step-desc">Последний шаг. Выбери как продавать программу и установи цену.</div>
+        </div>
+
+        <div class="pricing-types">
+          <div class="price-type" onclick="selectPriceType(this,'free')">
+            <div class="pt-icon">🎁</div>
+            <div class="pt-name">Бесплатно</div>
+            <div class="pt-desc">Доступна всем. REP за каждого кто начал тренироваться.</div>
+          </div>
+          <div class="price-type selected" onclick="selectPriceType(this,'paid')">
+            <div class="pt-icon">💰</div>
+            <div class="pt-name">Платная</div>
+            <div class="pt-desc">Ты устанавливаешь цену. Комиссия платформы зависит от твоего уровня.</div>
+          </div>
+          <div class="price-type" onclick="selectPriceType(this,'subscription')">
+            <div class="pt-icon">🔄</div>
+            <div class="pt-name">Подписка</div>
+            <div class="pt-desc">Ежемесячная оплата. Живые обновления и коррекции в реальном времени.</div>
+          </div>
+        </div>
+
+        <div id="priceInput">
+          <div class="field-row col2">
+            <div>
+              <label>Цена (USD) <span class="req">*</span></label>
+              <input type="number" id="priceVal" placeholder="29" value="29" oninput="calcCommission()">
+            </div>
+            <div>
+              <label>Валюта</label>
+              <select disabled>
+                <option>USD</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="commission-calc">
+            <div class="cc-title">Калькулятор дохода</div>
+            <div class="cc-row">
+              <div class="cc-label">Цена программы</div>
+              <div class="cc-val" id="ccPrice">$29</div>
+            </div>
+            <div class="cc-row">
+              <div class="cc-label">Твой уровень</div>
+              <div class="cc-val" style="color:var(--gold)">Легенда</div>
+            </div>
+            <div class="cc-row">
+              <div class="cc-label">Комиссия платформы (15%)</div>
+              <div class="cc-val red" id="ccComm">−$4.35</div>
+            </div>
+            <div class="cc-row">
+              <div class="cc-label">Эквайринг (2.9% + $0.30)</div>
+              <div class="cc-val red" id="ccStripe">−$1.14</div>
+            </div>
+            <div class="cc-row">
+              <div class="cc-label" style="font-weight:700;color:var(--white)">Твой доход с продажи</div>
+              <div class="cc-val big" id="ccNet">$23.51</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <label>Гарантия возврата</label>
+          <select>
+            <option>Без гарантии</option>
+            <option selected>7 дней (рекомендовано)</option>
+            <option>14 дней</option>
+            <option>30 дней</option>
+          </select>
+          <div style="font-size:.58rem;color:var(--gray-light);margin-top:6px;">Гарантия 7 дней увеличивает конверсию на 23% по данным платформы</div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <label>Статус публикации</label>
+          <select>
+            <option>Черновик</option>
+            <option selected>Опубликовать сейчас</option>
+            <option>Запланировать</option>
+          </select>
+        </div>
+
+        <!-- Checklist before publish -->
+        <div style="background:var(--gray);border:1px solid var(--gray-mid);padding:20px;margin-top:20px;">
+          <div style="font-size:.55rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:14px;">Чеклист перед публикацией</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;font-size:.68rem;">
+              <span style="color:var(--green)">✓</span> Название и питч заполнены
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:.68rem;">
+              <span style="color:var(--green)">✓</span> Целевое упражнение выбрано из базы
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:.68rem;">
+              <span style="color:var(--green)">✓</span> Весовые категории заполнены
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:.68rem;">
+              <span style="color:var(--gold)">⚠</span> Структура неполная — 2 из 12 недель заполнено
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:.68rem;">
+              <span style="color:var(--green)">✓</span> Цена установлена
+            </div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep()">← Структура</button>
+          <button class="btn-next publish" onclick="publishProgram()">🚀 Опубликовать программу</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="creator-sidebar">
+
+      <!-- PREVIEW CARD -->
+      <div class="preview-card">
+        <div class="preview-label">👁 Превью карточки</div>
+        <div class="preview-hero">
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="prevTags">
+            <span style="font-size:.45rem;font-weight:700;letter-spacing:.08em;border:1px solid rgba(61,220,132,.3);color:var(--green);padding:2px 6px;">НАТУРАЛ</span>
+            <span style="font-size:.45rem;font-weight:700;letter-spacing:.08em;border:1px solid rgba(232,38,11,.3);color:var(--red);padding:2px 6px;">ЖИВАЯ</span>
+          </div>
+          <div class="preview-title" id="prevTitle">Введи название программы...</div>
+          <div class="preview-meta" id="prevMeta">12 недель · 3–4 тр/нед · Натурал</div>
+          <div class="preview-price" id="prevPrice">$29</div>
+          <div style="font-size:.6rem;color:var(--gray-light);margin-top:4px;" id="prevStats">
+            📈 +43.3% · ⭐ 4.9 · 👥 128 купили
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS -->
+      <div class="status-block">
+        <div class="status-title">Статус черновика</div>
+        <div class="status-row">
+          <div class="status-key">Паспорт</div>
+          <div class="status-val ok">✓ Готов</div>
+        </div>
+        <div class="status-row">
+          <div class="status-key">Категории</div>
+          <div class="status-val warn">⚠ Частично</div>
+        </div>
+        <div class="status-row">
+          <div class="status-key">Правила</div>
+          <div class="status-val err">✕ Пусто</div>
+        </div>
+        <div class="status-row">
+          <div class="status-key">Структура</div>
+          <div class="status-val warn">2/12 недель</div>
+        </div>
+        <div class="status-row">
+          <div class="status-key">Публикация</div>
+          <div class="status-val err">✕ Не готов</div>
+        </div>
+      </div>
+
+      <!-- TIP -->
+      <div class="tip-block" id="contextTip">
+        <div class="tip-icon">💡</div>
+        <div class="tip-title">Совет по паспорту</div>
+        <div class="tip-text">Программы с конкретным результатом в названии («+50 кг к жиму») продаются на 67% лучше чем с общим описанием.</div>
+      </div>
+
+      <!-- REP REWARD -->
+      <div class="rep-block">
+        <div class="rep-icon">⚡</div>
+        <div class="rep-title">REP за программу</div>
+        <div class="rep-row">
+          <div class="rep-label">За публикацию</div>
+          <div class="rep-val">+50</div>
+        </div>
+        <div class="rep-row">
+          <div class="rep-label">За каждую продажу</div>
+          <div class="rep-val">+10</div>
+        </div>
+        <div class="rep-row">
+          <div class="rep-label">За отзыв 5★</div>
+          <div class="rep-val">+5</div>
+        </div>
+        <div class="rep-row">
+          <div class="rep-label">Бонус топ-10</div>
+          <div class="rep-val">+100</div>
+        </div>
+        <div style="margin-top:10px;font-size:.58rem;color:rgba(245,242,238,.4);line-height:1.5;">
+          REP начисляется непрерывно — каждая продажа работает на твой уровень
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FREE MODE -->
+<div id="free-editor">
+  <div class="free-layout">
+    <div class="free-edit-pane">
+      <h3>Редактор</h3>
+      <div style="font-size:.6rem;color:var(--gray-light);margin-bottom:16px;line-height:1.6;">
+        Пиши в свободной форме. Markdown поддерживается. Структура недель определяется автоматически по заголовкам <code style="background:var(--gray);padding:2px 6px;font-size:.58rem;">## Неделя N</code>
+      </div>
+      <textarea class="free-editor-textarea" placeholder="## Жим 170+ кг за 6 месяцев
+
+Программа линейной прогрессии для пауэрлифтинга.
+
+**Кому подходит:** Атлетам в стагнации 3+ месяца, стаж 1–3 года, категория 83+ кг.
+
+**Стартовый результат:** 120 кг → **Цель:** 172 кг
+
+---
+
+## Неделя 1 — Вводная
+
+### День 1 (Пн)
+- Жим лёжа 5×5 @ 75% 1RM
+- Жим паузный 3×3 @ 65%
+- Трицепс блок 4×12
+
+### День 3 (Ср)
+- Жим стоя 5×5 @ 60%
+
+..."></textarea>
+    </div>
+    <div class="free-preview-pane">
+      <div style="font-size:.55rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">📄 Превью как видит покупатель</div>
+      <div class="pi-title">Жим 170+ кг за 6 месяцев</div>
+      <div class="pi-tags">
+        <span class="pi-tag g">Натурал</span>
+        <span class="pi-tag b">Линейная</span>
+        <span class="pi-tag r">Живая</span>
+      </div>
+      <div class="pi-pitch" style="font-size:.72rem;color:rgba(245,242,238,.6);">Программа линейной прогрессии для пауэрлифтинга. Для тех кто застрял на одном весе больше 3 месяцев.</div>
+      <div style="margin-top:16px;font-size:.6rem;color:var(--gray-light);">Предпросмотр обновляется в реальном времени по мере ввода...</div>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW OVERLAY -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-bar">
+    <div class="preview-bar-left">
+      <button class="preview-back" onclick="closePreview()">← Вернуться к редактору</button>
+      <div class="preview-tag">👁 ПРЕДПРОСМОТР — РЕЖИМ ПОКУПАТЕЛЯ</div>
+    </div>
+    <button class="btn-next publish" style="clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);padding:10px 24px;font-size:.58rem;" onclick="publishProgram()">🚀 Опубликовать</button>
+  </div>
+  <div class="preview-inner">
+    <div class="pi-hero">
+      <div class="pi-tags">
+        <span class="pi-tag g">Верифицирована</span>
+        <span class="pi-tag g">Натурал</span>
+        <span class="pi-tag b">Линейная прогрессия</span>
+        <span class="pi-tag r">Живая</span>
+      </div>
+      <div class="pi-title" id="previewFullTitle">Жим 170+ кг за 6 месяцев</div>
+      <div class="pi-pitch">Системная программа линейной прогрессии для пауэрлифтинга. Для тех кто застрял на одном весе больше 3 месяцев. Проверено на 128 атлетах — средний прирост +43 кг за цикл.</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;color:var(--black);">АК</div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--gold);">Алексей К.</div>
+          <div style="font-size:.58rem;color:var(--gray-light);">REP 3,847 · Легенда · Рекорд 192 кг</div>
+        </div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--green);margin-top:20px;" id="previewFullPrice">$29</div>
+      <button class="preview-buy">Купить программу</button>
+    </div>
+
+    <div style="height:1px;background:var(--gray-mid);margin:32px 0;"></div>
+    <div style="font-size:.62rem;color:var(--gray-light);text-align:center;padding:20px;">
+      Это предпросмотр. Структура программы отобразится после заполнения всех недель.
+    </div>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cur');
+const trail = document.getElementById('trail');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    trail.style.left = e.clientX + 'px';
+    trail.style.top = e.clientY + 'px';
+  }, 80);
+});
+
+// STEP MANAGEMENT
+let currentStep = 1;
+const totalSteps = 5;
+
+function goStep(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step' + currentStep).classList.add('active');
+  updateStepBar();
+  document.querySelector('.form-area').scrollTop = 0;
+}
+
+function nextStep() {
+  if (currentStep < totalSteps) goStep(currentStep + 1);
+}
+
+function prevStep() {
+  if (currentStep > 1) goStep(currentStep - 1);
+}
+
+function updateStepBar() {
+  const progress = (currentStep / totalSteps) * 100;
+  document.getElementById('progressFill').style.width = progress + '%';
+
+  for (let i = 1; i <= totalSteps; i++) {
+    const num = document.getElementById('sn' + i);
+    const lbl = document.getElementById('sl' + i);
+    const con = document.getElementById('sc' + i);
+    if (i < currentStep) {
+      num.className = 'step-num done';
+      num.textContent = '✓';
+      lbl.className = 'step-label done';
+      if (con) con.className = 'step-connector done';
+    } else if (i === currentStep) {
+      num.className = 'step-num active';
+      num.textContent = i;
+      lbl.className = 'step-label active';
+    } else {
+      num.className = 'step-num';
+      num.textContent = i;
+      lbl.className = 'step-label';
+    }
+  }
+
+  // Update tips
+  const tips = {
+    1: {title: 'Совет по паспорту', text: 'Программы с конкретным результатом в названии продаются на 67% лучше чем с общим описанием.'},
+    2: {title: 'Совет по категориям', text: 'Заполни хотя бы 83 кг — остальные пересчитаются автоматически. Атлеты доверяют точным цифрам.'},
+    3: {title: 'Совет по правилам', text: 'Правила отката и прогрессии — главное что отличает профессиональную программу от любительской.'},
+    4: {title: 'Совет по структуре', text: 'Первая неделя должна быть полной — покупатели смотрят на неё как на образец всей программы.'},
+    5: {title: 'Совет по публикации', text: 'Цена $29–39 — оптимальный диапазон для первой программы. После 10 продаж и отзывов можно поднять.'},
+  };
+  const t = tips[currentStep];
+  document.querySelector('.tip-title').textContent = t.title;
+  document.querySelector('.tip-text').textContent = t.text;
+}
+
+// MODE SWITCH
+function switchMode(mode, btn) {
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (mode === 'structured') {
+    document.getElementById('structured-editor').style.display = 'block';
+    document.getElementById('free-editor').style.display = 'none';
+  } else {
+    document.getElementById('structured-editor').style.display = 'none';
+    document.getElementById('free-editor').style.display = 'block';
+  }
+}
+
+// EXERCISE SEARCH
+function openExDropdown() {
+  document.getElementById('exDropdown').classList.add('open');
+  document.addEventListener('click', closeDropOnClickOut);
+}
+
+function closeDropOnClickOut(e) {
+  const wrap = document.querySelector('.ex-search-wrap');
+  if (!wrap.contains(e.target)) {
+    document.getElementById('exDropdown').classList.remove('open');
+    document.removeEventListener('click', closeDropOnClickOut);
+  }
+}
+
+function searchEx(val) {
+  openExDropdown();
+  const items = document.querySelectorAll('.ex-item');
+  items.forEach(item => {
+    const name = item.querySelector('.ex-name').textContent.toLowerCase();
+    item.style.display = name.includes(val.toLowerCase()) ? 'flex' : 'none';
+  });
+}
+
+function selectEx(name, cat, level) {
+  document.getElementById('exSearch').value = name;
+  document.getElementById('exDropdown').classList.remove('open');
+  document.getElementById('exSelectedBlock').style.display = 'block';
+  document.getElementById('exSelectedName').textContent = name + ' · ' + cat;
+  updatePreview();
+}
+
+function clearEx() {
+  document.getElementById('exSearch').value = '';
+  document.getElementById('exSelectedBlock').style.display = 'none';
+}
+
+// PREVIEW UPDATE
+function updatePreview() {
+  const title = document.getElementById('programTitle').value;
+  const price = document.getElementById('priceVal') ? document.getElementById('priceVal').value : '29';
+  const prevTitle = document.getElementById('prevTitle');
+  prevTitle.textContent = title || 'Введи название программы...';
+  prevTitle.className = title ? 'preview-title' : 'preview-title placeholder';
+  document.getElementById('prevPrice').textContent = price ? '$' + price : 'Бесплатно';
+  document.getElementById('previewFullTitle').textContent = title || 'Название программы';
+  document.getElementById('previewFullPrice').textContent = price ? '$' + price : 'БЕСПЛАТНО';
+}
+
+// TAGS
+function addTag(el) {
+  const tag = el.textContent;
+  const wrap = document.getElementById('tagsWrap');
+  const chip = document.createElement('div');
+  chip.className = 'tag-chip';
+  chip.innerHTML = tag + ' <span class="rm" onclick="removeTag(this)">✕</span>';
+  wrap.appendChild(chip);
+  el.remove();
+}
+
+function removeTag(el) {
+  const chip = el.parentElement;
+  const tag = chip.textContent.replace('✕','').trim();
+  chip.remove();
+  const sug = document.createElement('span');
+  sug.className = 'tag-sug';
+  sug.textContent = tag;
+  sug.onclick = function(){addTag(this);};
+  document.querySelector('.tag-suggestions').appendChild(sug);
+}
+
+// WEEK TOGGLE
+function toggleWeek(header) {
+  const card = header.closest('.week-card');
+  const body = card.querySelector('.week-body');
+  const toggle = header.querySelector('.week-toggle');
+  card.classList.toggle('open');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// ADD WEEK
+let weekCount = 3;
+function addWeek() {
+  weekCount++;
+  const list = document.getElementById('weekList');
+  const card = document.createElement('div');
+  card.className = 'week-card';
+  card.innerHTML = `
+    <div class="week-header" onclick="toggleWeek(this)">
+      <div class="week-num">${String(weekCount).padStart(2,'0')}</div>
+      <input class="week-title-input" type="text" value="Неделя ${weekCount}" onclick="e => e.stopPropagation()">
+      <div class="week-stats">пусто</div>
+      <div class="week-toggle">▼</div>
+    </div>
+    <div class="week-body">
+      <div class="day-list"></div>
+      <button class="week-add-btn" style="margin-top:12px;border-color:rgba(74,158,255,.3);color:var(--blue);" onclick="addDay(this)">+ Добавить день</button>
+    </div>`;
+  list.appendChild(card);
+}
+
+// COMMISSION CALC
+function calcCommission() {
+  const price = parseFloat(document.getElementById('priceVal').value) || 0;
+  const comm = price * 0.15;
+  const stripe = price * 0.029 + 0.30;
+  const net = price - comm - stripe;
+  document.getElementById('ccPrice').textContent = '$' + price.toFixed(2);
+  document.getElementById('ccComm').textContent = '−$' + comm.toFixed(2);
+  document.getElementById('ccStripe').textContent = '−$' + stripe.toFixed(2);
+  document.getElementById('ccNet').textContent = '$' + Math.max(0, net).toFixed(2);
+  updatePreview();
+}
+
+// PRICE TYPE
+function selectPriceType(el, type) {
+  document.querySelectorAll('.price-type').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  const pi = document.getElementById('priceInput');
+  if (type === 'free') {
+    pi.style.display = 'none';
+    document.getElementById('prevPrice').textContent = 'БЕСПЛАТНО';
+    document.getElementById('prevPrice').style.color = 'var(--green)';
+  } else {
+    pi.style.display = 'block';
+    calcCommission();
+  }
+}
+
+// PREVIEW
+function openPreview() {
+  document.getElementById('previewOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePreview() {
+  document.getElementById('previewOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// DRAFT
+function saveDraft() {
+  const btn = document.querySelector('.nav-save');
+  btn.textContent = '✓ Сохранено';
+  setTimeout(() => btn.textContent = '💾 Сохранить черновик', 2000);
+}
+
+// PUBLISH
+function publishProgram() {
+  alert('🚀 Программа отправлена на верификацию!\n\nСредний срок: 24–48 часов.\nТы получишь уведомление когда программа будет опубликована.');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Дневник</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+.cursor{width:10px;height:10px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);}
+.cursor-trail{width:32px;height:32px;border:1px solid rgba(232,38,11,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .14s ease;transform:translate(-50%,-50%);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.97);border-bottom:1px solid var(--gray-mid);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--white);text-decoration:none;cursor:none;}
+.logo span{color:var(--red);}
+.nav-tabs{display:flex;align-items:stretch;gap:0;}
+.nav-tab{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:0 18px;color:var(--gray-light);text-decoration:none;cursor:none;transition:color .2s;display:flex;align-items:center;border-bottom:2px solid transparent;}
+.nav-tab:hover{color:var(--white);}
+.nav-tab.active{color:var(--white);border-bottom-color:var(--red);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-streak{display:flex;align-items:center;gap:6px;font-size:.6rem;}
+.streak-fire{font-size:1rem;}
+.streak-count{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--red);}
+.streak-label{font-size:.52rem;color:var(--gray-light);}
+.nav-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#805000);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:var(--black);}
+
+/* LAYOUT */
+.page{padding-top:65px;display:grid;grid-template-columns:1fr 300px;min-height:100vh;}
+
+/* MAIN COLUMN */
+.main-col{padding:32px 40px;border-right:1px solid var(--gray-mid);}
+
+/* ── GREETING ── */
+.greeting{margin-bottom:28px;}
+.greeting-date{font-size:.55rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;}
+.greeting-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1;margin-bottom:6px;}
+.greeting-title span{color:var(--red);}
+.greeting-sub{font-size:.7rem;color:var(--gray-light);font-weight:300;}
+
+/* ── ACTIVE PROGRAMS ── */
+.section-label{font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.section-label a{color:var(--gray-light);font-size:.5rem;letter-spacing:.1em;text-decoration:none;cursor:none;transition:color .2s;}
+.section-label a:hover{color:var(--white);}
+
+.programs-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:32px;scrollbar-width:none;}
+.programs-scroll::-webkit-scrollbar{display:none;}
+
+.prog-card{flex-shrink:0;width:280px;background:var(--gray);border:1px solid var(--gray-mid);padding:18px;position:relative;overflow:hidden;transition:border-color .2s;cursor:none;}
+.prog-card:hover{border-color:rgba(245,242,238,.15);}
+.prog-card.primary{border-color:rgba(232,38,11,.25);}
+.prog-card-bg{position:absolute;right:-20px;top:-10px;font-family:'Bebas Neue',sans-serif;font-size:7rem;line-height:1;color:rgba(255,255,255,.025);pointer-events:none;user-select:none;}
+.prog-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;position:relative;}
+.prog-badge{font-size:.46rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid;}
+.prog-badge.active{color:var(--green);border-color:rgba(61,220,132,.25);background:rgba(61,220,132,.06);}
+.prog-badge.paused{color:var(--gold);border-color:rgba(245,200,66,.25);background:rgba(245,200,66,.06);}
+.prog-next-day{font-size:.5rem;color:var(--gray-light);}
+.prog-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;line-height:1;margin-bottom:4px;position:relative;}
+.prog-author{font-size:.56rem;color:var(--gray-light);margin-bottom:12px;}
+.prog-author span{color:var(--gold);}
+
+/* Progress bar */
+.prog-progress{margin-bottom:12px;}
+.prog-progress-top{display:flex;justify-content:space-between;margin-bottom:5px;}
+.ppt-week{font-size:.58rem;font-weight:700;}
+.ppt-pct{font-size:.56rem;color:var(--gray-light);}
+.prog-bar{height:3px;background:var(--gray-mid);position:relative;}
+.prog-bar-fill{height:100%;background:var(--red);transition:width .6s ease;}
+.prog-bar-fill.green{background:var(--green);}
+
+/* Next workout preview */
+.prog-next{background:var(--black);padding:10px 12px;margin-bottom:12px;}
+.pn-label{font-size:.48rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:6px;}
+.pn-exs{display:flex;flex-direction:column;gap:3px;}
+.pn-ex{display:flex;align-items:center;justify-content:space-between;font-size:.6rem;}
+.pn-ex-name{color:var(--white);}
+.pn-ex-sets{font-family:'Bebas Neue',sans-serif;font-size:.75rem;color:var(--gold);}
+.pn-ex-weight{font-size:.56rem;color:var(--gray-light);}
+
+.prog-start-btn{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:11px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background .2s;position:relative;}
+.prog-start-btn:hover{background:var(--red-dark);}
+.prog-start-btn.paused-btn{background:var(--gray-mid);color:var(--gray-light);}
+.prog-start-btn.paused-btn:hover{background:rgba(245,200,66,.2);color:var(--gold);}
+
+/* Add program card */
+.prog-card-add{flex-shrink:0;width:180px;background:transparent;border:1px dashed var(--gray-mid);padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:none;transition:all .2s;}
+.prog-card-add:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.03);}
+.pca-icon{font-size:1.6rem;color:var(--gray-mid);}
+.pca-text{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);text-align:center;}
+
+/* ── ACTIVITY FEED ── */
+.feed-filters{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap;}
+.ff-btn{font-size:.54rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--gray-mid);background:transparent;color:var(--gray-light);cursor:none;transition:all .2s;}
+.ff-btn:hover{color:var(--white);border-color:var(--gray-light);}
+.ff-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
+
+.activity-feed{display:flex;flex-direction:column;gap:0;}
+
+/* Day group */
+.day-group{margin-bottom:24px;}
+.day-group-header{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.dgh-date{font-size:.56rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-light);}
+.dgh-line{flex:1;height:1px;background:var(--gray-mid);}
+.dgh-today{font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);background:rgba(232,38,11,.1);border:1px solid rgba(232,38,11,.2);padding:2px 7px;}
+
+/* Activity item */
+.act-item{background:var(--gray);border:1px solid var(--gray-mid);padding:16px;margin-bottom:6px;position:relative;overflow:hidden;transition:border-color .2s;cursor:none;}
+.act-item:hover{border-color:rgba(245,242,238,.12);}
+.act-item.success{border-left:3px solid var(--green);}
+.act-item.partial{border-left:3px solid var(--gold);}
+.act-item.pr{border-left:3px solid var(--red);}
+.act-item.skipped{border-left:3px solid var(--gray-mid);opacity:.6;}
+.act-item-bg{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:4rem;opacity:.04;pointer-events:none;}
+
+.act-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.act-left{display:flex;flex-direction:column;gap:4px;}
+.act-prog{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);}
+.act-prog span{color:var(--blue);}
+.act-title{font-size:.78rem;font-weight:700;}
+.act-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.act-status{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border:1px solid;}
+.act-status.ok{color:var(--green);border-color:rgba(61,220,132,.25);background:rgba(61,220,132,.06);}
+.act-status.warn{color:var(--gold);border-color:rgba(245,200,66,.25);background:rgba(245,200,66,.06);}
+.act-status.pr-tag{color:var(--red);border-color:rgba(232,38,11,.25);background:rgba(232,38,11,.06);}
+.act-status.skip{color:var(--gray-light);border-color:var(--gray-mid);}
+.act-duration{font-size:.54rem;color:var(--gray-light);}
+
+/* Exercise results */
+.act-exs{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.act-ex{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:5px 8px;background:var(--black);}
+.ae-name{font-size:.62rem;font-weight:600;}
+.ae-sets{font-family:'Bebas Neue',sans-serif;font-size:.8rem;color:var(--gold);}
+.ae-weight{font-size:.6rem;font-weight:700;}
+.ae-delta{font-size:.54rem;font-weight:700;}
+.ae-delta.up{color:var(--green);}
+.ae-delta.same{color:var(--gray-light);}
+.ae-delta.down{color:var(--red);}
+
+/* PR highlight */
+.act-pr-highlight{background:rgba(232,38,11,.06);border:1px solid rgba(232,38,11,.15);padding:8px 12px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.apr-icon{font-size:1.2rem;}
+.apr-text{font-size:.62rem;font-weight:700;color:var(--white);}
+.apr-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red);margin-left:auto;}
+
+.act-bottom{display:flex;align-items:center;justify-content:space-between;}
+.act-note{font-size:.58rem;color:var(--gray-light);font-style:italic;flex:1;}
+.act-actions{display:flex;gap:6px;}
+.act-btn{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--gray-mid);background:transparent;color:var(--gray-light);cursor:none;transition:all .2s;}
+.act-btn:hover{color:var(--white);border-color:var(--gray-light);}
+.act-btn.share{border-color:rgba(74,158,255,.2);color:var(--blue);}
+.act-btn.share:hover{background:rgba(74,158,255,.08);}
+
+/* Skipped item */
+.act-skip-reason{font-size:.62rem;color:var(--gray-light);}
+
+/* Load more */
+.load-more{width:100%;background:transparent;border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px;cursor:none;transition:all .2s;margin-top:8px;}
+.load-more:hover{border-color:var(--gray-light);color:var(--white);}
+
+/* ── SIDEBAR ── */
+.sidebar{padding:28px 24px;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.stat-card{background:var(--gray);padding:14px 12px;}
+.sc-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;margin-bottom:2px;}
+.sc-val.red{color:var(--red);}
+.sc-val.green{color:var(--green);}
+.sc-val.gold{color:var(--gold);}
+.sc-val.blue{color:var(--blue);}
+.sc-label{font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);}
+.sc-delta{font-size:.52rem;margin-top:3px;}
+.sc-delta.up{color:var(--green);}
+.sc-delta.down{color:var(--red);}
+
+/* MINI CALENDAR */
+.mini-cal{background:var(--gray);border:1px solid var(--gray-mid);padding:14px;}
+.mc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.mc-month{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.mc-nav{background:none;border:none;color:var(--gray-light);cursor:none;font-size:.7rem;transition:color .2s;padding:2px 6px;}
+.mc-nav:hover{color:var(--white);}
+.mc-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.mc-dh{font-size:.44rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-light);text-align:center;}
+.mc-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.mc-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.54rem;font-weight:600;position:relative;cursor:none;}
+.mc-day.other{color:var(--gray-mid);}
+.mc-day.today{color:var(--white);background:var(--red);clip-path:polygon(3px 0%,100% 0%,calc(100% - 3px) 100%,0% 100%);}
+.mc-day.trained{color:var(--green);}
+.mc-day.trained::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:3px;height:3px;background:var(--green);border-radius:50%;}
+.mc-day.skipped{color:var(--gray-mid);}
+.mc-day.skipped::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:3px;height:3px;background:var(--red);border-radius:50%;}
+.mc-day.pr-day{color:var(--gold);}
+.mc-day.pr-day::after{content:'⚡';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:.4rem;}
+
+/* PROGRESS CHART */
+.prog-chart{background:var(--gray);border:1px solid var(--gray-mid);padding:14px;}
+.pc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.pc-title{font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);}
+.pc-select{background:transparent;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.52rem;outline:none;cursor:none;}
+.pc-main-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--white);margin-bottom:2px;}
+.pc-delta{font-size:.58rem;color:var(--green);margin-bottom:10px;}
+.pc-bars{display:flex;align-items:flex-end;gap:3px;height:50px;}
+.pc-bar{flex:1;background:var(--gray-mid);position:relative;transition:height .4s ease;min-height:2px;}
+.pc-bar.highlight{background:var(--red);}
+.pc-bar-tip{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.42rem;color:var(--white);white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;}
+.pc-bar:hover .pc-bar-tip{opacity:1;}
+.pc-weeks{display:flex;justify-content:space-between;margin-top:4px;}
+.pc-wlbl{font-size:.42rem;color:var(--gray-light);}
+
+/* NEXT WORKOUT BIG */
+.next-workout{background:var(--black);border:1px solid rgba(232,38,11,.2);}
+.nw-header{background:rgba(232,38,11,.08);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(232,38,11,.15);}
+.nw-label{font-size:.5rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
+.nw-when{font-size:.5rem;color:var(--gray-light);}
+.nw-body{padding:14px;}
+.nw-prog{font-size:.52rem;color:var(--gray-light);margin-bottom:4px;}
+.nw-day{font-size:.75rem;font-weight:700;margin-bottom:10px;}
+.nw-exs{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.nw-ex{display:flex;align-items:center;justify-content:space-between;font-size:.6rem;padding:5px 8px;background:var(--gray);}
+.nwe-name{display:flex;align-items:center;gap:5px;}
+.nwe-lvl{font-size:.6rem;}
+.nwe-sets{font-family:'Bebas Neue',sans-serif;font-size:.78rem;color:var(--gold);}
+.nwe-weight{font-size:.56rem;color:var(--gray-light);}
+.nw-calc-note{font-size:.54rem;color:rgba(74,158,255,.7);margin-bottom:12px;line-height:1.5;}
+.nw-start{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:12px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);cursor:none;transition:background .2s;}
+.nw-start:hover{background:var(--red-dark);}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .35s ease both;}
+.fade-up-2{animation:fadeUp .35s ease .08s both;}
+.fade-up-3{animation:fadeUp .35s ease .16s both;}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-trail" id="trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="fitorank.html" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-tabs">
+    <a href="fitorank-feed.html" class="nav-tab">Лента</a>
+    <a href="#" class="nav-tab active">Дневник</a>
+    <a href="fitorank-leaderboard.html" class="nav-tab">Рекорды</a>
+    <a href="fitorank-profile.html" class="nav-tab">Профиль</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-streak">
+      <span class="streak-fire">🔥</span>
+      <span class="streak-count">14</span>
+      <span class="streak-label">дней подряд</span>
+    </div>
+    <div class="nav-avatar">АК</div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- MAIN COLUMN -->
+<div class="main-col">
+
+  <!-- GREETING -->
+  <div class="greeting fade-up">
+    <div class="greeting-date" id="greetDate">Среда, 11 марта 2026</div>
+    <div class="greeting-title">Привет, <span>Алексей</span></div>
+    <div class="greeting-sub" id="greetSub">Следующая тренировка сегодня — Жим лёжа · День 3 · Блок 2</div>
+  </div>
+
+  <!-- ACTIVE PROGRAMS -->
+  <div class="section-label fade-up-2">
+    Активные программы
+    <a href="fitorank-programs.html">+ Найти программу</a>
+  </div>
+
+  <div class="programs-scroll fade-up-2">
+
+    <!-- Program 1 — Primary -->
+    <div class="prog-card primary">
+      <div class="prog-card-bg">ЖИМ</div>
+      <div class="prog-card-top">
+        <span class="prog-badge active">● Активная</span>
+        <span class="prog-next-day">Сегодня</span>
+      </div>
+      <div class="prog-title">Жим 170+ кг за 6 месяцев</div>
+      <div class="prog-author">Алексей К. · <span>REP 3847</span></div>
+      <div class="prog-progress">
+        <div class="prog-progress-top">
+          <span class="ppt-week">Неделя 8 из 24 · Блок 2</span>
+          <span class="ppt-pct">33%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-bar-fill" style="width:33%"></div></div>
+      </div>
+      <div class="prog-next">
+        <div class="pn-label">День 3 — Сегодня</div>
+        <div class="pn-exs">
+          <div class="pn-ex"><span class="pn-ex-name">🏆 Жим лёжа</span><span class="pn-ex-sets">5×3</span><span class="pn-ex-weight">137.5 кг</span></div>
+          <div class="pn-ex"><span class="pn-ex-name">⭐ Жим паузный</span><span class="pn-ex-sets">3×3</span><span class="pn-ex-weight">120 кг</span></div>
+          <div class="pn-ex"><span class="pn-ex-name">🔬 Трицепс блок</span><span class="pn-ex-sets">4×10</span><span class="pn-ex-weight">RPE 7</span></div>
+        </div>
+      </div>
+      <button class="prog-start-btn" onclick="alert('Переход к активной тренировке...')">▶ Начать тренировку</button>
+    </div>
+
+    <!-- Program 2 -->
+    <div class="prog-card">
+      <div class="prog-card-bg">ТЯГ</div>
+      <div class="prog-card-top">
+        <span class="prog-badge active">● Активная</span>
+        <span class="prog-next-day">Завтра</span>
+      </div>
+      <div class="prog-title">Становая 200+ · Блоковая</div>
+      <div class="prog-author">Сергей М. · <span>REP 2140</span></div>
+      <div class="prog-progress">
+        <div class="prog-progress-top">
+          <span class="ppt-week">Неделя 3 из 16 · Блок 1</span>
+          <span class="ppt-pct">19%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-bar-fill green" style="width:19%"></div></div>
+      </div>
+      <div class="prog-next">
+        <div class="pn-label">День 1 — Завтра</div>
+        <div class="pn-exs">
+          <div class="pn-ex"><span class="pn-ex-name">🏆 Становая классика</span><span class="pn-ex-sets">5×5</span><span class="pn-ex-weight">70%</span></div>
+          <div class="pn-ex"><span class="pn-ex-name">⭐ Румынская тяга</span><span class="pn-ex-sets">3×8</span><span class="pn-ex-weight">RPE 7</span></div>
+        </div>
+      </div>
+      <button class="prog-start-btn paused-btn">Завтра</button>
+    </div>
+
+    <!-- Program 3 — Paused -->
+    <div class="prog-card">
+      <div class="prog-card-bg">ПРИСЕД</div>
+      <div class="prog-card-top">
+        <span class="prog-badge paused">⏸ Пауза</span>
+        <span class="prog-next-day">5 дней назад</span>
+      </div>
+      <div class="prog-title">Приседания 180 · Шейко</div>
+      <div class="prog-author">Иван П. · <span>REP 1890</span></div>
+      <div class="prog-progress">
+        <div class="prog-progress-top">
+          <span class="ppt-week">Неделя 6 из 12 · Блок 2</span>
+          <span class="ppt-pct">50%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-bar-fill" style="width:50%;background:var(--gold)"></div></div>
+      </div>
+      <div class="prog-next">
+        <div class="pn-label" style="color:var(--gold)">На паузе</div>
+        <div style="font-size:.58rem;color:var(--gray-light);margin-top:4px;">Возобновить чтобы продолжить с недели 6</div>
+      </div>
+      <button class="prog-start-btn paused-btn">↩ Возобновить</button>
+    </div>
+
+    <!-- Add program -->
+    <div class="prog-card-add">
+      <div class="pca-icon">＋</div>
+      <div class="pca-text">Добавить программу</div>
+    </div>
+
+  </div>
+
+  <!-- ACTIVITY FEED -->
+  <div class="section-label fade-up-3">
+    Лента активности
+    <div style="display:flex;gap:5px;">
+      <span style="font-size:.5rem;color:var(--green);">● 14 дней подряд</span>
+    </div>
+  </div>
+
+  <div class="feed-filters fade-up-3">
+    <button class="ff-btn active" onclick="filterFeed(this,'all')">Все</button>
+    <button class="ff-btn" onclick="filterFeed(this,'success')">✓ Выполнено</button>
+    <button class="ff-btn" onclick="filterFeed(this,'pr')">⚡ Рекорды</button>
+    <button class="ff-btn" onclick="filterFeed(this,'skipped')">✕ Пропуски</button>
+  </div>
+
+  <div class="activity-feed" id="activityFeed">
+
+    <!-- TODAY -->
+    <div class="day-group" data-filter="all">
+      <div class="day-group-header">
+        <span class="dgh-date">Сегодня</span>
+        <span class="dgh-today">ЗАПЛАНИРОВАНО</span>
+        <div class="dgh-line"></div>
+      </div>
+      <div class="act-item" style="border-left:3px solid var(--blue);background:rgba(74,158,255,.03);">
+        <div class="act-item-bg">▶</div>
+        <div class="act-top">
+          <div class="act-left">
+            <div class="act-prog">Жим 170+ кг · <span>Неделя 8 · День 3</span></div>
+            <div class="act-title">Жим лёжа — Силовой блок</div>
+          </div>
+          <div class="act-right">
+            <span class="act-status" style="color:var(--blue);border-color:rgba(74,158,255,.25);background:rgba(74,158,255,.06);">СЕГОДНЯ</span>
+            <span class="act-duration">~75 мин</span>
+          </div>
+        </div>
+        <div class="act-exs">
+          <div class="act-ex">
+            <span class="ae-name">🏆 Жим лёжа</span>
+            <span class="ae-sets" style="color:var(--gray-light)">5×3</span>
+            <span class="ae-weight" style="color:var(--gray-light)">137.5 кг</span>
+            <span class="ae-delta same">—</span>
+          </div>
+          <div class="act-ex">
+            <span class="ae-name">⭐ Жим паузный</span>
+            <span class="ae-sets" style="color:var(--gray-light)">3×3</span>
+            <span class="ae-weight" style="color:var(--gray-light)">120 кг</span>
+            <span class="ae-delta same">—</span>
+          </div>
+        </div>
+        <div class="act-bottom">
+          <span class="act-note">Не начата</span>
+          <div class="act-actions">
+            <button class="prog-start-btn" style="padding:6px 16px;font-size:.54rem;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);" onclick="alert('Переход к активной тренировке...')">▶ Начать</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YESTERDAY -->
+    <div class="day-group" data-filter="all success">
+      <div class="day-group-header">
+        <span class="dgh-date">Вчера · 10 марта</span>
+        <div class="dgh-line"></div>
+      </div>
+
+      <div class="act-item success" data-type="success">
+        <div class="act-item-bg">✓</div>
+        <div class="act-top">
+          <div class="act-left">
+            <div class="act-prog">Жим 170+ кг · <span>Неделя 8 · День 2</span></div>
+            <div class="act-title">Жим стоя + Объём</div>
+          </div>
+          <div class="act-right">
+            <span class="act-status ok">Выполнено</span>
+            <span class="act-duration">62 мин</span>
+          </div>
+        </div>
+        <div class="act-exs">
+          <div class="act-ex">
+            <span class="ae-name">⭐ Жим стоя</span>
+            <span class="ae-sets">5×5</span>
+            <span class="ae-weight">92.5 кг</span>
+            <span class="ae-delta up">+2.5 кг</span>
+          </div>
+          <div class="act-ex">
+            <span class="ae-name">🔬 Жим гантелей</span>
+            <span class="ae-sets">4×10</span>
+            <span class="ae-weight">36 кг</span>
+            <span class="ae-delta same">= план</span>
+          </div>
+        </div>
+        <div class="act-bottom">
+          <span class="act-note">Всё по плану. Жим стоя идёт хорошо.</span>
+          <div class="act-actions">
+            <button class="act-btn share">↗ Поделиться</button>
+            <button class="act-btn">Детали</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 days ago — PR -->
+    <div class="day-group" data-filter="all pr success">
+      <div class="day-group-header">
+        <span class="dgh-date">8 марта · Воскресенье</span>
+        <div class="dgh-line"></div>
+      </div>
+
+      <div class="act-item pr" data-type="pr">
+        <div class="act-item-bg">⚡</div>
+        <div class="act-top">
+          <div class="act-left">
+            <div class="act-prog">Жим 170+ кг · <span>Неделя 8 · День 1</span></div>
+            <div class="act-title">Жим лёжа — Новый рекорд</div>
+          </div>
+          <div class="act-right">
+            <span class="act-status pr-tag">⚡ Рекорд</span>
+            <span class="act-duration">78 мин</span>
+          </div>
+        </div>
+        <div class="act-pr-highlight">
+          <span class="apr-icon">🏆</span>
+          <span class="apr-text">Личный рекорд — Жим лёжа</span>
+          <span class="apr-val">135 кг</span>
+        </div>
+        <div class="act-exs">
+          <div class="act-ex">
+            <span class="ae-name">🏆 Жим лёжа</span>
+            <span class="ae-sets">5×3</span>
+            <span class="ae-weight">135 кг</span>
+            <span class="ae-delta up">+2.5 кг ПР</span>
+          </div>
+          <div class="act-ex">
+            <span class="ae-name">🏆 Жим лёжа паузный</span>
+            <span class="ae-sets">3×3</span>
+            <span class="ae-weight">117.5 кг</span>
+            <span class="ae-delta up">+2.5 кг</span>
+          </div>
+        </div>
+        <div class="act-bottom">
+          <span class="act-note">Техника чистая. Готов к 137.5 на следующей.</span>
+          <div class="act-actions">
+            <button class="act-btn share">↗ Опубликовать рекорд</button>
+            <button class="act-btn">Детали</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 days ago -->
+    <div class="day-group" data-filter="all success">
+      <div class="day-group-header">
+        <span class="dgh-date">6 марта · Пятница</span>
+        <div class="dgh-line"></div>
+      </div>
+
+      <div class="act-item success" data-type="success">
+        <div class="act-top">
+          <div class="act-left">
+            <div class="act-prog">Становая 200+ · <span>Неделя 3 · День 2</span></div>
+            <div class="act-title">Становая тяга — Объём</div>
+          </div>
+          <div class="act-right">
+            <span class="act-status ok">Выполнено</span>
+            <span class="act-duration">55 мин</span>
+          </div>
+        </div>
+        <div class="act-exs">
+          <div class="act-ex">
+            <span class="ae-name">🏆 Становая классика</span>
+            <span class="ae-sets">5×5</span>
+            <span class="ae-weight">140 кг</span>
+            <span class="ae-delta up">+5 кг</span>
+          </div>
+        </div>
+        <div class="act-bottom">
+          <span class="act-note"></span>
+          <div class="act-actions">
+            <button class="act-btn share">↗ Поделиться</button>
+            <button class="act-btn">Детали</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skip -->
+    <div class="day-group" data-filter="all skipped">
+      <div class="day-group-header">
+        <span class="dgh-date">4 марта · Среда</span>
+        <div class="dgh-line"></div>
+      </div>
+
+      <div class="act-item skipped" data-type="skipped">
+        <div class="act-top">
+          <div class="act-left">
+            <div class="act-prog">Жим 170+ кг · <span>Неделя 7 · День 3</span></div>
+            <div class="act-title">Жим лёжа — пропущено</div>
+          </div>
+          <div class="act-right">
+            <span class="act-status skip">Пропуск</span>
+          </div>
+        </div>
+        <div class="act-bottom">
+          <span class="act-skip-reason">Причина: болезнь. Система перенесла тренировку на следующий день.</span>
+          <div class="act-actions">
+            <button class="act-btn">Детали</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="load-more" onclick="alert('Загрузка предыдущих тренировок...')">Загрузить предыдущие тренировки</button>
+
+</div><!-- /main-col -->
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <!-- NEXT WORKOUT -->
+  <div class="next-workout fade-up">
+    <div class="nw-header">
+      <span class="nw-label">⚡ Следующая тренировка</span>
+      <span class="nw-when">Сегодня</span>
+    </div>
+    <div class="nw-body">
+      <div class="nw-prog">Жим 170+ кг · Нед 8 · День 3</div>
+      <div class="nw-day">Жим лёжа — Силовой блок</div>
+      <div class="nw-exs">
+        <div class="nw-ex">
+          <span class="nwe-name"><span class="nwe-lvl">🏆</span> Жим лёжа</span>
+          <span class="nwe-sets">5×3</span>
+          <span class="nwe-weight">137.5 кг</span>
+        </div>
+        <div class="nw-ex">
+          <span class="nwe-name"><span class="nwe-lvl">⭐</span> Жим паузный</span>
+          <span class="nwe-sets">3×3</span>
+          <span class="nwe-weight">120 кг</span>
+        </div>
+        <div class="nw-ex">
+          <span class="nwe-name"><span class="nwe-lvl">🔬</span> Трицепс блок</span>
+          <span class="nwe-sets">4×10</span>
+          <span class="nwe-weight">RPE 7</span>
+        </div>
+        <div class="nw-ex">
+          <span class="nwe-name"><span class="nwe-lvl">🔬</span> Разводка гантелей</span>
+          <span class="nwe-sets">3×15</span>
+          <span class="nwe-weight">RPE 6</span>
+        </div>
+      </div>
+      <div class="nw-calc-note">💡 Веса рассчитаны от твоего 1RM 135 кг (обновлён 8 марта)</div>
+      <button class="nw-start" onclick="alert('Переход к активной тренировке...')">▶ Начать тренировку</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid fade-up-2">
+    <div class="stat-card">
+      <div class="sc-val red">14</div>
+      <div class="sc-label">Серия дней</div>
+      <div class="sc-delta up">↑ Личный рекорд</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-val green">28</div>
+      <div class="sc-label">Трен. за месяц</div>
+      <div class="sc-delta up">↑ +4 vs прошлый</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-val gold">135</div>
+      <div class="sc-label">Жим 1RM (кг)</div>
+      <div class="sc-delta up">↑ +15 за 8 нед</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-val blue">3</div>
+      <div class="sc-label">Программы</div>
+      <div class="sc-delta" style="color:var(--gray-light);">2 активных</div>
+    </div>
+  </div>
+
+  <!-- MINI CALENDAR -->
+  <div class="mini-cal fade-up-2">
+    <div class="mc-header">
+      <button class="mc-nav">‹</button>
+      <span class="mc-month">Март 2026</span>
+      <button class="mc-nav">›</button>
+    </div>
+    <div class="mc-days-header">
+      <div class="mc-dh">Пн</div><div class="mc-dh">Вт</div><div class="mc-dh">Ср</div>
+      <div class="mc-dh">Чт</div><div class="mc-dh">Пт</div><div class="mc-dh">Сб</div><div class="mc-dh">Вс</div>
+    </div>
+    <div class="mc-days" id="calDays"></div>
+  </div>
+
+  <!-- PROGRESS CHART -->
+  <div class="prog-chart fade-up-3">
+    <div class="pc-header">
+      <span class="pc-title">Прогресс</span>
+      <select class="pc-select" onchange="updateChart(this.value)">
+        <option value="bench">Жим лёжа</option>
+        <option value="deadlift">Становая</option>
+        <option value="squat">Приседания</option>
+      </select>
+    </div>
+    <div class="pc-main-val" id="chartVal">135 кг</div>
+    <div class="pc-delta" id="chartDelta">+15 кг за 8 недель (+12.5%)</div>
+    <div class="pc-bars" id="chartBars"></div>
+    <div class="pc-weeks" id="chartWeeks"></div>
+  </div>
+
+</div><!-- /sidebar -->
+
+</div><!-- /page -->
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),trail=document.getElementById('trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx+'px';trail.style.top=ty+'px';requestAnimationFrame(loop);})();
+
+// GREETING DATE
+const days=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const now=new Date();
+document.getElementById('greetDate').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+
+// FEED FILTER
+function filterFeed(btn,type){
+  document.querySelectorAll('.ff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.act-item').forEach(item=>{
+    if(type==='all'){item.style.display='grid';}
+    else{item.style.display=item.dataset.type===type?'grid':'none';}
+  });
+  document.querySelectorAll('.day-group').forEach(g=>{
+    const visible=[...g.querySelectorAll('.act-item')].some(i=>i.style.display!=='none');
+    g.style.display=visible?'block':'none';
+  });
+}
+
+// CALENDAR
+function renderCal(){
+  const year=2026,month=2; // March 2026 (0-indexed)
+  const trained=[2,3,4,6,8,9,10,13,14,16,17];
+  const skipped=[4];
+  const prs=[8];
+  const firstDay=new Date(year,month,1).getDay();
+  const offset=(firstDay+6)%7;
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=11;
+  let html='';
+  for(let i=0;i<offset;i++) html+=`<div class="mc-day other">${new Date(year,month,-(offset-i-1)).getDate()}</div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    let cls='mc-day';
+    if(d===today) cls+=' today';
+    else if(prs.includes(d)) cls+=' pr-day';
+    else if(trained.includes(d)&&!skipped.includes(d)) cls+=' trained';
+    else if(skipped.includes(d)) cls+=' skipped';
+    html+=`<div class="${cls}">${d}</div>`;
+  }
+  document.getElementById('calDays').innerHTML=html;
+}
+renderCal();
+
+// PROGRESS CHART
+const chartData={
+  bench:{val:'135 кг',delta:'+15 кг за 8 недель (+12.5%)',bars:[100,102.5,105,107.5,110,112.5,115,115,120,122.5,125,127.5,130,132.5,135,135],weeks:['Нед 1','','','','Нед 5','','','','Нед 9','','','','Нед 13','','','Нед 16']},
+  deadlift:{val:'175 кг',delta:'+25 кг за 3 недели (+16.7%)',bars:[150,152.5,155,157.5,160,162.5,165,167.5,170,172.5,175],weeks:['Нед 1','','','','Нед 5','','','','','','Нед 11']},
+  squat:{val:'160 кг',delta:'+5 кг за 6 недель (пауза)',bars:[155,155,157.5,157.5,158,160,160],weeks:['Нед 1','','','','Нед 5','','Нед 7']},
+};
+function updateChart(key){
+  const d=chartData[key];
+  document.getElementById('chartVal').textContent=d.val;
+  document.getElementById('chartDelta').textContent=d.delta;
+  const max=Math.max(...d.bars);
+  const min=Math.min(...d.bars);
+  const range=max-min||1;
+  document.getElementById('chartBars').innerHTML=d.bars.map((v,i)=>`
+    <div class="pc-bar ${i===d.bars.length-1?'highlight':''}" style="height:${8+((v-min)/range*42)}px">
+      <div class="pc-bar-tip">${v}</div>
+    </div>`).join('');
+  document.getElementById('chartWeeks').innerHTML=d.weeks.map(w=>`<div class="pc-wlbl">${w}</div>`).join('');
+}
+updateChart('bench');
+</script>
+</body>
+</html>
