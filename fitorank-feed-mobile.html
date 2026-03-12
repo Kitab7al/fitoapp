@@ -32,14 +32,13 @@ body::before {
   pointer-events: none; z-index: 0; opacity: .4;
 }
 
-/* ══ HEADER ══ */
+/* HEADER */
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(8,8,8,.92); backdrop-filter: blur(12px);
+  background: rgba(8,8,8,.95); backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,.06);
-  padding: env(safe-area-inset-top, 12px) 16px 0;
+  padding: env(safe-area-inset-top, 12px) 16px 12px;
   display: flex; align-items: center; justify-content: space-between;
-  padding-bottom: 12px;
 }
 .header-logo {
   font-family: 'Bebas Neue', sans-serif;
@@ -50,8 +49,7 @@ body::before {
 
 .lang-switcher {
   display: flex;
-  background: var(--gray); border: 1px solid var(--gray-mid);
-  overflow: hidden;
+  background: var(--gray); border: 1px solid var(--gray-mid); overflow: hidden;
 }
 .lang-btn {
   background: none; border: none; color: var(--gray-light);
@@ -70,13 +68,12 @@ body::before {
 }
 .btn-signin:active { background: var(--red-dark); }
 
-/* ══ SORT TABS ══ */
+/* SORT */
 .sort-bar {
   position: fixed; top: calc(env(safe-area-inset-top, 0px) + 52px); left: 0; right: 0; z-index: 99;
-  background: rgba(8,8,8,.88); backdrop-filter: blur(8px);
+  background: rgba(8,8,8,.92); backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255,255,255,.06);
-  display: flex; overflow-x: auto; gap: 0;
-  scrollbar-width: none;
+  display: flex; overflow-x: auto; scrollbar-width: none;
 }
 .sort-bar::-webkit-scrollbar { display: none; }
 .sort-tab {
@@ -85,73 +82,43 @@ body::before {
   letter-spacing: .1em; text-transform: uppercase;
   padding: 11px 18px; cursor: pointer; white-space: nowrap;
   border-bottom: 2px solid transparent; transition: all .2s;
-  position: relative;
 }
 .sort-tab.active { color: var(--white); border-bottom-color: var(--red); }
-.sort-tab .fire-icon { margin-right: 5px; }
 
-/* ══ FEED ══ */
+/* FEED */
 .feed {
   padding-top: calc(env(safe-area-inset-top, 0px) + 96px);
   padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 76px);
 }
 
-/* ══ RECORD CARD ══ */
-.card {
-  position: relative; margin: 0 0 2px;
-  background: var(--gray);
-  overflow: hidden;
-  animation: cardIn .4s ease both;
-}
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.card:nth-child(1) { animation-delay: .05s; }
-.card:nth-child(2) { animation-delay: .1s; }
-.card:nth-child(3) { animation-delay: .15s; }
-.card:nth-child(4) { animation-delay: .2s; }
-.card:nth-child(5) { animation-delay: .25s; }
+/* CARD */
+.card { background: var(--gray); margin-bottom: 3px; animation: cardIn .4s ease both; }
+@keyframes cardIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+.card:nth-child(1) { animation-delay:.05s; }
+.card:nth-child(2) { animation-delay:.1s; }
+.card:nth-child(3) { animation-delay:.15s; }
+.card:nth-child(4) { animation-delay:.2s; }
+.card:nth-child(5) { animation-delay:.25s; }
 
-/* Media area */
-.card-media {
-  position: relative; width: 100%; aspect-ratio: 4/5;
-  background: var(--gray-mid); overflow: hidden;
-}
-.card-media-img {
-  width: 100%; height: 100%; object-fit: cover;
-  display: block; transition: transform .4s ease;
-}
-.card-media-placeholder {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 3rem; background: var(--gray-mid);
-}
+.card-media { position: relative; width: 100%; aspect-ratio: 4/5; background: var(--gray-mid); overflow: hidden; }
+.card-media-placeholder { width: 100%; height: 100%; position: relative; }
 
-/* Hot badge */
 .badge-hot {
-  position: absolute; top: 12px; left: 12px;
+  position: absolute; top: 12px; left: 12px; z-index: 2;
   background: var(--red); color: var(--white);
   font-family: 'Montserrat', sans-serif; font-size: .52rem; font-weight: 900;
-  letter-spacing: .14em; text-transform: uppercase;
-  padding: 4px 9px; display: flex; align-items: center; gap: 5px;
+  letter-spacing: .14em; text-transform: uppercase; padding: 4px 9px;
 }
-.badge-hot::before { content: '🔥'; font-size: .7rem; }
-
-/* Category badge */
 .badge-cat {
-  position: absolute; top: 12px; right: 12px;
+  position: absolute; top: 12px; right: 12px; z-index: 2;
   background: rgba(8,8,8,.8); backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,.12);
   color: var(--gray-light); font-family: 'Montserrat', sans-serif;
-  font-size: .5rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  padding: 4px 9px;
+  font-size: .5rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 9px;
 }
-
-/* Video play icon */
 .play-icon {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  pointer-events: none;
+  pointer-events: none; z-index: 2;
 }
 .play-circle {
   width: 52px; height: 52px; border-radius: 50%;
@@ -160,191 +127,113 @@ body::before {
   display: flex; align-items: center; justify-content: center;
 }
 .play-circle::after {
-  content: ''; width: 0; height: 0;
-  border-top: 10px solid transparent; border-bottom: 10px solid transparent;
-  border-left: 16px solid var(--white); margin-left: 4px;
+  content:''; width:0; height:0;
+  border-top:10px solid transparent; border-bottom:10px solid transparent;
+  border-left:16px solid var(--white); margin-left:4px;
 }
 
-/* Card body */
 .card-body { padding: 14px 16px 12px; }
-.card-athlete {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-}
+.card-athlete { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .athlete-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--gray-mid); border: 2px solid var(--gray-mid);
-  overflow: hidden; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; font-weight: 700;
+  font-size: .85rem; font-weight: 700; border: 2px solid var(--gray-mid);
 }
-.athlete-info { flex: 1; min-width: 0; }
-.athlete-name {
-  font-size: .75rem; font-weight: 700; letter-spacing: .02em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.athlete-meta {
-  font-size: .58rem; color: var(--gray-light); font-weight: 400; margin-top: 1px;
-}
+.athlete-name { font-size: .75rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.athlete-meta { font-size: .58rem; color: var(--gray-light); margin-top: 1px; }
 .athlete-meta b { color: var(--white); font-weight: 600; }
 
-/* Record main */
-.card-record {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 14px;
-}
-.record-exercise {
-  font-size: .62rem; color: var(--gray-light); font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px;
-}
-.record-weight {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.6rem; letter-spacing: .04em; line-height: 1;
-  color: var(--white);
-}
-.record-weight .unit {
-  font-size: 1.1rem; color: var(--gray-light); margin-left: 2px;
-}
-.record-reps {
-  font-size: .62rem; color: var(--gray-light); font-weight: 400;
-}
+.card-record { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+.record-exercise { font-size: .62rem; color: var(--gray-light); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+.record-weight { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; letter-spacing: .04em; line-height: 1; }
+.record-weight .unit { font-size: 1.1rem; color: var(--gray-light); margin-left: 2px; }
+.record-reps { font-size: .62rem; color: var(--gray-light); }
+.record-verify { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.verify-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--gold); letter-spacing: .04em; line-height: 1; }
+.verify-label { font-size: .5rem; color: var(--gray-light); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 
-/* Verify badge */
-.record-verify {
-  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
-}
-.verify-score {
-  font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
-  color: var(--gold); letter-spacing: .04em; line-height: 1;
-}
-.verify-label {
-  font-size: .5rem; color: var(--gray-light); font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-}
-
-/* Actions */
+/* ACTION BUTTONS — всегда активны */
 .card-actions {
-  display: flex; align-items: center; gap: 0;
+  display: flex; align-items: center;
   border-top: 1px solid rgba(255,255,255,.07); padding-top: 12px;
 }
 .action-btn {
   flex: 1; background: none; border: none;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  color: var(--gray-light); cursor: pointer; padding: 4px 0;
-  transition: color .2s; position: relative;
+  color: var(--gray-light); cursor: pointer; padding: 6px 0;
+  transition: color .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
 }
-.action-btn:active { transform: scale(.92); }
-.action-icon { font-size: 1.2rem; line-height: 1; }
-.action-count {
-  font-size: .55rem; font-weight: 700; letter-spacing: .06em;
-}
-.action-btn.vote-up.voted { color: var(--green); }
+.action-btn:active { transform: scale(.85); }
+.action-icon { font-size: 1.3rem; line-height: 1; display: block; }
+.action-count { font-size: .55rem; font-weight: 700; letter-spacing: .06em; display: block; }
+.action-btn.vote-up.voted   { color: var(--green); }
 .action-btn.vote-down.voted { color: var(--red); }
+.action-btn.commented       { color: var(--blue); }
 
-/* BLUR on votes for guests — только визуальный эффект, клики работают */
-.guest-blur {
-  filter: blur(5px);
-  transition: filter .3s;
+/* POPUP */
+.popup-overlay {
+  position: fixed; inset: 0; z-index: 600;
+  background: rgba(0,0,0,.75);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease;
 }
-/* Когда залогинен — убираем blur */
-body.logged-in .guest-blur {
-  filter: none;
+.popup-overlay.show { opacity: 1; pointer-events: all; }
+.popup {
+  background: var(--gray); width: 100%; max-width: 340px;
+  padding: 28px 24px 20px;
+  border-top: 3px solid var(--red);
+  transform: scale(.94) translateY(10px);
+  transition: transform .25s cubic-bezier(.34,1.4,.64,1);
 }
+.popup-overlay.show .popup { transform: scale(1) translateY(0); }
+.popup-icon  { font-size: 2rem; margin-bottom: 10px; }
+.popup-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: .04em; line-height: 1.1; margin-bottom: 8px; }
+.popup-text  { font-size: .68rem; color: var(--gray-light); line-height: 1.65; margin-bottom: 22px; }
+.popup-text b { color: var(--white); }
+.popup-actions { display: flex; flex-direction: column; gap: 8px; }
+.popup-cta {
+  width: 100%; background: var(--red); color: var(--white); border: none;
+  font-family: 'Montserrat', sans-serif; font-size: .7rem; font-weight: 900;
+  letter-spacing: .14em; text-transform: uppercase; padding: 15px;
+  cursor: pointer; transition: background .2s;
+}
+.popup-cta:active { background: var(--red-dark); }
+.popup-back {
+  width: 100%; background: none; border: 1px solid var(--gray-mid);
+  color: var(--gray-light); font-family: 'Montserrat', sans-serif;
+  font-size: .65rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; padding: 13px; cursor: pointer; transition: all .2s;
+}
+.popup-back:active { border-color: var(--white); color: var(--white); }
 
-/* Divider between cards */
-.card + .card { border-top: 3px solid var(--black); }
-
-/* ══ GATE BOTTOM SHEET ══ */
-.overlay {
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0);
-  pointer-events: none;
-  display: none;
-  transition: background .3s;
-}
-.overlay.show {
-  display: block;
-  background: rgba(0,0,0,.65);
-  pointer-events: all;
-}
-
-.gate-sheet {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 501;
-  background: var(--gray);
-  border-top: 1px solid rgba(255,255,255,.1);
-  padding: 0 24px calc(env(safe-area-inset-bottom, 24px) + 24px);
-  transform: translateY(110%);
-  transition: transform .38s cubic-bezier(.32,1,.42,1);
-}
-.gate-sheet.show { transform: translateY(0); }
-
-.gate-handle {
-  width: 36px; height: 4px; background: var(--gray-mid);
-  margin: 14px auto 24px; border-radius: 2px;
-}
-.gate-icon { font-size: 2rem; text-align: center; margin-bottom: 14px; }
-.gate-title {
-  font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem;
-  letter-spacing: .06em; text-align: center; margin-bottom: 6px;
-  line-height: 1.1;
-}
-.gate-sub {
-  font-size: .68rem; color: var(--gray-light); text-align: center;
-  margin-bottom: 24px; font-weight: 400; line-height: 1.5;
-}
-.gate-sub b { color: var(--white); }
-.gate-cta {
-  width: 100%; background: var(--red); color: var(--white);
-  border: none; font-family: 'Montserrat', sans-serif;
-  font-size: .72rem; font-weight: 900; letter-spacing: .14em;
-  text-transform: uppercase; padding: 16px;
-  cursor: pointer; margin-bottom: 10px;
-  transition: background .2s;
-}
-.gate-cta:active { background: var(--red-dark); }
-.gate-skip {
-  display: block; text-align: center;
-  font-size: .6rem; color: var(--gray-light); font-weight: 400;
-  background: none; border: none; width: 100%;
-  padding: 8px; cursor: pointer; letter-spacing: .06em;
-}
-
-/* ══ BOTTOM NAV ══ */
+/* BOTTOM NAV */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(8,8,8,.95); backdrop-filter: blur(12px);
+  background: rgba(8,8,8,.97); backdrop-filter: blur(12px);
   border-top: 1px solid rgba(255,255,255,.08);
-  display: flex;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex; padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .nav-item {
   flex: 1; background: none; border: none;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
   color: var(--gray-light); padding: 10px 0 12px;
   cursor: pointer; transition: color .2s; font-family: 'Montserrat', sans-serif;
 }
 .nav-item.active { color: var(--white); }
-.nav-item .nav-icon { font-size: 1.3rem; line-height: 1; }
-.nav-item .nav-label {
-  font-size: .48rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+.nav-icon  { font-size: 1.3rem; line-height: 1; }
+.nav-label { font-size: .48rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.nav-item.add-btn .nav-icon-wrap {
+  width: 44px; height: 44px; background: var(--red); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; margin-top: -18px; margin-bottom: 2px;
+  border: 3px solid var(--black); transition: background .2s;
 }
-.nav-item.add-record {
-  position: relative;
-}
-.nav-item.add-record .nav-icon-wrap {
-  width: 44px; height: 44px; background: var(--red);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; margin-top: -18px; margin-bottom: 2px;
-  border: 3px solid var(--black);
-}
+.nav-item.add-btn:active .nav-icon-wrap { background: var(--red-dark); }
 
-/* Loaded indicator */
-.load-more {
-  text-align: center; padding: 24px 0;
-  font-size: .58rem; color: var(--gray-light); letter-spacing: .1em;
-}
-
-/* ══ TRANSLATIONS ══ */
-[data-en] { }
+.load-more { text-align: center; padding: 24px 0; font-size: .58rem; color: var(--gray-light); letter-spacing: .1em; }
 </style>
 </head>
 <body>
@@ -354,158 +243,100 @@ body.logged-in .guest-blur {
   <div class="header-logo">FITO<span>RANK</span></div>
   <div class="header-right">
     <div class="lang-switcher">
-      <button class="lang-btn active" onclick="setLang('ru')">RU</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
     </div>
-    <button class="btn-signin" id="signinBtn" onclick="openGate('signin')" data-ru="Войти" data-en="Sign in">Войти</button>
+    <button class="btn-signin" id="signinBtn" onclick="goOnboarding()"></button>
   </div>
 </header>
 
-<!-- SORT BAR -->
+<!-- SORT -->
 <div class="sort-bar">
-  <button class="sort-tab active" onclick="setSort(this,'hot')" data-ru="🔥 Горящие" data-en="🔥 Hot">🔥 Горящие</button>
-  <button class="sort-tab" onclick="setSort(this,'new')" data-ru="Новые" data-en="New">Новые</button>
-  <button class="sort-tab" onclick="setSort(this,'top')" data-ru="Топ недели" data-en="Top week">Топ недели</button>
-  <button class="sort-tab" onclick="setSort(this,'verified')" data-ru="Подтверждённые" data-en="Verified">Подтверждённые</button>
+  <button class="sort-tab active" onclick="setSort(this)">🔥 <span data-t="sort_hot"></span></button>
+  <button class="sort-tab" onclick="setSort(this)"><span data-t="sort_new"></span></button>
+  <button class="sort-tab" onclick="setSort(this)"><span data-t="sort_top"></span></button>
+  <button class="sort-tab" onclick="setSort(this)"><span data-t="sort_verified"></span></button>
 </div>
 
 <!-- FEED -->
-<main class="feed" id="feed">
+<main class="feed">
 
-  <!-- CARD 1 — Video, hot -->
   <article class="card">
     <div class="card-media">
-      <div class="card-media-placeholder" style="background: linear-gradient(160deg,#1a0a08,#2e1208);">
-        <!-- gradient bg simulating video thumbnail -->
-        <svg width="100%" height="100%" style="position:absolute;inset:0;" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <radialGradient id="g1" cx="50%" cy="40%" r="60%">
-              <stop offset="0%" stop-color="#e8260b" stop-opacity=".18"/>
-              <stop offset="100%" stop-color="#080808" stop-opacity="1"/>
-            </radialGradient>
-          </defs>
+      <div class="card-media-placeholder">
+        <svg width="100%" height="100%" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#e8260b" stop-opacity=".18"/><stop offset="100%" stop-color="#080808"/></radialGradient></defs>
           <rect fill="url(#g1)" width="400" height="500"/>
-          <text x="200" y="270" font-family="Bebas Neue,sans-serif" font-size="120" fill="rgba(255,255,255,.06)" text-anchor="middle">195</text>
-          <text x="200" y="320" font-family="Bebas Neue,sans-serif" font-size="32" fill="rgba(255,255,255,.08)" text-anchor="middle">KG</text>
+          <text x="200" y="290" font-family="Bebas Neue,sans-serif" font-size="130" fill="rgba(255,255,255,.05)" text-anchor="middle">195</text>
         </svg>
       </div>
-      <div class="badge-hot" data-ru="Горящий" data-en="Hot">Горящий</div>
+      <div class="badge-hot" data-t="badge_hot"></div>
       <div class="badge-cat">Open · 24–39</div>
       <div class="play-icon"><div class="play-circle"></div></div>
     </div>
     <div class="card-body">
       <div class="card-athlete">
         <div class="athlete-avatar" style="background:#1f1508;color:var(--gold);">АМ</div>
-        <div class="athlete-info">
-          <div class="athlete-name">Алексей Морозов</div>
-          <div class="athlete-meta"><b>Москва</b> · 28 лет · 92 кг</div>
-        </div>
+        <div><div class="athlete-name">Алексей Морозов</div><div class="athlete-meta"><b>Москва</b> · 28 <span data-t="years"></span> · 92 <span data-t="kg"></span></div></div>
       </div>
       <div class="card-record">
         <div>
-          <div class="record-exercise" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</div>
-          <div class="record-weight">195<span class="unit">кг</span></div>
-          <div class="record-reps" data-ru="1 повторение · 04 мар 2026" data-en="1 rep · Mar 04, 2026">1 повторение · 04 мар 2026</div>
+          <div class="record-exercise" data-t="bench"></div>
+          <div class="record-weight">195<span class="unit"> <span data-t="kg"></span></span></div>
+          <div class="record-reps">1 <span data-t="rep"></span> · 04.03.2026</div>
         </div>
-        <div class="record-verify">
-          <div class="verify-score">94%</div>
-          <div class="verify-label" data-ru="Доверие" data-en="Trust">Доверие</div>
-        </div>
+        <div class="record-verify"><div class="verify-score">94%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👍</span>
-          <span class="action-count guest-blur">312</span>
-        </button>
-        <button class="action-btn vote-down" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👎</span>
-          <span class="action-count guest-blur">18</span>
-        </button>
-        <button class="action-btn" onclick="openGate('comment')">
-          <span class="action-icon">💬</span>
-          <span class="action-count guest-blur">47</span>
-        </button>
-        <button class="action-btn" onclick="shareRecord()">
-          <span class="action-icon">↗</span>
-          <span class="action-count" data-ru="Поделиться" data-en="Share">Поделиться</span>
-        </button>
+        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">312</span></button>
+        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">18</span></button>
+        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">47</span></button>
+        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
       </div>
     </div>
   </article>
 
-  <!-- CARD 2 — Photo, hot -->
   <article class="card">
     <div class="card-media">
       <div class="card-media-placeholder">
-        <svg width="100%" height="100%" style="position:absolute;inset:0;" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <radialGradient id="g2" cx="50%" cy="40%" r="60%">
-              <stop offset="0%" stop-color="#0b2be8" stop-opacity=".14"/>
-              <stop offset="100%" stop-color="#080808" stop-opacity="1"/>
-            </radialGradient>
-          </defs>
+        <svg width="100%" height="100%" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#0b2be8" stop-opacity=".14"/><stop offset="100%" stop-color="#080808"/></radialGradient></defs>
           <rect fill="url(#g2)" width="400" height="500"/>
-          <text x="200" y="270" font-family="Bebas Neue,sans-serif" font-size="120" fill="rgba(255,255,255,.06)" text-anchor="middle">300</text>
-          <text x="200" y="320" font-family="Bebas Neue,sans-serif" font-size="32" fill="rgba(255,255,255,.08)" text-anchor="middle">KG</text>
+          <text x="200" y="290" font-family="Bebas Neue,sans-serif" font-size="130" fill="rgba(255,255,255,.05)" text-anchor="middle">300</text>
         </svg>
       </div>
-      <div class="badge-hot" data-ru="Горящий" data-en="Hot">Горящий</div>
+      <div class="badge-hot" data-t="badge_hot"></div>
       <div class="badge-cat">Masters 1 · 40–49</div>
     </div>
     <div class="card-body">
       <div class="card-athlete">
         <div class="athlete-avatar" style="background:#080f1f;color:var(--blue);">ВС</div>
-        <div class="athlete-info">
-          <div class="athlete-name">Виктор Семёнов</div>
-          <div class="athlete-meta"><b>Санкт-Петербург</b> · 43 года · 100 кг</div>
-        </div>
+        <div><div class="athlete-name">Виктор Семёнов</div><div class="athlete-meta"><b>СПб</b> · 43 <span data-t="years"></span> · 100 <span data-t="kg"></span></div></div>
       </div>
       <div class="card-record">
         <div>
-          <div class="record-exercise" data-ru="Становая тяга" data-en="Deadlift">Становая тяга</div>
-          <div class="record-weight">300<span class="unit">кг</span></div>
-          <div class="record-reps" data-ru="1 повторение · 10 мар 2026" data-en="1 rep · Mar 10, 2026">1 повторение · 10 мар 2026</div>
+          <div class="record-exercise" data-t="deadlift"></div>
+          <div class="record-weight">300<span class="unit"> <span data-t="kg"></span></span></div>
+          <div class="record-reps">1 <span data-t="rep"></span> · 10.03.2026</div>
         </div>
-        <div class="record-verify">
-          <div class="verify-score">88%</div>
-          <div class="verify-label" data-ru="Доверие" data-en="Trust">Доверие</div>
-        </div>
+        <div class="record-verify"><div class="verify-score">88%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👍</span>
-          <span class="action-count guest-blur">201</span>
-        </button>
-        <button class="action-btn vote-down" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👎</span>
-          <span class="action-count guest-blur">9</span>
-        </button>
-        <button class="action-btn" onclick="openGate('comment')">
-          <span class="action-icon">💬</span>
-          <span class="action-count guest-blur">33</span>
-        </button>
-        <button class="action-btn" onclick="shareRecord()">
-          <span class="action-icon">↗</span>
-          <span class="action-count" data-ru="Поделиться" data-en="Share">Поделиться</span>
-        </button>
+        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">201</span></button>
+        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">9</span></button>
+        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">33</span></button>
+        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
       </div>
     </div>
   </article>
 
-  <!-- CARD 3 — Video, female -->
   <article class="card">
     <div class="card-media">
       <div class="card-media-placeholder">
-        <svg width="100%" height="100%" style="position:absolute;inset:0;" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <radialGradient id="g3" cx="50%" cy="40%" r="60%">
-              <stop offset="0%" stop-color="#c8420b" stop-opacity=".16"/>
-              <stop offset="100%" stop-color="#080808" stop-opacity="1"/>
-            </radialGradient>
-          </defs>
+        <svg width="100%" height="100%" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#c8420b" stop-opacity=".16"/><stop offset="100%" stop-color="#080808"/></radialGradient></defs>
           <rect fill="url(#g3)" width="400" height="500"/>
-          <text x="200" y="270" font-family="Bebas Neue,sans-serif" font-size="110" fill="rgba(255,255,255,.06)" text-anchor="middle">115</text>
-          <text x="200" y="320" font-family="Bebas Neue,sans-serif" font-size="32" fill="rgba(255,255,255,.08)" text-anchor="middle">KG</text>
+          <text x="200" y="290" font-family="Bebas Neue,sans-serif" font-size="130" fill="rgba(255,255,255,.05)" text-anchor="middle">115</text>
         </svg>
       </div>
       <div class="badge-cat">Open · 24–39</div>
@@ -514,57 +345,32 @@ body.logged-in .guest-blur {
     <div class="card-body">
       <div class="card-athlete">
         <div class="athlete-avatar" style="background:#1a0d1a;color:#d97ef5;">ЕК</div>
-        <div class="athlete-info">
-          <div class="athlete-name">Екатерина Козлова</div>
-          <div class="athlete-meta"><b>Казань</b> · 31 год · 65 кг</div>
-        </div>
+        <div><div class="athlete-name">Екатерина Козлова</div><div class="athlete-meta"><b>Казань</b> · 31 <span data-t="years"></span> · 65 <span data-t="kg"></span></div></div>
       </div>
       <div class="card-record">
         <div>
-          <div class="record-exercise" data-ru="Присед со штангой" data-en="Back Squat">Присед со штангой</div>
-          <div class="record-weight">115<span class="unit">кг</span></div>
-          <div class="record-reps" data-ru="3 повторения · 12 мар 2026" data-en="3 reps · Mar 12, 2026">3 повторения · 12 мар 2026</div>
+          <div class="record-exercise" data-t="squat"></div>
+          <div class="record-weight">115<span class="unit"> <span data-t="kg"></span></span></div>
+          <div class="record-reps">3 <span data-t="reps"></span> · 12.03.2026</div>
         </div>
-        <div class="record-verify">
-          <div class="verify-score">97%</div>
-          <div class="verify-label" data-ru="Доверие" data-en="Trust">Доверие</div>
-        </div>
+        <div class="record-verify"><div class="verify-score">97%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👍</span>
-          <span class="action-count guest-blur">156</span>
-        </button>
-        <button class="action-btn vote-down" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👎</span>
-          <span class="action-count guest-blur">4</span>
-        </button>
-        <button class="action-btn" onclick="openGate('comment')">
-          <span class="action-icon">💬</span>
-          <span class="action-count guest-blur">22</span>
-        </button>
-        <button class="action-btn" onclick="shareRecord()">
-          <span class="action-icon">↗</span>
-          <span class="action-count" data-ru="Поделиться" data-en="Share">Поделиться</span>
-        </button>
+        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">156</span></button>
+        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">4</span></button>
+        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">22</span></button>
+        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
       </div>
     </div>
   </article>
 
-  <!-- CARD 4 — U23 -->
   <article class="card">
     <div class="card-media">
       <div class="card-media-placeholder">
-        <svg width="100%" height="100%" style="position:absolute;inset:0;" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <radialGradient id="g4" cx="50%" cy="40%" r="60%">
-              <stop offset="0%" stop-color="#3ddc84" stop-opacity=".1"/>
-              <stop offset="100%" stop-color="#080808" stop-opacity="1"/>
-            </radialGradient>
-          </defs>
+        <svg width="100%" height="100%" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g4" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#3ddc84" stop-opacity=".1"/><stop offset="100%" stop-color="#080808"/></radialGradient></defs>
           <rect fill="url(#g4)" width="400" height="500"/>
-          <text x="200" y="270" font-family="Bebas Neue,sans-serif" font-size="110" fill="rgba(255,255,255,.06)" text-anchor="middle">170</text>
-          <text x="200" y="320" font-family="Bebas Neue,sans-serif" font-size="32" fill="rgba(255,255,255,.08)" text-anchor="middle">KG</text>
+          <text x="200" y="290" font-family="Bebas Neue,sans-serif" font-size="130" fill="rgba(255,255,255,.05)" text-anchor="middle">170</text>
         </svg>
       </div>
       <div class="badge-cat">U23 · 18–23</div>
@@ -573,57 +379,32 @@ body.logged-in .guest-blur {
     <div class="card-body">
       <div class="card-athlete">
         <div class="athlete-avatar" style="background:#081a0f;color:var(--green);">ДП</div>
-        <div class="athlete-info">
-          <div class="athlete-name">Дмитрий Петров</div>
-          <div class="athlete-meta"><b>Екатеринбург</b> · 21 год · 83 кг</div>
-        </div>
+        <div><div class="athlete-name">Дмитрий Петров</div><div class="athlete-meta"><b>Екатеринбург</b> · 21 <span data-t="years"></span> · 83 <span data-t="kg"></span></div></div>
       </div>
       <div class="card-record">
         <div>
-          <div class="record-exercise" data-ru="Становая тяга" data-en="Deadlift">Становая тяга</div>
-          <div class="record-weight">170<span class="unit">кг</span></div>
-          <div class="record-reps" data-ru="1 повторение · 11 мар 2026" data-en="1 rep · Mar 11, 2026">1 повторение · 11 мар 2026</div>
+          <div class="record-exercise" data-t="deadlift"></div>
+          <div class="record-weight">170<span class="unit"> <span data-t="kg"></span></span></div>
+          <div class="record-reps">1 <span data-t="rep"></span> · 11.03.2026</div>
         </div>
-        <div class="record-verify">
-          <div class="verify-score">82%</div>
-          <div class="verify-label" data-ru="Доверие" data-en="Trust">Доверие</div>
-        </div>
+        <div class="record-verify"><div class="verify-score">82%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👍</span>
-          <span class="action-count guest-blur">89</span>
-        </button>
-        <button class="action-btn vote-down" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👎</span>
-          <span class="action-count guest-blur">11</span>
-        </button>
-        <button class="action-btn" onclick="openGate('comment')">
-          <span class="action-icon">💬</span>
-          <span class="action-count guest-blur">15</span>
-        </button>
-        <button class="action-btn" onclick="shareRecord()">
-          <span class="action-icon">↗</span>
-          <span class="action-count" data-ru="Поделиться" data-en="Share">Поделиться</span>
-        </button>
+        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">89</span></button>
+        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">11</span></button>
+        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">15</span></button>
+        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
       </div>
     </div>
   </article>
 
-  <!-- CARD 5 -->
   <article class="card">
     <div class="card-media">
       <div class="card-media-placeholder">
-        <svg width="100%" height="100%" style="position:absolute;inset:0;" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <radialGradient id="g5" cx="50%" cy="40%" r="60%">
-              <stop offset="0%" stop-color="#f5c842" stop-opacity=".12"/>
-              <stop offset="100%" stop-color="#080808" stop-opacity="1"/>
-            </radialGradient>
-          </defs>
+        <svg width="100%" height="100%" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g5" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#f5c842" stop-opacity=".12"/><stop offset="100%" stop-color="#080808"/></radialGradient></defs>
           <rect fill="url(#g5)" width="400" height="500"/>
-          <text x="200" y="270" font-family="Bebas Neue,sans-serif" font-size="110" fill="rgba(255,255,255,.06)" text-anchor="middle">140</text>
-          <text x="200" y="320" font-family="Bebas Neue,sans-serif" font-size="32" fill="rgba(255,255,255,.08)" text-anchor="middle">KG</text>
+          <text x="200" y="290" font-family="Bebas Neue,sans-serif" font-size="130" fill="rgba(255,255,255,.05)" text-anchor="middle">140</text>
         </svg>
       </div>
       <div class="badge-cat">Masters 2 · 50–59</div>
@@ -631,247 +412,215 @@ body.logged-in .guest-blur {
     <div class="card-body">
       <div class="card-athlete">
         <div class="athlete-avatar" style="background:#1a1508;color:var(--gold);">НВ</div>
-        <div class="athlete-info">
-          <div class="athlete-name">Николай Волков</div>
-          <div class="athlete-meta"><b>Новосибирск</b> · 54 года · 95 кг</div>
-        </div>
+        <div><div class="athlete-name">Николай Волков</div><div class="athlete-meta"><b>Новосибирск</b> · 54 <span data-t="years"></span> · 95 <span data-t="kg"></span></div></div>
       </div>
       <div class="card-record">
         <div>
-          <div class="record-exercise" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</div>
-          <div class="record-weight">140<span class="unit">кг</span></div>
-          <div class="record-reps" data-ru="1 повторение · 09 мар 2026" data-en="1 rep · Mar 09, 2026">1 повторение · 09 мар 2026</div>
+          <div class="record-exercise" data-t="bench"></div>
+          <div class="record-weight">140<span class="unit"> <span data-t="kg"></span></span></div>
+          <div class="record-reps">1 <span data-t="rep"></span> · 09.03.2026</div>
         </div>
-        <div class="record-verify">
-          <div class="verify-score">91%</div>
-          <div class="verify-label" data-ru="Доверие" data-en="Trust">Доверие</div>
-        </div>
+        <div class="record-verify"><div class="verify-score">91%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👍</span>
-          <span class="action-count guest-blur">73</span>
-        </button>
-        <button class="action-btn vote-down" onclick="openGate('vote')">
-          <span class="action-icon guest-blur">👎</span>
-          <span class="action-count guest-blur">5</span>
-        </button>
-        <button class="action-btn" onclick="openGate('comment')">
-          <span class="action-icon">💬</span>
-          <span class="action-count guest-blur">8</span>
-        </button>
-        <button class="action-btn" onclick="shareRecord()">
-          <span class="action-icon">↗</span>
-          <span class="action-count" data-ru="Поделиться" data-en="Share">Поделиться</span>
-        </button>
+        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">73</span></button>
+        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">5</span></button>
+        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">8</span></button>
+        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
       </div>
     </div>
   </article>
 
-  <div class="load-more" data-ru="Загрузка..." data-en="Loading...">Загрузка...</div>
+  <div class="load-more" data-t="loading"></div>
 </main>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay" onclick="closeGate()"></div>
-
-<!-- GATE BOTTOM SHEET -->
-<div class="gate-sheet" id="gateSheet">
-  <div class="gate-handle"></div>
-  <div class="gate-icon" id="gateIcon">👊</div>
-  <div class="gate-title" id="gateTitle">Это займёт 1 минуту</div>
-  <div class="gate-sub" id="gateSub">Зарегистрируйся чтобы голосовать и<br><b>оставить свой рекорд в истории</b></div>
-  <button class="gate-cta" id="gateCta" onclick="goToOnboarding()" data-ru="Зарегистрироваться" data-en="Sign up">Зарегистрироваться</button>
-  <button class="gate-skip" onclick="closeGate()" data-ru="Продолжить как гость" data-en="Continue as guest">Продолжить как гость</button>
+<!-- POPUP -->
+<div class="popup-overlay" id="popup">
+  <div class="popup" id="popupBox">
+    <div class="popup-icon"  id="popupIcon"></div>
+    <div class="popup-title" id="popupTitle"></div>
+    <div class="popup-text"  id="popupText"></div>
+    <div class="popup-actions">
+      <button class="popup-cta"  id="popupCta"  onclick="goOnboarding()"></button>
+      <button class="popup-back" id="popupBack" onclick="closePopup()"></button>
+    </div>
+  </div>
 </div>
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-item active">
     <span class="nav-icon">⚡</span>
-    <span class="nav-label" data-ru="Лента" data-en="Feed">Лента</span>
+    <span class="nav-label" data-t="nav_feed"></span>
   </button>
-  <button class="nav-item" onclick="openGate('search')">
+  <button class="nav-item" onclick="requireAuth('search')">
     <span class="nav-icon">🔍</span>
-    <span class="nav-label" data-ru="Поиск" data-en="Search">Поиск</span>
+    <span class="nav-label" data-t="nav_search"></span>
   </button>
-  <button class="nav-item add-record" onclick="openGate('record')">
-    <span class="nav-icon-wrap">＋</span>
-    <span class="nav-label" data-ru="Рекорд" data-en="Record">Рекорд</span>
+  <button class="nav-item add-btn" onclick="requireAuth('record')">
+    <div class="nav-icon-wrap">＋</div>
+    <span class="nav-label" data-t="nav_record"></span>
   </button>
-  <button class="nav-item" onclick="openGate('profile')">
+  <button class="nav-item" onclick="requireAuth('profile')">
     <span class="nav-icon">👤</span>
-    <span class="nav-label" data-ru="Профиль" data-en="Profile">Профиль</span>
+    <span class="nav-label" data-t="nav_profile"></span>
   </button>
-  <button class="nav-item" onclick="openGate('more')">
+  <button class="nav-item" onclick="requireAuth('more')">
     <span class="nav-icon">☰</span>
-    <span class="nav-label" data-ru="Ещё" data-en="More">Ещё</span>
+    <span class="nav-label" data-t="nav_more"></span>
   </button>
 </nav>
 
 <script>
-// ══ LANGUAGE ══
 const T = {
   ru: {
-    signin: 'Войти',
-    hot: '🔥 Горящие', new: 'Новые', top: 'Топ недели', verified: 'Подтверждённые',
-    vote_title: 'Голосуй за рекорды',
-    vote_sub: 'Регистрация займёт <b>1 минуту</b> — голосуй, комментируй, добавляй рекорды',
-    vote_icon: '👊',
-    comment_title: 'Присоединяйся к обсуждению',
-    comment_sub: 'Зарегистрируйся чтобы комментировать и<br><b>оставить свой рекорд</b>',
-    comment_icon: '💬',
-    record_title: 'Добавь свой рекорд',
-    record_sub: 'Зарегистрируйся за <b>1 минуту</b> и заяви о себе миру',
-    record_icon: '🏆',
-    signin_title: 'Войди в свой аккаунт',
-    signin_sub: 'Голосуй, комментируй и добавляй<br><b>личные рекорды</b>',
-    signin_icon: '⚡',
-    cta: 'Зарегистрироваться',
-    skip: 'Продолжить как гость',
-    share: 'Поделиться',
-    feed: 'Лента', search: 'Поиск', record_nav: 'Рекорд', profile: 'Профиль', more: 'Ещё',
-    trust: 'Доверие',
-    loading: 'Загрузка...',
-    hot_badge: 'Горящий',
-    bench: 'Жим лёжа', dead: 'Становая тяга', squat: 'Присед со штангой',
-    rep1: '1 повторение', rep3: '3 повторения',
+    signin:'Войти', sort_hot:'Горящие', sort_new:'Новые', sort_top:'Топ недели', sort_verified:'Подтверждённые',
+    badge_hot:'🔥 Горящий', trust:'Доверие', share:'Поделиться',
+    years:'лет', kg:'кг', rep:'повтор', reps:'повтора',
+    bench:'Жим лёжа', deadlift:'Становая тяга', squat:'Присед со штангой',
+    loading:'Загрузка...', nav_feed:'Лента', nav_search:'Поиск', nav_record:'Рекорд', nav_profile:'Профиль', nav_more:'Ещё',
+    p_vote_icon:'👊',   p_vote_title:'Ещё не зарегистрирован?',
+    p_vote_text:'Хочешь голосовать за рекорды и оставлять комментарии? <b>Пройди быструю регистрацию</b> — займёт меньше минуты.',
+    p_record_icon:'🏆', p_record_title:'Добавь свой рекорд',
+    p_record_text:'Зарегистрируйся чтобы добавлять рекорды и попасть в <b>официальный рейтинг FitoRank</b>.',
+    p_profile_icon:'👤',p_profile_title:'Войди в аккаунт',
+    p_profile_text:'Зарегистрируйся чтобы вести профиль и <b>отслеживать прогресс</b>.',
+    p_default_icon:'⚡', p_default_title:'Ещё не зарегистрирован?',
+    p_default_text:'Зарегистрируйся чтобы голосовать, комментировать и добавлять рекорды. <b>Быстро и бесплатно.</b>',
+    p_cta:'Зарегистрироваться →', p_back:'Вернуться в ленту',
   },
   en: {
-    signin: 'Sign in',
-    hot: '🔥 Hot', new: 'New', top: 'Top week', verified: 'Verified',
-    vote_title: 'Vote on records',
-    vote_sub: 'Sign up in <b>1 minute</b> — vote, comment, post your own records',
-    vote_icon: '👊',
-    comment_title: 'Join the discussion',
-    comment_sub: 'Sign up to comment and<br><b>post your own record</b>',
-    comment_icon: '💬',
-    record_title: 'Post your record',
-    record_sub: 'Sign up in <b>1 minute</b> and show the world what you've got',
-    record_icon: '🏆',
-    signin_title: 'Welcome back',
-    signin_sub: 'Vote, comment and post<br><b>your personal records</b>',
-    signin_icon: '⚡',
-    cta: 'Sign up',
-    skip: 'Continue as guest',
-    share: 'Share',
-    feed: 'Feed', search: 'Search', record_nav: 'Record', profile: 'Profile', more: 'More',
-    trust: 'Trust',
-    loading: 'Loading...',
-    hot_badge: 'Hot',
-    bench: 'Bench Press', dead: 'Deadlift', squat: 'Back Squat',
-    rep1: '1 rep', rep3: '3 reps',
+    signin:'Sign in', sort_hot:'Hot', sort_new:'New', sort_top:'Top week', sort_verified:'Verified',
+    badge_hot:'🔥 Hot', trust:'Trust', share:'Share',
+    years:'y.o.', kg:'kg', rep:'rep', reps:'reps',
+    bench:'Bench Press', deadlift:'Deadlift', squat:'Back Squat',
+    loading:'Loading...', nav_feed:'Feed', nav_search:'Search', nav_record:'Record', nav_profile:'Profile', nav_more:'More',
+    p_vote_icon:'👊',   p_vote_title:'Not signed up yet?',
+    p_vote_text:'Want to vote on records and leave comments? <b>Quick sign-up</b> — takes less than a minute.',
+    p_record_icon:'🏆', p_record_title:'Post your record',
+    p_record_text:'Sign up to add records and get into the <b>official FitoRank rankings</b>.',
+    p_profile_icon:'👤',p_profile_title:'Sign in',
+    p_profile_text:'Create an account to build your profile and <b>track progress</b>.',
+    p_default_icon:'⚡', p_default_title:'Not signed up yet?',
+    p_default_text:'Sign up to vote, comment and post records. <b>Free and fast.</b>',
+    p_cta:'Sign up →', p_back:'Back to feed',
   }
 };
 
-// Detect language: localStorage preference → browser language
+// LANG
 function detectLang() {
-  const saved = localStorage.getItem('fitorank_lang');
-  if (saved === 'ru' || saved === 'en') return saved;
-  const bl = (navigator.language || 'ru').toLowerCase();
-  const sng = ['ru','uk','kk','be','uz','hy','az','ka','tg','tk','ky'];
-  return sng.some(l => bl.startsWith(l)) ? 'ru' : 'en';
+  const s = localStorage.getItem('fitorank_lang');
+  if (s === 'ru' || s === 'en') return s;
+  const bl = (navigator.language||'ru').toLowerCase();
+  return ['ru','uk','kk','be','uz','hy','az','ka','tg','tk','ky'].some(l=>bl.startsWith(l)) ? 'ru' : 'en';
 }
 let lang = detectLang();
 
 function setLang(l) {
   lang = l;
   localStorage.setItem('fitorank_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  document.getElementById('btn-ru').classList.toggle('active', l==='ru');
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
   applyLang();
 }
 
 function applyLang() {
-  document.querySelectorAll('[data-ru]').forEach(el => {
-    const val = el.getAttribute('data-' + lang);
-    if (val) el.innerHTML = val;
+  const t = T[lang];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const v = t[el.dataset.t];
+    if (v !== undefined) el.textContent = v;
   });
+  document.getElementById('signinBtn').textContent = t.signin;
 }
 
-// ══ AUTH STATE ══
-// Проверяем — вернулся ли юзер после онбординга
-const isLoggedIn = localStorage.getItem('fitorank_user') === 'true';
+// AUTH
+let isLoggedIn = localStorage.getItem('fitorank_user') === 'true';
 
 function applyAuthState() {
   if (isLoggedIn) {
-    // Убираем blur со всех элементов
-    document.querySelectorAll('.guest-blur').forEach(el => el.classList.remove('guest-blur'));
-    // Убираем кнопку "Войти" из хедера, показываем аватар
-    const signinBtn = document.getElementById('signinBtn');
-    if (signinBtn) signinBtn.style.display = 'none';
-    // Меняем обработчики кнопок голосования на реальное действие
-    document.querySelectorAll('.action-btn.vote-up, .action-btn.vote-down').forEach(btn => {
-      btn.onclick = function() { handleVote(this); };
-    });
+    const btn = document.getElementById('signinBtn');
+    btn.textContent = '👤';
+    btn.style.cssText = 'background:var(--gray);border:1px solid var(--gray-mid);font-size:1.1rem;padding:5px 11px;';
   }
 }
 
-function handleVote(btn) {
-  const isUp = btn.classList.contains('vote-up');
-  const card = btn.closest('.card-actions');
-  const upBtn = card.querySelector('.vote-up');
-  const downBtn = card.querySelector('.vote-down');
-
-  if (btn.classList.contains('voted')) {
-    btn.classList.remove('voted');
-  } else {
-    upBtn.classList.remove('voted');
-    downBtn.classList.remove('voted');
-    btn.classList.add('voted');
-  }
-}
-
-// ══ SORT ══
-function setSort(el, type) {
+// SORT
+function setSort(el) {
   document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
 }
 
-// ══ GATE ══
-function openGate(context) {
-  // Если уже залогинен — не показываем gate
-  if (isLoggedIn) return;
-
-  const t = T[lang];
-  const ctx = {
-    vote:    { icon: '👊', title: t.vote_title,    sub: t.vote_sub },
-    comment: { icon: '💬', title: t.comment_title, sub: t.comment_sub },
-    record:  { icon: '🏆', title: t.record_title,  sub: t.record_sub },
-    signin:  { icon: '⚡', title: t.signin_title,  sub: t.signin_sub },
-    search:  { icon: '🔍', title: t.signin_title,  sub: t.signin_sub },
-    profile: { icon: '👤', title: t.signin_title,  sub: t.signin_sub },
-    more:    { icon: '☰',  title: t.signin_title,  sub: t.signin_sub },
-  }[context] || { icon: '⚡', title: t.vote_title, sub: t.vote_sub };
-
-  document.getElementById('gateIcon').textContent = ctx.icon;
-  document.getElementById('gateTitle').textContent = ctx.title;
-  document.getElementById('gateSub').innerHTML = ctx.sub;
-  document.getElementById('gateCta').textContent = lang === 'ru' ? 'Зарегистрироваться' : 'Sign up';
-  document.querySelector('.gate-skip').textContent = t.skip;
-
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById('gateSheet').classList.add('show');
-}
-
-function closeGate() {
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('gateSheet').classList.remove('show');
-}
-
-function goToOnboarding() {
-  window.location.href = 'fitorank-onboarding-mobile.html';
-}
-
-function shareRecord() {
-  if (navigator.share) {
-    navigator.share({ title: 'FitoRank', url: window.location.href });
+// VOTE
+function handleVote(btn) {
+  if (!isLoggedIn) { showPopup('vote'); return; }
+  const actions = btn.closest('.card-actions');
+  const up   = actions.querySelector('.vote-up');
+  const down = actions.querySelector('.vote-down');
+  const cnt  = btn.querySelector('.action-count');
+  const n    = parseInt(cnt.textContent) || 0;
+  if (btn.classList.contains('voted')) {
+    btn.classList.remove('voted');
+    cnt.textContent = n - 1;
+  } else {
+    const other = btn.classList.contains('vote-up') ? down : up;
+    if (other.classList.contains('voted')) {
+      other.classList.remove('voted');
+      const oc = other.querySelector('.action-count');
+      oc.textContent = parseInt(oc.textContent) - 1;
+    }
+    btn.classList.add('voted');
+    cnt.textContent = n + 1;
   }
 }
 
-// ══ INIT ══
-document.querySelectorAll('.lang-btn').forEach(b => {
-  b.classList.toggle('active', b.textContent === lang.toUpperCase());
+// COMMENT
+function handleComment(btn) {
+  if (!isLoggedIn) { showPopup('vote'); return; }
+  btn.classList.toggle('commented');
+}
+
+// SHARE
+function handleShare() {
+  if (navigator.share) navigator.share({ title:'FitoRank', url:window.location.href });
+}
+
+// NAV AUTH GUARD
+function requireAuth(ctx) {
+  if (!isLoggedIn) showPopup(ctx);
+}
+
+// POPUP
+function showPopup(ctx) {
+  const t = T[lang];
+  const m = {
+    vote:    [t.p_vote_icon,    t.p_vote_title,    t.p_vote_text],
+    record:  [t.p_record_icon,  t.p_record_title,  t.p_record_text],
+    profile: [t.p_profile_icon, t.p_profile_title, t.p_profile_text],
+  }[ctx] || [t.p_default_icon, t.p_default_title, t.p_default_text];
+
+  document.getElementById('popupIcon').textContent  = m[0];
+  document.getElementById('popupTitle').textContent = m[1];
+  document.getElementById('popupText').innerHTML    = m[2];
+  document.getElementById('popupCta').textContent   = t.p_cta;
+  document.getElementById('popupBack').textContent  = t.p_back;
+  document.getElementById('popup').classList.add('show');
+}
+
+function closePopup() {
+  document.getElementById('popup').classList.remove('show');
+}
+
+// Клик на overlay закрывает popup
+document.getElementById('popup').addEventListener('click', function(e) {
+  if (e.target === this) closePopup();
 });
-applyLang();
+
+function goOnboarding() {
+  window.location.href = 'fitorank-onboarding-mobile.html';
+}
+
+// INIT
+setLang(lang);
 applyAuthState();
 </script>
 </body>
