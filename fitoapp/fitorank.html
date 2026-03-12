@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Твои Рекорды</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#080808; --white:#f5f2ee; --red:#e8260b; --red-dark:#b51e08; --gray:#1a1a1a; --gray-mid:#2e2e2e; --gray-light:#888; }
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--white); font-family:'Montserrat',sans-serif; overflow-x:hidden; cursor:none; }
+
+  .cursor { width:12px; height:12px; background:var(--red); border-radius:50%; position:fixed; pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  .cursor-trail { width:36px; height:36px; border:1px solid var(--red); border-radius:50%; position:fixed; pointer-events:none; z-index:9998; opacity:0.5; transition:all 0.12s ease; }
+
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:100; opacity:0.4; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:500; display:flex; align-items:center; justify-content:space-between; padding:24px 48px; background:linear-gradient(to bottom,rgba(8,8,8,0.95),transparent); }
+  .logo { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:0.1em; color:var(--white); text-decoration:none; }
+  .logo span { color:var(--red); }
+  .nav-right { display:flex; align-items:center; gap:32px; }
+  .nav-links { display:flex; gap:36px; list-style:none; }
+  .nav-links a { color:var(--gray-light); text-decoration:none; font-size:0.75rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--white); }
+  .nav-cta { background:var(--red); color:var(--white)!important; padding:10px 24px; clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); }
+  .nav-cta:hover { background:var(--red-dark)!important; }
+
+  .lang-switcher { display:flex; border:1px solid var(--gray-mid); clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); overflow:hidden; }
+  .lang-btn { background:transparent; color:var(--gray-light); border:none; font-family:'Montserrat',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:8px 14px; cursor:none; transition:all 0.2s; }
+  .lang-btn.active { background:var(--red); color:var(--white); }
+  .lang-btn:hover:not(.active) { color:var(--white); background:rgba(255,255,255,0.05); }
+
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:120px 48px 80px; position:relative; overflow:hidden; }
+  .hero-bg-number { position:absolute; right:-2%; top:50%; transform:translateY(-50%); font-family:'Bebas Neue',sans-serif; font-size:38vw; color:rgba(232,38,11,0.04); line-height:1; pointer-events:none; user-select:none; }
+  .hero-tag { display:inline-block; font-size:0.7rem; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); border:1px solid var(--red); padding:6px 16px; margin-bottom:32px; width:fit-content; animation:fadeUp 0.8s ease both; }
+  .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(4rem,11vw,13rem); line-height:0.9; letter-spacing:0.02em; max-width:900px; animation:fadeUp 0.8s 0.15s ease both; }
+  .hero h1 .outline { -webkit-text-stroke:2px var(--white); color:transparent; }
+  .hero h1 .red { color:var(--red); }
+  .hero-sub { margin-top:40px; max-width:480px; font-size:1rem; font-weight:300; line-height:1.7; color:var(--gray-light); animation:fadeUp 0.8s 0.3s ease both; }
+  .hero-actions { margin-top:48px; display:flex; gap:20px; align-items:center; animation:fadeUp 0.8s 0.45s ease both; }
+  .hero-stats { position:absolute; bottom:60px; right:48px; display:flex; gap:48px; animation:fadeUp 0.8s 0.6s ease both; }
+  .hero-stat { text-align:right; }
+  .hero-stat-num { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; color:var(--white); line-height:1; }
+  .hero-stat-num span { color:var(--red); }
+  .hero-stat-label { font-size:0.65rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--gray-light); margin-top:4px; }
+
+  .btn-primary { background:var(--red); color:var(--white); font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; border:none; padding:18px 40px; clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); cursor:none; transition:background 0.2s,transform 0.2s; }
+  .btn-primary:hover { background:var(--red-dark); transform:translateY(-2px); }
+  .btn-ghost { background:transparent; color:var(--white); font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; border:1px solid var(--gray-mid); padding:17px 40px; clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); cursor:none; transition:border-color 0.2s,transform 0.2s; }
+  .btn-ghost:hover { border-color:var(--white); transform:translateY(-2px); }
+  .btn-dark { background:var(--black); color:var(--white); font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; border:none; padding:18px 48px; clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); cursor:none; transition:opacity 0.2s,transform 0.2s; }
+  .btn-dark:hover { opacity:0.85; transform:translateY(-2px); }
+
+  .divider { height:1px; background:linear-gradient(to right,transparent,var(--gray-mid),transparent); margin:0 48px; }
+
+  .section { padding:100px 48px; }
+  .section-label { font-size:0.7rem; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); margin-bottom:16px; }
+  .section-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,5vw,5rem); letter-spacing:0.03em; line-height:1; margin-bottom:64px; }
+
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+  .step { background:var(--gray); padding:48px 40px; position:relative; overflow:hidden; transition:background 0.3s; }
+  .step:hover { background:var(--gray-mid); }
+  .step::before { content:''; position:absolute; top:0; left:0; width:3px; height:0; background:var(--red); transition:height 0.4s ease; }
+  .step:hover::before { height:100%; }
+  .step-num { font-family:'Bebas Neue',sans-serif; font-size:5rem; color:rgba(255,255,255,0.05); line-height:1; margin-bottom:24px; }
+  .step-icon { font-size:2rem; margin-bottom:20px; }
+  .step h3 { font-size:1rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:12px; }
+  .step p { font-size:0.85rem; font-weight:300; line-height:1.7; color:var(--gray-light); }
+
+  .leaderboard-section { padding:100px 48px; background:var(--gray); position:relative; overflow:hidden; }
+  .leaderboard-section::before { content:'TOP'; position:absolute; right:-5%; top:50%; transform:translateY(-50%); font-family:'Bebas Neue',sans-serif; font-size:30vw; color:rgba(255,255,255,0.02); line-height:1; pointer-events:none; }
+  .lb-filters { display:flex; gap:12px; margin-bottom:40px; flex-wrap:wrap; }
+  .lb-filter { background:var(--gray-mid); border:1px solid var(--gray-mid); color:var(--gray-light); font-family:'Montserrat',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:8px 20px; cursor:none; transition:all 0.2s; }
+  .lb-filter.active,.lb-filter:hover { background:var(--red); border-color:var(--red); color:var(--white); }
+  .lb-table { width:100%; border-collapse:collapse; }
+  .lb-table th { text-align:left; font-size:0.65rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--gray-light); padding:12px 20px; border-bottom:1px solid var(--gray-mid); }
+  .lb-table tr.lb-row { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.2s; }
+  .lb-table tr.lb-row:hover { background:rgba(255,255,255,0.03); }
+  .lb-table td { padding:18px 20px; font-size:0.85rem; }
+  .lb-rank { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--gray-light); width:60px; }
+  .lb-rank.gold { color:#f5c842; } .lb-rank.silver { color:#c0c0c0; } .lb-rank.bronze { color:#cd7f32; }
+  .lb-name { font-weight:700; } .lb-age { color:var(--gray-light); font-size:0.75rem; }
+  .lb-result { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--white); }
+  .lb-result span { font-family:'Montserrat',sans-serif; font-size:0.7rem; color:var(--gray-light); font-weight:400; }
+  .lb-badge { display:inline-block; font-size:0.6rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border-radius:2px; }
+  .lb-badge.natural { background:rgba(40,200,100,0.15); color:#3ddc84; border:1px solid rgba(40,200,100,0.3); }
+  .lb-badge.pharma { background:rgba(232,38,11,0.15); color:var(--red); border:1px solid rgba(232,38,11,0.3); }
+  .lb-badge.unverified { background:rgba(255,200,0,0.1); color:#ffc800; border:1px solid rgba(255,200,0,0.3); }
+  .lb-votes { display:flex; align-items:center; gap:12px; font-size:0.75rem; color:var(--gray-light); }
+  .vote-bar { width:80px; height:4px; background:var(--gray-mid); border-radius:2px; overflow:hidden; }
+  .vote-fill { height:100%; background:#3ddc84; border-radius:2px; }
+
+  .ego-section { padding:100px 48px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .ego-text .section-title { margin-bottom:24px; }
+  .ego-desc { font-size:0.95rem; font-weight:300; line-height:1.8; color:var(--gray-light); margin-bottom:40px; }
+  .ego-visual { background:var(--gray); padding:48px; }
+  .ego-card-title { font-size:0.7rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--gray-light); margin-bottom:32px; }
+  .ego-highlight { text-align:center; margin-bottom:40px; }
+  .ego-percent { font-family:'Bebas Neue',sans-serif; font-size:8rem; color:var(--red); line-height:1; }
+  .ego-highlight-text { font-size:0.85rem; font-weight:600; color:var(--white); margin-top:8px; }
+  .ego-highlight-sub { font-size:0.75rem; color:var(--gray-light); margin-top:4px; }
+  .age-bars { display:flex; flex-direction:column; gap:12px; }
+  .age-bar-row { display:flex; align-items:center; gap:16px; }
+  .age-label { font-size:0.7rem; font-weight:600; color:var(--gray-light); width:60px; text-align:right; }
+  .age-bar-track { flex:1; height:6px; background:var(--gray-mid); border-radius:3px; overflow:hidden; }
+  .age-bar-fill { height:100%; background:var(--red); border-radius:3px; }
+  .age-bar-fill.you { background:#3ddc84; }
+  .age-pct { font-size:0.7rem; font-weight:700; color:var(--white); width:40px; }
+
+  .register-section { padding:100px 48px; background:var(--red); position:relative; overflow:hidden; }
+  .register-section::before { content:'FITO'; position:absolute; right:-5%; bottom:-10%; font-family:'Bebas Neue',sans-serif; font-size:28vw; color:rgba(0,0,0,0.15); line-height:1; pointer-events:none; }
+  .register-inner { max-width:600px; position:relative; z-index:1; }
+  .register-section .section-label { color:rgba(255,255,255,0.6); }
+  .register-section .section-title { color:var(--white); margin-bottom:24px; }
+  .register-desc { font-size:1rem; font-weight:300; line-height:1.7; color:rgba(255,255,255,0.75); margin-bottom:48px; }
+  .register-form { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+  .form-group { display:flex; flex-direction:column; gap:8px; }
+  .form-group label { font-size:0.65rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .form-group input,.form-group select { background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.2); color:var(--white); font-family:'Montserrat',sans-serif; font-size:0.9rem; padding:14px 16px; outline:none; transition:border-color 0.2s; cursor:none; }
+  .form-group input::placeholder { color:rgba(255,255,255,0.3); }
+  .form-group input:focus,.form-group select:focus { border-color:var(--white); }
+  .form-group select option { background:var(--black); }
+  .form-group.full { grid-column:1/-1; }
+
+  footer { padding:48px; border-top:1px solid var(--gray-mid); display:flex; align-items:center; justify-content:space-between; }
+  .footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--white); }
+  .footer-logo span { color:var(--red); }
+  .footer-text { font-size:0.7rem; color:var(--gray-light); letter-spacing:0.05em; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.7s ease,transform 0.7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:var(--black)} ::-webkit-scrollbar-thumb{background:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a href="#" class="logo">FITO<span>RANK</span></a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#how" class="t" data-ru="Как работает" data-en="How It Works">Как работает</a></li>
+      <li><a href="#leaders" class="t" data-ru="Рекорды" data-en="Records">Рекорды</a></li>
+      <li><a href="#compare" class="t" data-ru="Сравнение" data-en="Compare">Сравнение</a></li>
+      <li><a href="#register" class="nav-cta t" data-ru="Начать" data-en="Get Started">Начать</a></li>
+    </ul>
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-ru" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg-number">1</div>
+  <div class="hero-tag t" data-ru="Персональные рекорды · Реальные люди" data-en="Personal Records · Real People">Персональные рекорды · Реальные люди</div>
+  <h1>
+    <span class="t" data-ru="ТВОЙ" data-en="YOUR">ТВОЙ</span><br>
+    <span class="outline t" data-ru="РЕКОРД" data-en="RECORD">РЕКОРД</span><br>
+    <span class="red t" data-ru="ВАЖЕН" data-en="MATTERS">ВАЖЕН</span>
+  </h1>
+  <p class="hero-sub t" data-ru="Сравни себя с людьми своего возраста, веса и роста. Без профи. Без фарм-монстров. Только честный спорт." data-en="Compare yourself to people your age, weight and height. No pros. No enhanced athletes. Just honest sport.">Сравни себя с людьми своего возраста, веса и роста. Без профи. Без фарм-монстров. Только честный спорт.</p>
+  <div class="hero-actions">
+    <button class="btn-primary t" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})" data-ru="Зарегистрировать рекорд" data-en="Register a Record">Зарегистрировать рекорд</button>
+    <button class="btn-ghost t" onclick="document.getElementById('leaders').scrollIntoView({behavior:'smooth'})" data-ru="Смотреть таблицу" data-en="View Leaderboard">Смотреть таблицу</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">12<span>+</span></div>
+      <div class="hero-stat-label t" data-ru="Упражнений" data-en="Exercises">Упражнений</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">—</div>
+      <div class="hero-stat-label t" data-ru="Твой результат" data-en="Your Result">Твой результат</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">100<span>%</span></div>
+      <div class="hero-stat-label t" data-ru="Натуральный спорт" data-en="Natural Sport">Натуральный спорт</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="how">
+  <div class="section-label t" data-ru="Принцип работы" data-en="How It Works">Принцип работы</div>
+  <div class="section-title reveal">
+    <span class="t" data-ru="КАК ЭТО РАБОТАЕТ" data-en="HOW IT WORKS">КАК ЭТО<br>РАБОТАЕТ</span>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div><div class="step-icon">👤</div>
+      <h3 class="t" data-ru="Создай профиль" data-en="Create Profile">Создай профиль</h3>
+      <p class="t" data-ru="Укажи возраст, вес, рост и пол. Система найдёт только тех, кто идентичен тебе по физическим данным." data-en="Enter your age, weight, height and gender. The system matches you only with people who share identical physical stats.">Укажи возраст, вес, рост и пол. Система найдёт только тех, кто идентичен тебе по физическим данным.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div><div class="step-icon">🏋️</div>
+      <h3 class="t" data-ru="Зафиксируй рекорд" data-en="Log Your Record">Зафиксируй рекорд</h3>
+      <p class="t" data-ru="Выбери упражнение, введи результат. Прикрепи видео из TikTok, YouTube или Instagram как подтверждение." data-en="Choose an exercise, enter your result. Attach a video from TikTok, YouTube or Instagram as proof.">Выбери упражнение, введи результат. Прикрепи видео из TikTok, YouTube или Instagram как подтверждение.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div><div class="step-icon">🏆</div>
+      <h3 class="t" data-ru="Сравни себя" data-en="Compare Yourself">Сравни себя</h3>
+      <p class="t" data-ru="Узнай своё место в категории. Бонус — посмотри как ты выглядишь против людей моложе тебя." data-en="Find your rank in your category. Bonus — see how you stack up against people younger than you.">Узнай своё место в категории. Бонус — посмотри как ты выглядишь против людей моложе тебя.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">04</div><div class="step-icon">✅</div>
+      <h3 class="t" data-ru="Подтверди чистоту" data-en="Verify Natty Status">Подтверди чистоту</h3>
+      <p class="t" data-ru="Натурал или фарма — ты сам указываешь. Сообщество голосует. Спорные результаты верифицируются через анализы." data-en="Natural or enhanced — you declare it. The community votes. Disputed results are verified through lab tests.">Натурал или фарма — ты сам указываешь. Сообщество голосует. Спорные результаты верифицируются через анализы.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">05</div><div class="step-icon">⭐</div>
+      <h3 class="t" data-ru="Рости в репутации" data-en="Build Reputation">Рости в репутации</h3>
+      <p class="t" data-ru="Подтверждённые рекорды и честная статистика дают тебе вес. Авторитетные пользователи подтверждают технику." data-en="Verified records and honest stats earn you authority. Trusted users validate technique for others.">Подтверждённые рекорды и честная статистика дают тебе вес. Авторитетные пользователи подтверждают технику.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">06</div><div class="step-icon">🔥</div>
+      <h3 class="t" data-ru="Вовлекай других" data-en="Challenge Others">Вовлекай других</h3>
+      <p class="t" data-ru="Брось вызов. Поделись результатом. Докажи что в 45 ты можешь то, что не могут 30-летние." data-en="Issue a challenge. Share your result. Prove that at 45 you outperform people half your age.">Брось вызов. Поделись результатом. Докажи что в 45 ты можешь то, что не могут 30-летние.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="leaderboard-section" id="leaders">
+  <div class="section-label t" data-ru="Таблица лидеров" data-en="Leaderboard">Таблица лидеров</div>
+  <div class="section-title reveal t" data-ru="РЕКОРДЫ СООБЩЕСТВА" data-en="COMMUNITY RECORDS">РЕКОРДЫ<br>СООБЩЕСТВА</div>
+  <div class="lb-filters">
+    <button class="lb-filter active t" data-ru="Подтягивания" data-en="Pull-ups">Подтягивания</button>
+    <button class="lb-filter t" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</button>
+    <button class="lb-filter t" data-ru="Приседания" data-en="Squats">Приседания</button>
+    <button class="lb-filter t" data-ru="Отжимания на брусьях" data-en="Dips">Отжимания на брусьях</button>
+    <button class="lb-filter t" data-ru="Становая тяга" data-en="Deadlift">Становая тяга</button>
+  </div>
+  <div style="font-size:0.7rem;color:var(--gray-light);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px;" class="t" data-ru="Категория: Мужчины · 38–42 года · 95–101 кг · 176–180 см" data-en="Category: Male · Age 38–42 · 95–101 kg · 176–180 cm">Категория: Мужчины · 38–42 года · 95–101 кг · 176–180 см</div>
+  <table class="lb-table">
+    <thead><tr>
+      <th>#</th>
+      <th class="t" data-ru="Спортсмен" data-en="Athlete">Спортсмен</th>
+      <th class="t" data-ru="Результат" data-en="Result">Результат</th>
+      <th class="t" data-ru="Статус" data-en="Status">Статус</th>
+      <th class="t" data-ru="Доверие" data-en="Trust">Доверие</th>
+      <th class="t" data-ru="Видео" data-en="Video">Видео</th>
+    </tr></thead>
+    <tbody>
+      <tr class="lb-row">
+        <td class="lb-rank gold">1</td>
+        <td><div class="lb-name">Aleksey K.</div><div class="lb-age t" data-ru="40 лет · 98 кг · 178 см" data-en="40 y.o. · 98 kg · 178 cm">40 лет · 98 кг · 178 см</div></td>
+        <td class="lb-result">18 <span class="t" data-ru="повт." data-en="reps">повт.</span></td>
+        <td><span class="lb-badge natural t" data-ru="Натурал ✓" data-en="Natural ✓">Натурал ✓</span></td>
+        <td><div class="lb-votes"><div class="vote-bar"><div class="vote-fill" style="width:92%"></div></div><span>92%</span></div></td>
+        <td style="font-size:0.8rem;color:var(--red)">▶ TikTok</td>
+      </tr>
+      <tr class="lb-row">
+        <td class="lb-rank silver">2</td>
+        <td><div class="lb-name">Dmitry V.</div><div class="lb-age t" data-ru="41 год · 100 кг · 179 см" data-en="41 y.o. · 100 kg · 179 cm">41 год · 100 кг · 179 см</div></td>
+        <td class="lb-result">15 <span class="t" data-ru="повт." data-en="reps">повт.</span></td>
+        <td><span class="lb-badge natural t" data-ru="Натурал ✓" data-en="Natural ✓">Натурал ✓</span></td>
+        <td><div class="lb-votes"><div class="vote-bar"><div class="vote-fill" style="width:87%"></div></div><span>87%</span></div></td>
+        <td style="font-size:0.8rem;color:var(--red)">▶ YouTube</td>
+      </tr>
+      <tr class="lb-row" style="background:rgba(61,220,132,0.04)">
+        <td class="lb-rank bronze">3</td>
+        <td><div class="lb-name t" data-ru="Ты (Z)" data-en="You (Z)">Ты (Z)</div><div class="lb-age t" data-ru="40 лет · 99 кг · 178 см" data-en="40 y.o. · 99 kg · 178 cm">40 лет · 99 кг · 178 см</div></td>
+        <td class="lb-result">10 <span class="t" data-ru="повт." data-en="reps">повт.</span></td>
+        <td><span class="lb-badge natural t" data-ru="Натурал" data-en="Natural">Натурал</span></td>
+        <td><div class="lb-votes"><div class="vote-bar"><div class="vote-fill" style="width:75%"></div></div><span>75%</span></div></td>
+        <td style="font-size:0.8rem;color:var(--red)">▶ Instagram</td>
+      </tr>
+      <tr class="lb-row">
+        <td class="lb-rank">4</td>
+        <td><div class="lb-name">Sergey M.</div><div class="lb-age t" data-ru="39 лет · 97 кг · 177 см" data-en="39 y.o. · 97 kg · 177 cm">39 лет · 97 кг · 177 см</div></td>
+        <td class="lb-result">9 <span class="t" data-ru="повт." data-en="reps">повт.</span></td>
+        <td><span class="lb-badge unverified t" data-ru="Под вопросом" data-en="Disputed">Под вопросом</span></td>
+        <td><div class="lb-votes"><div class="vote-bar"><div class="vote-fill" style="width:45%;background:#ffc800"></div></div><span>45%</span></div></td>
+        <td style="font-size:0.8rem;color:var(--red)">▶ TikTok</td>
+      </tr>
+      <tr class="lb-row">
+        <td class="lb-rank">5</td>
+        <td><div class="lb-name">Igor T.</div><div class="lb-age t" data-ru="42 года · 96 кг · 180 см" data-en="42 y.o. · 96 kg · 180 cm">42 года · 96 кг · 180 см</div></td>
+        <td class="lb-result">8 <span class="t" data-ru="повт." data-en="reps">повт.</span></td>
+        <td><span class="lb-badge pharma t" data-ru="Фарма" data-en="Enhanced">Фарма</span></td>
+        <td><div class="lb-votes"><div class="vote-bar"><div class="vote-fill" style="width:80%"></div></div><span>80%</span></div></td>
+        <td style="font-size:0.8rem;color:var(--red)">▶ YouTube</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="ego-section" id="compare">
+  <div class="ego-text">
+    <div class="section-label t" data-ru="Сила возраста" data-en="The Power of Age">Сила возраста</div>
+    <div class="section-title reveal t" data-ru="ТЫ ЛУЧШЕ МОЛОДЫХ" data-en="YOU BEAT THE YOUNG">ТЫ ЛУЧШЕ<br>МОЛОДЫХ</div>
+    <p class="ego-desc t" data-ru="Система автоматически показывает твой процентиль не только в своей категории, но и среди других возрастных групп. Потому что иногда 40-летний рвёт всех 30-летних." data-en="The system automatically shows your percentile across all age groups — not just your own. Because sometimes a 40-year-old destroys every 30-year-old in the room.">Система автоматически показывает твой процентиль не только в своей категории, но и среди других возрастных групп. Потому что иногда 40-летний рвёт всех 30-летних.</p>
+    <button class="btn-primary t" data-ru="Узнать свой процентиль" data-en="Find My Percentile">Узнать свой процентиль</button>
+  </div>
+  <div class="ego-visual reveal">
+    <div class="ego-card-title t" data-ru="Подтягивания · 10 повторений · Z, 40 лет" data-en="Pull-ups · 10 reps · Z, age 40">Подтягивания · 10 повторений · Z, 40 лет</div>
+    <div class="ego-highlight">
+      <div class="ego-percent">83%</div>
+      <div class="ego-highlight-text t" data-ru="Лучше 83% людей в возрасте 35–39 лет" data-en="Better than 83% of people aged 35–39">Лучше 83% людей в возрасте 35–39 лет</div>
+      <div class="ego-highlight-sub t" data-ru="В твоей весовой категории · 95–101 кг" data-en="In your weight class · 95–101 kg">В твоей весовой категории · 95–101 кг</div>
+    </div>
+    <div class="age-bars">
+      <div class="age-bar-row"><div class="age-label">55–60</div><div class="age-bar-track"><div class="age-bar-fill" style="width:98%"></div></div><div class="age-pct">98%</div></div>
+      <div class="age-bar-row"><div class="age-label">46–54</div><div class="age-bar-track"><div class="age-bar-fill" style="width:91%"></div></div><div class="age-pct">91%</div></div>
+      <div class="age-bar-row"><div class="age-label" style="color:var(--white)">40–45</div><div class="age-bar-track"><div class="age-bar-fill you" style="width:67%"></div></div><div class="age-pct" style="color:#3ddc84">67%</div></div>
+      <div class="age-bar-row"><div class="age-label">35–39</div><div class="age-bar-track"><div class="age-bar-fill" style="width:83%"></div></div><div class="age-pct">83%</div></div>
+      <div class="age-bar-row"><div class="age-label">26–34</div><div class="age-bar-track"><div class="age-bar-fill" style="width:71%"></div></div><div class="age-pct">71%</div></div>
+      <div class="age-bar-row"><div class="age-label">18–25</div><div class="age-bar-track"><div class="age-bar-fill" style="width:58%"></div></div><div class="age-pct">58%</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="register-section" id="register">
+  <div class="register-inner">
+    <div class="section-label t" data-ru="Присоединиться" data-en="Join Now">Присоединиться</div>
+    <div class="section-title t" data-ru="НАЧНИ СЕЙЧАС" data-en="START NOW">НАЧНИ<br>СЕЙЧАС</div>
+    <p class="register-desc t" data-ru="Зарегистрируй свой первый рекорд. Найди своих. Докажи что возраст — это не предел." data-en="Log your first record. Find your people. Prove that age is not a limit.">Зарегистрируй свой первый рекорд. Найди своих. Докажи что возраст — это не предел.</p>
+    <div class="register-form">
+      <div class="form-group"><label class="t" data-ru="Имя" data-en="Name">Имя</label><input type="text" id="inp-name" placeholder="Алексей"></div>
+      <div class="form-group"><label class="t" data-ru="Возраст" data-en="Age">Возраст</label><input type="number" placeholder="40"></div>
+      <div class="form-group"><label class="t" data-ru="Вес (кг)" data-en="Weight (kg)">Вес (кг)</label><input type="number" placeholder="99"></div>
+      <div class="form-group"><label class="t" data-ru="Рост (см)" data-en="Height (cm)">Рост (см)</label><input type="number" placeholder="178"></div>
+      <div class="form-group">
+        <label class="t" data-ru="Пол" data-en="Gender">Пол</label>
+        <select>
+          <option class="t" data-ru="Мужчина" data-en="Male">Мужчина</option>
+          <option class="t" data-ru="Женщина" data-en="Female">Женщина</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="t" data-ru="Статус" data-en="Status">Статус</label>
+        <select>
+          <option class="t" data-ru="Натурал" data-en="Natural">Натурал</option>
+          <option class="t" data-ru="Фарма" data-en="Enhanced">Фарма</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="t" data-ru="Первое упражнение" data-en="First Exercise">Первое упражнение</label>
+        <select>
+          <option class="t" data-ru="Подтягивания" data-en="Pull-ups">Подтягивания</option>
+          <option class="t" data-ru="Жим лёжа" data-en="Bench Press">Жим лёжа</option>
+          <option class="t" data-ru="Приседания со штангой" data-en="Barbell Squats">Приседания со штангой</option>
+          <option class="t" data-ru="Становая тяга" data-en="Deadlift">Становая тяга</option>
+          <option class="t" data-ru="Отжимания на брусьях" data-en="Dips">Отжимания на брусьях</option>
+          <option class="t" data-ru="Жим стоя" data-en="Overhead Press">Жим стоя</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-dark t" data-ru="Зарегистрировать рекорд →" data-en="Register Record →">Зарегистрировать рекорд →</button>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">FITO<span>RANK</span></div>
+  <div class="footer-text t" data-ru="Честный спорт · Реальные люди · Твои рекорды" data-en="Honest Sport · Real People · Your Records">Честный спорт · Реальные люди · Твои рекорды</div>
+  <div class="footer-text">© 2025 Fito</div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  let mx=0,my=0,tx=0,ty=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx-6+'px';cursor.style.top=my-6+'px';});
+  (function loop(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx-18+'px';trail.style.top=ty-18+'px';requestAnimationFrame(loop)})();
+
+  // Reveal
+  new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*80);});},{threshold:.1}).observe && document.querySelectorAll('.reveal').forEach(r=>new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1}).observe(r));
+
+  // Filters
+  document.querySelectorAll('.lb-filter').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.lb-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});});
+
+  // Lang
+  let lang = 'ru';
+  function setLang(l) {
+    lang = l;
+    document.getElementById('btn-ru').classList.toggle('active', l==='ru');
+    document.getElementById('btn-en').classList.toggle('active', l==='en');
+    document.documentElement.lang = l;
+    document.title = l==='ru' ? 'FitoRank — Твои Рекорды' : 'FitoRank — Your Records';
+
+    document.querySelectorAll('.t[data-ru][data-en]').forEach(el=>{
+      const val = el.getAttribute('data-'+l);
+      if(!val) return;
+      if(el.tagName==='INPUT') { el.placeholder=val; return; }
+      if(el.tagName==='OPTION') { el.textContent=val; return; }
+      // For section-title with reveal class — keep innerHTML structure if it has <br>
+      if(el.classList.contains('section-title') || el.classList.contains('ego-desc') || el.classList.contains('register-desc')) {
+        // split on space at midpoint for section-titles
+        if(el.classList.contains('section-title')) {
+          const words=val.split(' ');
+          const mid=Math.ceil(words.length/2);
+          el.innerHTML=words.slice(0,mid).join(' ')+'<br>'+words.slice(mid).join(' ');
+        } else {
+          el.textContent=val;
+        }
+        return;
+      }
+      el.textContent=val;
+    });
+
+    // Name placeholder
+    document.getElementById('inp-name').placeholder = l==='ru'?'Алексей':'Alex';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitoRank — Карта фронтенда</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;min-height:100vh;padding:40px;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+  .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+
+  /* HEADER */
+  .site-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px;padding-bottom:20px;border-bottom:1px solid var(--gray-mid);}
+  .site-logo{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:0.08em;line-height:1;}
+  .site-logo span{color:var(--red);}
+  .site-subtitle{font-size:0.72rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray-light);margin-top:4px;}
+  .header-right{text-align:right;}
+  .header-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+  .header-date{font-size:0.72rem;color:var(--gray-light);}
+
+  /* LEGEND */
+  .legend{display:flex;gap:24px;margin-bottom:40px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-light);}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+  /* STATS ROW */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:48px;}
+  .stat-box{background:var(--gray);padding:20px 24px;}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;}
+  .stat-label{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gray-light);margin-top:4px;}
+
+  /* SECTION TITLE */
+  .section-title{font-size:0.6rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--gray-light);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+
+  /* PAGE CARDS GRID */
+  .pages-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:48px;}
+
+  .page-card{background:var(--gray);padding:24px;position:relative;overflow:hidden;transition:background 0.2s;display:flex;flex-direction:column;gap:0;}
+  .page-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;transition:height 0.4s;}
+  .page-card:hover{background:#212121;}
+  .page-card:hover::before{height:100%;}
+  .page-card.done::before{background:var(--green);}
+  .page-card.in-progress::before{background:var(--gold);}
+  .page-card.planned::before{background:var(--gray-light);}
+
+  .pc-status{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+  .pc-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .pc-status-text{font-size:0.58rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;}
+
+  .pc-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.04em;margin-bottom:6px;line-height:1.1;}
+  .pc-file{font-size:0.62rem;color:var(--gray-light);font-family:monospace;margin-bottom:14px;}
+
+  .pc-features{display:flex;flex-direction:column;gap:5px;margin-bottom:18px;flex:1;}
+  .pc-feature{font-size:0.68rem;color:var(--gray-light);display:flex;align-items:flex-start;gap:7px;line-height:1.4;}
+  .pc-feature .fc-dot{width:4px;height:4px;border-radius:50%;background:var(--gray-light);flex-shrink:0;margin-top:5px;}
+  .pc-feature.done-feat{color:var(--white);}
+  .pc-feature.done-feat .fc-dot{background:var(--green);}
+  .pc-feature.todo-feat{color:var(--gray-light);}
+  .pc-feature.todo-feat .fc-dot{background:var(--gray-mid);}
+
+  .pc-open-btn{display:inline-flex;align-items:center;gap:8px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);border:1px solid rgba(232,38,11,0.25);padding:7px 14px;text-decoration:none;transition:all 0.2s;align-self:flex-start;margin-top:auto;}
+  .pc-open-btn:hover{background:var(--red);color:var(--white);}
+  .pc-open-btn.disabled{color:var(--gray-light);border-color:var(--gray-mid);pointer-events:none;}
+
+  /* COMPONENTS MAP */
+  .components-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-bottom:48px;}
+  .comp-card{background:var(--gray);padding:20px 24px;}
+  .comp-title{font-size:0.78rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .comp-title .ct-icon{font-size:1rem;}
+  .comp-items{display:flex;flex-direction:column;gap:6px;}
+  .comp-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 10px;background:var(--black);}
+  .ci-name{font-size:0.7rem;color:var(--white);}
+  .ci-badge{font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;}
+  .ci-badge.done{background:rgba(61,220,132,0.12);color:var(--green);border:1px solid rgba(61,220,132,0.2);}
+  .ci-badge.partial{background:rgba(245,200,66,0.1);color:var(--gold);border:1px solid rgba(245,200,66,0.2);}
+  .ci-badge.todo{background:rgba(136,136,136,0.1);color:var(--gray-light);border:1px solid var(--gray-mid);}
+
+  /* FLOW DIAGRAM */
+  .flow{display:flex;align-items:center;gap:0;margin-bottom:48px;overflow-x:auto;padding-bottom:8px;}
+  .flow-node{background:var(--gray);padding:14px 20px;display:flex;flex-direction:column;gap:4px;flex-shrink:0;min-width:140px;position:relative;}
+  .flow-node.active{border-top:2px solid var(--red);}
+  .flow-node.planned-node{border-top:2px solid var(--gray-mid);opacity:0.6;}
+  .fn-label{font-size:0.58rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray-light);}
+  .fn-name{font-size:0.82rem;font-weight:700;}
+  .flow-arrow{color:var(--gray-mid);font-size:1.2rem;padding:0 4px;flex-shrink:0;}
+
+  /* MOBILE SECTION */
+  .mobile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-bottom:48px;}
+  .mobile-card{background:var(--gray);padding:20px 24px;}
+  .mc-title{font-size:0.78rem;font-weight:700;margin-bottom:10px;}
+  .mc-items{display:flex;flex-direction:column;gap:5px;}
+  .mc-item{font-size:0.68rem;color:var(--gray-light);display:flex;align-items:center;gap:7px;}
+  .mc-item.done{color:var(--white);}
+  .mc-item::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gray-mid);flex-shrink:0;}
+  .mc-item.done::before{background:var(--green);}
+
+  /* PROGRESS BAR */
+  .overall-progress{background:var(--gray);padding:28px 32px;margin-bottom:48px;display:flex;align-items:center;gap:32px;}
+  .op-label{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray-light);white-space:nowrap;}
+  .op-bar-wrap{flex:1;display:flex;flex-direction:column;gap:8px;}
+  .op-bar-track{height:8px;background:var(--gray-mid);border-radius:4px;overflow:hidden;}
+  .op-bar-fill{height:100%;background:linear-gradient(to right,var(--red),var(--gold));border-radius:4px;transition:width 1s ease;}
+  .op-milestones{display:flex;justify-content:space-between;font-size:0.58rem;color:var(--gray-light);}
+  .op-percent{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--white);line-height:1;white-space:nowrap;}
+
+  /* FOOTER */
+  .site-footer{border-top:1px solid var(--gray-mid);padding-top:20px;display:flex;align-items:center;justify-content:space-between;}
+  .sf-left{font-size:0.65rem;color:var(--gray-light);}
+  .sf-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gray-light);}
+  .sf-logo span{color:var(--red);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="site-header">
+    <div>
+      <div class="site-logo">FITO<span>RANK</span></div>
+      <div class="site-subtitle">Frontend Structure Map</div>
+    </div>
+    <div class="header-right">
+      <div class="header-tag">Карта фронтенда</div>
+      <div class="header-date">Март 2026 · Версия 1.0</div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Готово</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>В процессе</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gray-light)"></div>Запланировано</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Будущие фичи</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--green)">4</div>
+      <div class="stat-label">Страниц готово</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--gold)">5</div>
+      <div class="stat-label">Страниц в плане</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--white)">2</div>
+      <div class="stat-label">Языка (RU/EN)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--red)">100%</div>
+      <div class="stat-label">Мобильная адаптация</div>
+    </div>
+  </div>
+
+  <!-- OVERALL PROGRESS -->
+  <div class="section-title">Общий прогресс фронтенда</div>
+  <div class="overall-progress">
+    <div class="op-label">Фронтенд<br>MVP</div>
+    <div class="op-bar-wrap">
+      <div class="op-bar-track"><div class="op-bar-fill" style="width:44%"></div></div>
+      <div class="op-milestones">
+        <span>Старт</span>
+        <span>Прототип</span>
+        <span>Beta-ready</span>
+        <span>Launch</span>
+      </div>
+    </div>
+    <div class="op-percent">44%</div>
+  </div>
+
+  <!-- USER FLOW -->
+  <div class="section-title">Пользовательский путь</div>
+  <div class="flow">
+    <div class="flow-node active">
+      <div class="fn-label">Точка входа</div>
+      <div class="fn-name">Главная</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node planned-node">
+      <div class="fn-label">Вход</div>
+      <div class="fn-name">Регистрация</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">
+      <div class="fn-label">Активность</div>
+      <div class="fn-name">Лента</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node planned-node">
+      <div class="fn-label">Детали</div>
+      <div class="fn-name">Рекорд</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node active">
+      <div class="fn-label">Личное</div>
+      <div class="fn-name">Профиль</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node planned-node">
+      <div class="fn-label">Соревнование</div>
+      <div class="fn-name">Лидеры</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node planned-node" style="border-top-color:var(--blue);opacity:0.4;">
+      <div class="fn-label">Будущее</div>
+      <div class="fn-name">Карта мира</div>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div class="section-title">Страницы</div>
+  <div class="pages-grid">
+
+    <!-- MAIN -->
+    <div class="page-card done">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--green)"></div>
+        <span class="pc-status-text" style="color:var(--green)">Готово</span>
+      </div>
+      <div class="pc-title">Главная страница</div>
+      <div class="pc-file">fito.html</div>
+      <div class="pc-features">
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Hero-секция с концепцией</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Анимированный счётчик рекордов</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Секция «Как это работает»</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вирусная механика процентилей</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Переключатель RU / EN</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Кастомный курсор + noise texture</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Мобильная адаптация</div>
+      </div>
+      <a href="fitorank.html" class="pc-open-btn">Открыть →</a>
+    </div>
+
+    <!-- FEED -->
+    <div class="page-card done">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--green)"></div>
+        <span class="pc-status-text" style="color:var(--green)">Готово</span>
+      </div>
+      <div class="pc-title">Лента рекордов</div>
+      <div class="pc-file">fito-feed.html</div>
+      <div class="pc-features">
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Карточки рекордов с видео-превью</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Голосование Верю / Не верю</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Голосование Натурал / Химик</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Текст публикации автора</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Комментарии (раскрываемые)</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Сортировка: Новые / Обсуждаемые</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Фильтры: упражнение, статус, возраст, страна</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Мобильная адаптация + bottom nav</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Filter drawer (мобильный)</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Правый сайдбар: моя позиция, рекорд дня</div>
+      </div>
+      <a href="fitorank-feed.html" class="pc-open-btn">Открыть →</a>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page-card done">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--green)"></div>
+        <span class="pc-status-text" style="color:var(--green)">Готово</span>
+      </div>
+      <div class="pc-title">Профиль</div>
+      <div class="pc-file">fito-profile.html</div>
+      <div class="pc-features">
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Сайдбар: аватар, физданные, бейджи</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Прогресс-бар репутации в сайдбаре</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вкладка: Мои рекорды</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вкладка: Прогресс (графики)</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вкладка: Сравнение по возрастам</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вкладка: Сообщество</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вкладка: Квесты + XP система</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Вкладка: Монетизация + комиссии</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Таблица комиссий по репутации</div>
+        <div class="pc-feature done-feat"><div class="fc-dot"></div>Мобильная адаптация + bottom nav</div>
+      </div>
+      <a href="fitorank-profile.html" class="pc-open-btn">Открыть →</a>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div class="page-card in-progress">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--gold)"></div>
+        <span class="pc-status-text" style="color:var(--gold)">Следующий</span>
+      </div>
+      <div class="pc-title">Регистрация / Онбординг</div>
+      <div class="pc-file">fito-onboarding.html</div>
+      <div class="pc-features">
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Шаг 1: Кто ты (имя, возраст, пол, страна)</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Шаг 2: Твоё тело (вес, рост + live-категория)</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Шаг 3: Статус (натурал / фарма) + клуб</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Шаг 4: Первый рекорд</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Прогресс-бар шагов</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Live-обратная связь по категории</div>
+      </div>
+      <span class="pc-open-btn disabled">Не готово</span>
+    </div>
+
+    <!-- RECORD PAGE -->
+    <div class="page-card planned">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--gray-light)"></div>
+        <span class="pc-status-text" style="color:var(--gray-light)">Запланировано</span>
+      </div>
+      <div class="pc-title">Страница рекорда</div>
+      <div class="pc-file">fito-record.html</div>
+      <div class="pc-features">
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Встроенное видео</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Полная история рекордов автора</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Детальная статистика голосования</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Все комментарии с пагинацией</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Кнопка «Бросить вызов»</div>
+      </div>
+      <span class="pc-open-btn disabled">Не готово</span>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="page-card planned">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--gray-light)"></div>
+        <span class="pc-status-text" style="color:var(--gray-light)">Запланировано</span>
+      </div>
+      <div class="pc-title">Таблица лидеров</div>
+      <div class="pc-file">fito-leaders.html</div>
+      <div class="pc-features">
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Рейтинг по упражнению</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Фильтр по категории</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Раздельно натурал / фарма</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Топ авторитетов по REP</div>
+      </div>
+      <span class="pc-open-btn disabled">Не готово</span>
+    </div>
+
+    <!-- ADD RECORD -->
+    <div class="page-card planned">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--gray-light)"></div>
+        <span class="pc-status-text" style="color:var(--gray-light)">Запланировано</span>
+      </div>
+      <div class="pc-title">Добавить рекорд</div>
+      <div class="pc-file">fito-add-record.html</div>
+      <div class="pc-features">
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Выбор упражнения</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Ввод результата</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Прикрепление видео-ссылки</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Выбор техники (чистая / читинг)</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Превью категории и ранга</div>
+      </div>
+      <span class="pc-open-btn disabled">Не готово</span>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="page-card planned">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--gray-light)"></div>
+        <span class="pc-status-text" style="color:var(--gray-light)">Запланировано</span>
+      </div>
+      <div class="pc-title">Уведомления</div>
+      <div class="pc-file">fito-notifications.html</div>
+      <div class="pc-features">
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Новый вызов</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Голос «Верю» / «Не верю»</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Комментарий к рекорду</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Начисление REP</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Разблокировка квеста</div>
+      </div>
+      <span class="pc-open-btn disabled">Не готово</span>
+    </div>
+
+    <!-- WORLD MAP — FUTURE -->
+    <div class="page-card planned" style="border:1px dashed var(--gray-mid);background:transparent;">
+      <div class="pc-status">
+        <div class="pc-status-dot" style="background:var(--blue)"></div>
+        <span class="pc-status-text" style="color:var(--blue)">Будущее</span>
+      </div>
+      <div class="pc-title" style="color:var(--gray-light)">Карта мира</div>
+      <div class="pc-file">fito-map.html</div>
+      <div class="pc-features">
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>SVG-глобус со спортсменами</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Метки клубов / залов</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Фильтр по категории</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Мини-карточка при наведении</div>
+        <div class="pc-feature todo-feat"><div class="fc-dot"></div>Ближайший сильнее / слабее тебя</div>
+      </div>
+      <span class="pc-open-btn disabled">Будущая фича</span>
+    </div>
+
+  </div>
+
+  <!-- COMPONENTS -->
+  <div class="section-title">Компоненты и механики</div>
+  <div class="components-grid">
+
+    <div class="comp-card">
+      <div class="comp-title"><span class="ct-icon">🗳️</span> Система голосования</div>
+      <div class="comp-items">
+        <div class="comp-item"><span class="ci-name">Верю / Не верю</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Натурал / Химик</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Прогресс-бар доверия</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Оспоренный рекорд (баннер)</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Анимация при голосовании</span><span class="ci-badge done">Готово</span></div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-title"><span class="ct-icon">🎯</span> Квесты и репутация</div>
+      <div class="comp-items">
+        <div class="comp-item"><span class="ci-name">XP / REP система</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Группы квестов (3 группы)</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Заблокированные квесты</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Прогресс-бар в сайдбаре</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Сезонные квесты</span><span class="ci-badge todo">Будущее</span></div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-title"><span class="ct-icon">💰</span> Монетизация</div>
+      <div class="comp-items">
+        <div class="comp-item"><span class="ci-name">Карточки продуктов</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Блок доходов</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Таблица комиссий по REP</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Платёжная интеграция</span><span class="ci-badge todo">No-code MVP</span></div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-title"><span class="ct-icon">📱</span> Мобильная адаптация</div>
+      <div class="comp-items">
+        <div class="comp-item"><span class="ci-name">Bottom navigation bar</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Filter drawer (лента)</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Горизонтальный скролл экшенов</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Профиль (стек вместо сетки)</span><span class="ci-badge done">Готово</span></div>
+        <div class="comp-item"><span class="ci-name">Главная страница</span><span class="ci-badge partial">В плане</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DESIGN SYSTEM -->
+  <div class="section-title">Дизайн-система</div>
+  <div class="mobile-grid">
+    <div class="mobile-card">
+      <div class="mc-title">🎨 Цвета</div>
+      <div class="mc-items">
+        <div class="mc-item done" style="gap:10px">
+          <span style="display:inline-block;width:14px;height:14px;background:#e8260b;border-radius:2px;flex-shrink:0"></span>
+          <span>--red: #E8260B — акцент</span>
+        </div>
+        <div class="mc-item done" style="gap:10px">
+          <span style="display:inline-block;width:14px;height:14px;background:#f5f2ee;border-radius:2px;flex-shrink:0"></span>
+          <span>--white: #F5F2EE — текст</span>
+        </div>
+        <div class="mc-item done" style="gap:10px">
+          <span style="display:inline-block;width:14px;height:14px;background:#080808;border:1px solid #333;border-radius:2px;flex-shrink:0"></span>
+          <span>--black: #080808 — фон</span>
+        </div>
+        <div class="mc-item done" style="gap:10px">
+          <span style="display:inline-block;width:14px;height:14px;background:#3ddc84;border-radius:2px;flex-shrink:0"></span>
+          <span>--green: #3DDC84 — доверие</span>
+        </div>
+        <div class="mc-item done" style="gap:10px">
+          <span style="display:inline-block;width:14px;height:14px;background:#f5c842;border-radius:2px;flex-shrink:0"></span>
+          <span>--gold: #F5C842 — репутация</span>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-card">
+      <div class="mc-title">✍️ Типографика</div>
+      <div class="mc-items">
+        <div class="mc-item done"><span style="font-family:'Bebas Neue';font-size:1.1rem">Bebas Neue</span> — заголовки, цифры</div>
+        <div class="mc-item done"><span style="font-size:0.8rem;font-weight:700">Montserrat 700</span> — кнопки, метки</div>
+        <div class="mc-item done"><span style="font-size:0.8rem;font-weight:400">Montserrat 400</span> — основной текст</div>
+        <div class="mc-item done"><span style="font-size:0.8rem;font-weight:300">Montserrat 300</span> — вторичный текст</div>
+      </div>
+    </div>
+    <div class="mobile-card">
+      <div class="mc-title">⚡ UX-детали</div>
+      <div class="mc-items">
+        <div class="mc-item done">Кастомный курсор + trail</div>
+        <div class="mc-item done">Noise texture overlay</div>
+        <div class="mc-item done">clip-path на кнопках (скошенные углы)</div>
+        <div class="mc-item done">Hover: красная полоса снизу вверх</div>
+        <div class="mc-item done">FadeUp анимация карточек</div>
+        <div class="mc-item done">Smooth scroll</div>
+      </div>
+    </div>
+    <div class="mobile-card">
+      <div class="mc-title">🌐 Билингвальность</div>
+      <div class="mc-items">
+        <div class="mc-item done">Все страницы: RU / EN</div>
+        <div class="mc-item done">Переключатель в навигации</div>
+        <div class="mc-item done">data-ru / data-en атрибуты</div>
+        <div class="mc-item done">Графики перестраиваются при смене языка</div>
+        <div class="mc-item done">Placeholder'ы форм</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="site-footer">
+    <div class="sf-left">Карта обновляется по мере разработки · FitoRank Frontend Map v1.0</div>
+    <div class="sf-logo">FITO<span>RANK</span></div>
+  </div>
+
+</div>
+</body>
+</html>
