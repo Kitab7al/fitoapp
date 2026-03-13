@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FitoRank — Профиль</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808;
+  --white: #f5f2ee;
+  --red: #e8260b;
+  --red-dark: #b51e08;
+  --gray: #1a1a1a;
+  --gray-mid: #2e2e2e;
+  --gray-light: #888;
+  --green: #3ddc84;
+  --gold: #f5c842;
+  --blue: #4a9eff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body {
+  background: var(--black); color: var(--white);
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100%; overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: .4;
+}
+
+/* ── HEADER ── */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,8,.97); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: env(safe-area-inset-top, 12px) 16px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.9rem; letter-spacing: .1em; line-height: 1;
+}
+.header-logo span { color: var(--red); }
+.header-actions { display: flex; gap: 8px; }
+.btn-icon {
+  background: var(--gray); border: none; color: var(--white);
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s; flex-shrink: 0;
+}
+.btn-icon:active { background: var(--gray-mid); }
+.btn-icon svg { width: 18px; height: 18px; }
+.btn-edit-text {
+  background: var(--gray); border: none; color: var(--white);
+  font-family: 'Montserrat', sans-serif; font-size: .58rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; padding: 0 14px;
+  height: 36px; cursor: pointer; transition: background .2s;
+}
+.btn-edit-text:active { background: var(--gray-mid); }
+.btn-save-text {
+  background: var(--red); border: none; color: var(--white);
+  font-family: 'Montserrat', sans-serif; font-size: .58rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; padding: 0 14px;
+  height: 36px; cursor: pointer; transition: background .2s;
+}
+.btn-save-text:active { background: var(--red-dark); }
+
+/* ── SCROLL ── */
+.scroll-area {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 54px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 76px);
+}
+
+/* ── COVER ── */
+.cover {
+  position: relative; width: 100%; height: 160px;
+  background: linear-gradient(135deg, #1a0a0a 0%, #2e1010 50%, #1a0505 100%);
+  overflow: hidden;
+}
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, var(--black) 100%);
+}
+.cover-pattern {
+  position: absolute; inset: 0; opacity: .15;
+  background-image: repeating-linear-gradient(
+    45deg, var(--red) 0, var(--red) 1px, transparent 0, transparent 50%
+  );
+  background-size: 20px 20px;
+}
+.cover-edit-btn {
+  position: absolute; top: 12px; right: 12px; z-index: 10;
+  background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.15);
+  color: var(--white); font-family: 'Montserrat', sans-serif;
+  font-size: .5rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 7px 12px; cursor: pointer; display: none;
+}
+.editing .cover-edit-btn { display: block; }
+
+/* ── AVATAR ── */
+.avatar-wrap {
+  position: relative; margin: -44px 16px 0; z-index: 10;
+  width: 88px; height: 88px;
+}
+.avatar {
+  width: 88px; height: 88px;
+  background: var(--red);
+  border: 3px solid var(--black);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
+  color: var(--white); position: relative; overflow: hidden;
+}
+.avatar-edit-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.6);
+  display: none; align-items: center; justify-content: center;
+  font-size: 1.4rem; cursor: pointer;
+}
+.editing .avatar-edit-overlay { display: flex; }
+
+/* ── IDENTITY ── */
+.identity {
+  padding: 10px 16px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.identity-left { flex: 1; }
+.display-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem; letter-spacing: .05em; line-height: 1;
+}
+.username {
+  font-size: .65rem; font-weight: 400; color: var(--gray-light);
+  letter-spacing: .04em; margin-top: 2px;
+}
+.league-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; margin-top: 7px;
+  font-size: .52rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+}
+.league-chip.pro { background: rgba(245,200,66,.12); color: var(--gold); border: 1px solid rgba(245,200,66,.25); }
+.league-chip.amateur { background: rgba(74,158,255,.1); color: var(--blue); border: 1px solid rgba(74,158,255,.2); }
+
+.bio-text {
+  font-size: .7rem; font-weight: 400; color: var(--gray-light);
+  line-height: 1.5; margin-top: 8px;
+  padding: 0 16px;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: flex; margin: 16px 16px 0;
+  border: 1px solid var(--gray-mid); overflow: hidden;
+}
+.stat-cell {
+  flex: 1; padding: 12px 8px; text-align: center;
+  border-right: 1px solid var(--gray-mid); cursor: pointer;
+  transition: background .2s;
+}
+.stat-cell:last-child { border-right: none; }
+.stat-cell:active { background: var(--gray); }
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem; letter-spacing: .04em; line-height: 1;
+}
+.stat-num.red { color: var(--red); }
+.stat-label {
+  font-size: .48rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gray-light); margin-top: 3px;
+}
+
+/* ── SECTION TABS ── */
+.section-tabs {
+  display: flex; margin: 18px 0 0;
+  border-bottom: 1px solid var(--gray-mid);
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 54px); z-index: 50;
+  background: var(--black);
+}
+.section-tab {
+  flex: 1; background: none; border: none; color: var(--gray-light);
+  font-family: 'Montserrat', sans-serif; font-size: .58rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 13px 8px; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all .2s;
+}
+.section-tab.active { color: var(--white); border-bottom-color: var(--red); }
+
+/* ── TAB PANELS ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── RECORDS GRID ── */
+.records-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.record-card {
+  background: var(--gray); border-left: 3px solid var(--gray-mid);
+  padding: 14px 14px; display: flex; align-items: center; gap: 12px;
+  animation: fadeUp .35s ease both;
+  cursor: pointer; transition: border-color .2s;
+}
+.record-card:active { border-left-color: var(--red); }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.record-card:nth-child(1) { animation-delay:.05s; }
+.record-card:nth-child(2) { animation-delay:.1s; }
+.record-card:nth-child(3) { animation-delay:.15s; }
+.record-card:nth-child(4) { animation-delay:.2s; }
+.record-card:nth-child(5) { animation-delay:.25s; }
+
+.record-rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem; letter-spacing: .04em; color: var(--gray-mid);
+  line-height: 1; width: 28px; text-align: center; flex-shrink: 0;
+}
+.record-body { flex: 1; min-width: 0; }
+.record-ex {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem; letter-spacing: .05em; line-height: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.record-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.record-date { font-size: .52rem; color: var(--gray-light); font-weight: 400; }
+.record-type-chip {
+  font-size: .48rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 2px 6px; background: var(--gray-mid); color: var(--gray-light);
+}
+.record-level-chip {
+  font-size: .48rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 2px 6px;
+}
+.level-1-chip { background: rgba(136,136,136,.15); color: #888; }
+.level-2-chip { background: rgba(160,200,160,.12); color: #a0c8a0; }
+.level-3-chip { background: rgba(74,158,255,.12); color: var(--blue); }
+.level-4-chip { background: rgba(245,200,66,.12); color: var(--gold); }
+.level-5-chip { background: rgba(255,107,107,.12); color: #ff6b6b; }
+.level-6-chip { background: rgba(232,38,11,.15); color: var(--red); }
+
+.record-right { text-align: right; flex-shrink: 0; }
+.record-weight {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem; letter-spacing: .04em; line-height: 1; color: var(--red);
+}
+.record-unit { font-size: .55rem; color: var(--gray-light); font-weight: 700; }
+.record-votes { font-size: .55rem; color: var(--green); font-weight: 700; margin-top: 3px; }
+
+/* ── BADGES ── */
+.badges-grid {
+  padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.badge-card {
+  background: var(--gray); padding: 16px 14px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+  animation: fadeUp .35s ease both;
+}
+.badge-icon { font-size: 2.2rem; line-height: 1; }
+.badge-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .95rem; letter-spacing: .06em; line-height: 1.1;
+}
+.badge-desc { font-size: .55rem; color: var(--gray-light); font-weight: 400; line-height: 1.4; }
+.badge-date { font-size: .48rem; color: var(--gray-mid); font-weight: 700; letter-spacing: .08em; }
+.badge-card.locked { opacity: .35; filter: grayscale(1); }
+
+/* ── FOLLOWERS PANEL ── */
+.followers-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; }
+.follower-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+  animation: fadeUp .3s ease both;
+}
+.follower-row:last-child { border-bottom: none; }
+.f-avatar {
+  width: 40px; height: 40px; background: var(--gray-mid);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 1rem; flex-shrink: 0;
+}
+.f-name { font-size: .78rem; font-weight: 700; }
+.f-handle { font-size: .58rem; color: var(--gray-light); font-weight: 400; }
+.f-level-chip {
+  margin-left: auto; font-size: .48rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; padding: 3px 8px; flex-shrink: 0;
+}
+
+/* ── EDIT SHEET ── */
+.edit-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+  display: none; align-items: flex-end;
+}
+.edit-overlay.open { display: flex; }
+.edit-sheet {
+  background: var(--gray); width: 100%;
+  padding: 0 0 calc(env(safe-area-inset-bottom, 20px) + 20px);
+  border-top: 3px solid var(--red);
+  animation: slideUp .3s cubic-bezier(.25,.46,.45,.94);
+  max-height: 90vh; overflow-y: auto;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.edit-sheet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.edit-sheet-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem; letter-spacing: .06em;
+}
+.btn-close {
+  background: none; border: none; color: var(--gray-light);
+  font-size: 1.4rem; cursor: pointer; padding: 4px; line-height: 1;
+}
+.edit-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.edit-field-label {
+  font-size: .55rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--gray-light); margin-bottom: 6px;
+}
+.edit-input {
+  width: 100%; background: var(--black); border: 1px solid var(--gray-mid);
+  color: var(--white); font-family: 'Montserrat', sans-serif;
+  font-size: .85rem; font-weight: 400; padding: 13px 14px;
+  outline: none; transition: border-color .2s; -webkit-appearance: none;
+}
+.edit-input:focus { border-color: rgba(232,38,11,.5); }
+.edit-textarea {
+  width: 100%; background: var(--black); border: 1px solid var(--gray-mid);
+  color: var(--white); font-family: 'Montserrat', sans-serif;
+  font-size: .82rem; font-weight: 400; padding: 13px 14px;
+  outline: none; transition: border-color .2s; resize: none; min-height: 80px;
+  -webkit-appearance: none;
+}
+.edit-textarea:focus { border-color: rgba(232,38,11,.5); }
+.edit-textarea::placeholder, .edit-input::placeholder { color: var(--gray-light); }
+
+/* League toggle */
+.league-toggle { display: flex; gap: 0; border: 1px solid var(--gray-mid); }
+.league-btn {
+  flex: 1; background: none; border: none; color: var(--gray-light);
+  font-family: 'Montserrat', sans-serif; font-size: .62rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; padding: 13px 8px;
+  cursor: pointer; transition: all .2s; text-align: center;
+}
+.league-btn.active.pro { background: rgba(245,200,66,.15); color: var(--gold); }
+.league-btn.active.amateur { background: rgba(74,158,255,.12); color: var(--blue); }
+
+.btn-save-sheet {
+  background: var(--red); border: none; color: var(--white);
+  font-family: 'Montserrat', sans-serif; font-size: .72rem; font-weight: 900;
+  letter-spacing: .16em; text-transform: uppercase; padding: 17px 20px;
+  cursor: pointer; width: 100%; margin-top: 6px;
+  transition: background .2s;
+}
+.btn-save-sheet:active { background: var(--red-dark); }
+
+/* ── FOLLOWERS MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+  display: none; align-items: flex-end;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--gray); width: 100%;
+  border-top: 3px solid var(--red);
+  padding: 0 0 calc(env(safe-area-inset-bottom, 20px) + 16px);
+  animation: slideUp .3s cubic-bezier(.25,.46,.45,.94);
+  max-height: 75vh; overflow-y: auto;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  position: sticky; top: 0; background: var(--gray); z-index: 5;
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; letter-spacing: .06em;
+}
+.modal-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  position: sticky; top: 48px; background: var(--gray); z-index: 4;
+}
+.modal-tab {
+  flex: 1; background: none; border: none; color: var(--gray-light);
+  font-family: 'Montserrat', sans-serif; font-size: .58rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; padding: 12px;
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s;
+}
+.modal-tab.active { color: var(--white); border-bottom-color: var(--red); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,8,.97); backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex; padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.nav-item {
+  flex: 1; background: none; border: none;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  color: var(--gray-light); padding: 10px 0 12px;
+  cursor: pointer; transition: color .2s; font-family: 'Montserrat', sans-serif;
+}
+.nav-item.active { color: var(--white); }
+.nav-icon { font-size: 1.3rem; line-height: 1; }
+.nav-label { font-size: .48rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.nav-item.add-btn .nav-icon-wrap {
+  width: 44px; height: 44px; background: var(--red); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; margin-top: -18px; margin-bottom: 2px;
+  border: 3px solid var(--black); transition: background .2s;
+}
+.nav-item.add-btn:active .nav-icon-wrap { background: var(--red-dark); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 40px 24px; color: var(--gray-light);
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; letter-spacing: .06em; margin-bottom: 6px; color: var(--white);
+}
+.empty-sub { font-size: .65rem; line-height: 1.5; }
+.btn-add-record {
+  background: var(--red); border: none; color: var(--white);
+  font-family: 'Montserrat', sans-serif; font-size: .65rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; padding: 14px 24px;
+  cursor: pointer; margin-top: 18px; display: inline-block;
+}
+
+/* misc */
+.divider { height: 1px; background: rgba(255,255,255,.04); margin: 0 16px; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">FITO<span>RANK</span></div>
+  <div class="header-actions">
+    <button class="btn-edit-text" id="btnEdit" onclick="openEdit()" data-t="edit_btn">ИЗМЕНИТЬ</button>
+    <button class="btn-icon" onclick="openSettings()" title="Настройки">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="scroll-area">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-pattern"></div>
+    <button class="cover-edit-btn" data-t="change_cover">СМЕНИТЬ ОБЛОЖКУ</button>
+  </div>
+
+  <!-- AVATAR -->
+  <div class="avatar-wrap">
+    <div class="avatar" id="avatarEl">
+      <span id="avatarLetter">А</span>
+      <div class="avatar-edit-overlay" onclick="openEdit()">📷</div>
+    </div>
+  </div>
+
+  <!-- IDENTITY -->
+  <div class="identity">
+    <div class="identity-left">
+      <div class="display-name" id="displayName">Алексей Романов</div>
+      <div class="username" id="usernameEl">@alex_power</div>
+      <div class="league-chip pro" id="leagueChip">👑 ПРОФЕССИОНАЛ</div>
+    </div>
+  </div>
+
+  <div class="bio-text" id="bioEl">
+    Пауэрлифтинг 8 лет. КМС по жиму лёжа. Тренируюсь в CrossFit Urals 💪
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-cell" onclick="openFollowers('followers')">
+      <div class="stat-num" id="statFollowers">247</div>
+      <div class="stat-label" data-t="stat_followers">ПОДПИСЧИКИ</div>
+    </div>
+    <div class="stat-cell" onclick="openFollowers('following')">
+      <div class="stat-num" id="statFollowing">83</div>
+      <div class="stat-label" data-t="stat_following">ПОДПИСКИ</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num red" id="statRecords">14</div>
+      <div class="stat-label" data-t="stat_records">РЕКОРДЫ</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" id="statRating">#38</div>
+      <div class="stat-label" data-t="stat_rating">РЕЙТИНГ</div>
+    </div>
+  </div>
+
+  <!-- SECTION TABS -->
+  <div class="section-tabs">
+    <button class="section-tab active" onclick="switchTab('records')" data-t="tab_records">РЕКОРДЫ</button>
+    <button class="section-tab" onclick="switchTab('badges')" data-t="tab_badges">ДОСТИЖЕНИЯ</button>
+  </div>
+
+  <!-- TAB: RECORDS -->
+  <div class="tab-panel active" id="panel-records">
+    <div class="records-list" id="recordsList"></div>
+  </div>
+
+  <!-- TAB: BADGES -->
+  <div class="tab-panel" id="panel-badges">
+    <div class="badges-grid" id="badgesGrid"></div>
+  </div>
+
+</div><!-- scroll-area -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="goTo('feed')">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label" data-t="nav_feed">ЛЕНТА</span>
+  </button>
+  <button class="nav-item" onclick="goTo('search')">
+    <span class="nav-icon">🔍</span>
+    <span class="nav-label" data-t="nav_search">ПОИСК</span>
+  </button>
+  <button class="nav-item add-btn" onclick="goTo('add')">
+    <div class="nav-icon-wrap">＋</div>
+    <span class="nav-label" data-t="nav_add">РЕКОРД</span>
+  </button>
+  <button class="nav-item" onclick="goTo('leaderboard')">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label" data-t="nav_top">ТОП</span>
+  </button>
+  <button class="nav-item active">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label" data-t="nav_profile">Я</span>
+  </button>
+</nav>
+
+<!-- EDIT SHEET -->
+<div class="edit-overlay" id="editOverlay" onclick="closeEdit(event)">
+  <div class="edit-sheet" onclick="e=>e.stopPropagation()">
+    <div class="edit-sheet-header">
+      <div class="edit-sheet-title" data-t="edit_title">РЕДАКТИРОВАТЬ ПРОФИЛЬ</div>
+      <button class="btn-close" onclick="closeEditSheet()">✕</button>
+    </div>
+    <div class="edit-body">
+
+      <div>
+        <div class="edit-field-label" data-t="edit_name">ИМЯ</div>
+        <input class="edit-input" id="editName" type="text" placeholder="Алексей Романов">
+      </div>
+      <div>
+        <div class="edit-field-label" data-t="edit_username">НИКНЕЙМ</div>
+        <input class="edit-input" id="editUsername" type="text" placeholder="@alex_power">
+      </div>
+      <div>
+        <div class="edit-field-label" data-t="edit_bio">О СЕБЕ</div>
+        <textarea class="edit-textarea" id="editBio" placeholder="Расскажите о себе..."></textarea>
+      </div>
+
+      <div>
+        <div class="edit-field-label" data-t="edit_league">ЛИГА</div>
+        <div class="league-toggle">
+          <button class="league-btn active pro" id="leagueProBtn" onclick="setLeague('pro')" data-t="league_pro">👑 ПРОФЕССИОНАЛ</button>
+          <button class="league-btn amateur" id="leagueAmateurBtn" onclick="setLeague('amateur')" data-t="league_amateur">⚡ ЛЮБИТЕЛЬ</button>
+        </div>
+      </div>
+
+      <button class="btn-save-sheet" onclick="saveProfile()" data-t="save_btn">СОХРАНИТЬ →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOLLOWERS MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-sheet" onclick="e=>e.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle" data-t="followers_title">ПОДПИСЧИКИ</div>
+      <button class="btn-close" onclick="closeModalSheet()">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="mtab-followers" onclick="switchModalTab('followers')" data-t="tab_followers">ПОДПИСЧИКИ</button>
+      <button class="modal-tab" id="mtab-following" onclick="switchModalTab('following')" data-t="tab_following">ПОДПИСКИ</button>
+    </div>
+    <div class="followers-list" id="followersList"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const T = {
+  ru: {
+    edit_btn: 'ИЗМЕНИТЬ', change_cover: 'СМЕНИТЬ ОБЛОЖКУ',
+    stat_followers: 'ПОДПИСЧИКИ', stat_following: 'ПОДПИСКИ',
+    stat_records: 'РЕКОРДЫ', stat_rating: 'РЕЙТИНГ',
+    tab_records: 'РЕКОРДЫ', tab_badges: 'ДОСТИЖЕНИЯ',
+    nav_feed: 'ЛЕНТА', nav_search: 'ПОИСК', nav_add: 'РЕКОРД', nav_top: 'ТОП', nav_profile: 'Я',
+    edit_title: 'РЕДАКТИРОВАТЬ ПРОФИЛЬ',
+    edit_name: 'ИМЯ', edit_username: 'НИКНЕЙМ', edit_bio: 'О СЕБЕ', edit_league: 'ЛИГА',
+    league_pro: '👑 ПРОФЕССИОНАЛ', league_amateur: '⚡ ЛЮБИТЕЛЬ',
+    save_btn: 'СОХРАНИТЬ →',
+    followers_title: 'ПОДПИСЧИКИ',
+    tab_followers: 'ПОДПИСЧИКИ', tab_following: 'ПОДПИСКИ',
+    levels: ['Новичок','3-й разряд','2-й разряд','1-й разряд','КМС','МС'],
+    level_emojis: ['🥉','🥈','🥇','🏆','👑','🔥'],
+    league_pro_label: '👑 ПРОФЕССИОНАЛ',
+    league_amateur_label: '⚡ ЛЮБИТЕЛЬ',
+    rec_type_1rm: '1RM', rec_type_reps: 'ПОВТОРЕНИЯ',
+    votes: 'верю',
+    empty_records_title: 'ЕЩЁ НЕТ РЕКОРДОВ',
+    empty_records_sub: 'Добавьте первый рекорд — и он появится здесь',
+    add_first: 'ДОБАВИТЬ РЕКОРД',
+  },
+  en: {
+    edit_btn: 'EDIT', change_cover: 'CHANGE COVER',
+    stat_followers: 'FOLLOWERS', stat_following: 'FOLLOWING',
+    stat_records: 'RECORDS', stat_rating: 'RANK',
+    tab_records: 'RECORDS', tab_badges: 'BADGES',
+    nav_feed: 'FEED', nav_search: 'SEARCH', nav_add: 'RECORD', nav_top: 'TOP', nav_profile: 'ME',
+    edit_title: 'EDIT PROFILE',
+    edit_name: 'NAME', edit_username: 'USERNAME', edit_bio: 'BIO', edit_league: 'LEAGUE',
+    league_pro: '👑 PROFESSIONAL', league_amateur: '⚡ AMATEUR',
+    save_btn: 'SAVE →',
+    followers_title: 'FOLLOWERS',
+    tab_followers: 'FOLLOWERS', tab_following: 'FOLLOWING',
+    levels: ['Beginner','Grade 3','Grade 2','Grade 1','CMS','Master'],
+    level_emojis: ['🥉','🥈','🥇','🏆','👑','🔥'],
+    league_pro_label: '👑 PROFESSIONAL',
+    league_amateur_label: '⚡ AMATEUR',
+    rec_type_1rm: '1RM', rec_type_reps: 'REPS',
+    votes: 'legit',
+    empty_records_title: 'NO RECORDS YET',
+    empty_records_sub: 'Add your first record and it will appear here',
+    add_first: 'ADD RECORD',
+  }
+};
+
+// ============================================================
+// DATA
+// ============================================================
+const lang = localStorage.getItem('fitorank_lang') || 'ru';
+
+const RECORDS = [
+  { ex: {ru:'Жим лёжа', en:'Bench Press'}, weight: 182.5, unit:'кг', type:'1rm', level:5, votes:+31, date:'02.03.2026' },
+  { ex: {ru:'Приседания со штангой', en:'Barbell Squat'}, weight: 220, unit:'кг', type:'1rm', level:5, votes:+18, date:'14.02.2026' },
+  { ex: {ru:'Становая тяга', en:'Deadlift'}, weight: 260, unit:'кг', type:'1rm', level:6, votes:+44, date:'01.02.2026' },
+  { ex: {ru:'Подтягивания', en:'Pull-ups'}, weight: 30, unit:'кг', type:'bw_extra', level:4, votes:+9, date:'20.01.2026' },
+  { ex: {ru:'Жим стоя', en:'Overhead Press'}, weight: 110, unit:'кг', type:'1rm', level:4, votes:+7, date:'10.01.2026' },
+  { ex: {ru:'Тяга штанги в наклоне', en:'Barbell Row'}, weight: 155, unit:'кг', type:'1rm', level:5, votes:+12, date:'05.01.2026' },
+  { ex: {ru:'Отжимания на брусьях', en:'Dips'}, weight: 65, unit:'кг', type:'bw_extra', level:4, votes:+5, date:'28.12.2025' },
+  { ex: {ru:'Жим лёжа', en:'Bench Press'}, weight: 12, unit:'кг', type:'reps', level:3, votes:+4, date:'15.12.2025', reps:12 },
+];
+
+const BADGES = [
+  { icon:'🔥', name:{ru:'ПЕРВЫЙ РЕКОРД',en:'FIRST RECORD'}, desc:{ru:'Добавил первый рекорд',en:'Added first record'}, date:'15.12.2025', locked:false },
+  { icon:'💯', name:{ru:'10 РЕКОРДОВ',en:'10 RECORDS'}, desc:{ru:'Добавил 10 рекордов',en:'Added 10 records'}, date:'10.01.2026', locked:false },
+  { icon:'👑', name:{ru:'КМС',en:'CMS'}, desc:{ru:'Достиг уровня КМС',en:'Reached CMS level'}, date:'01.02.2026', locked:false },
+  { icon:'🏆', name:{ru:'ТОП 50',en:'TOP 50'}, desc:{ru:'Попал в топ-50 рейтинга',en:'Ranked top 50'}, date:'14.02.2026', locked:false },
+  { icon:'🎥', name:{ru:'С ВИДЕО',en:'WITH VIDEO'}, desc:{ru:'Добавил рекорд с видео',en:'Added record with video'}, date:'02.03.2026', locked:false },
+  { icon:'🔗', name:{ru:'25 РЕКОРДОВ',en:'25 RECORDS'}, desc:{ru:'Добавь 25 рекордов',en:'Add 25 records'}, date:'', locked:true },
+  { icon:'💪', name:{ru:'МС',en:'MASTER'}, desc:{ru:'Достигни уровня МС',en:'Reach Master level'}, date:'', locked:true },
+  { icon:'🌍', name:{ru:'МИРОВОЙ ТОП',en:'WORLD TOP'}, desc:{ru:'Попади в топ-10 мира',en:'Reach world top 10'}, date:'', locked:true },
+];
+
+const FOLLOWERS_DATA = {
+  followers: [
+    { name:'Дмитрий К.', handle:'@dmitry_k', level:4, color:'#f5c842' },
+    { name:'Maks Power', handle:'@maks_pw', level:5, color:'#ff6b6b' },
+    { name:'IronVlad', handle:'@ironvlad', level:3, color:'var(--blue)' },
+    { name:'АнтонС', handle:'@antons_lifts', level:2, color:'#a0c8a0' },
+    { name:'Pavel Strong', handle:'@pavelst', level:6, color:'var(--red)' },
+  ],
+  following: [
+    { name:'World Record', handle:'@worldrec', level:6, color:'var(--red)' },
+    { name:'Ekaterina F.', handle:'@katya_fit', level:4, color:'#f5c842' },
+    { name:'CrossFit Urals', handle:'@cf_urals', level:3, color:'var(--blue)' },
+  ],
+};
+
+// ============================================================
+// PROFILE STATE
+// ============================================================
+let profile = {
+  name: 'Алексей Романов',
+  username: '@alex_power',
+  bio: 'Пауэрлифтинг 8 лет. КМС по жиму лёжа. Тренируюсь в CrossFit Urals 💪',
+  league: 'pro',
+};
+let editLeague = 'pro';
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  applyLang();
+  renderProfile();
+  renderRecords();
+  renderBadges();
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (T[lang][key]) el.textContent = T[lang][key];
+  });
+}
+
+function renderProfile() {
+  document.getElementById('displayName').textContent = profile.name;
+  document.getElementById('usernameEl').textContent = profile.username;
+  document.getElementById('bioEl').textContent = profile.bio;
+  document.getElementById('avatarLetter').textContent = profile.name[0].toUpperCase();
+  const chip = document.getElementById('leagueChip');
+  if (profile.league === 'pro') {
+    chip.textContent = T[lang]['league_pro_label'];
+    chip.className = 'league-chip pro';
+  } else {
+    chip.textContent = T[lang]['league_amateur_label'];
+    chip.className = 'league-chip amateur';
+  }
+}
+
+// ============================================================
+// RECORDS
+// ============================================================
+function renderRecords() {
+  const t = T[lang];
+  const list = document.getElementById('recordsList');
+  list.innerHTML = RECORDS.map((r, i) => {
+    const lvlNames = t.levels;
+    const lvlEmojis = t.level_emojis;
+    const lvlIdx = Math.min(r.level - 1, 5);
+    const typeLabel = r.type === 'reps' ? t.rec_type_reps : t.rec_type_1rm;
+    const weightDisplay = r.reps ? `${r.weight} кг × ${r.reps}` : r.weight;
+    const unitDisplay = r.reps ? '' : r.unit;
+
+    return `
+      <div class="record-card" style="animation-delay:${i*0.06}s">
+        <div class="record-rank">${String(i+1).padStart(2,'0')}</div>
+        <div class="record-body">
+          <div class="record-ex">${r.ex[lang]}</div>
+          <div class="record-meta">
+            <span class="record-date">${r.date}</span>
+            <span class="record-type-chip">${typeLabel}</span>
+            <span class="record-level-chip level-${r.level}-chip">${lvlEmojis[lvlIdx]} ${lvlNames[lvlIdx].toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="record-right">
+          <div class="record-weight">${weightDisplay}</div>
+          ${unitDisplay ? `<div class="record-unit">${unitDisplay}</div>` : ''}
+          <div class="record-votes">+${r.votes} ${t.votes}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// BADGES
+// ============================================================
+function renderBadges() {
+  const grid = document.getElementById('badgesGrid');
+  grid.innerHTML = BADGES.map((b, i) => `
+    <div class="badge-card ${b.locked ? 'locked' : ''}" style="animation-delay:${i*0.06}s">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name[lang]}</div>
+      <div class="badge-desc">${b.desc[lang]}</div>
+      ${b.date ? `<div class="badge-date">${b.date}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.section-tab').forEach((btn, i) => {
+    const tabs = ['records','badges'];
+    btn.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ============================================================
+// EDIT SHEET
+// ============================================================
+function openEdit() {
+  document.getElementById('editName').value = profile.name;
+  document.getElementById('editUsername').value = profile.username;
+  document.getElementById('editBio').value = profile.bio;
+  editLeague = profile.league;
+  setLeague(editLeague);
+  document.getElementById('editOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEdit(e) {
+  if (e.target === document.getElementById('editOverlay')) closeEditSheet();
+}
+
+function closeEditSheet() {
+  document.getElementById('editOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setLeague(l) {
+  editLeague = l;
+  document.getElementById('leagueProBtn').classList.toggle('active', l === 'pro');
+  document.getElementById('leagueProBtn').classList.toggle('pro', l === 'pro');
+  document.getElementById('leagueAmateurBtn').classList.toggle('active', l === 'amateur');
+  document.getElementById('leagueAmateurBtn').classList.toggle('amateur', l === 'amateur');
+}
+
+function saveProfile() {
+  profile.name = document.getElementById('editName').value.trim() || profile.name;
+  profile.username = document.getElementById('editUsername').value.trim() || profile.username;
+  profile.bio = document.getElementById('editBio').value.trim() || profile.bio;
+  profile.league = editLeague;
+  renderProfile();
+  closeEditSheet();
+}
+
+// ============================================================
+// FOLLOWERS MODAL
+// ============================================================
+function openFollowers(tab) {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchModalTab(tab);
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalSheet();
+}
+
+function closeModalSheet() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function switchModalTab(tab) {
+  ['followers','following'].forEach(t => {
+    document.getElementById('mtab-' + t).classList.toggle('active', t === tab);
+  });
+  const t = T[lang];
+  const lvlNames = t.levels;
+  const list = FOLLOWERS_DATA[tab];
+  document.getElementById('followersList').innerHTML = list.map((f, i) => `
+    <div class="follower-row" style="animation-delay:${i*0.06}s">
+      <div class="f-avatar" style="background:${f.color}">${f.name[0]}</div>
+      <div>
+        <div class="f-name">${f.name}</div>
+        <div class="f-handle">${f.handle}</div>
+      </div>
+      <div class="f-level-chip" style="background:rgba(255,255,255,.05);color:${f.color}">
+        ${lvlNames[f.level-1].toUpperCase()}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openSettings() {
+  // placeholder
+  alert('Настройки — в разработке');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function goTo(dest) {
+  const map = {
+    feed: 'fitorank-feed-mobile.html',
+    add: 'fitorank-add-record-mobile.html',
+  };
+  if (map[dest]) window.location.href = map[dest];
+}
+
+// ============================================================
+// INIT
+// ============================================================
+init();
+</script>
+</body>
+</html>
