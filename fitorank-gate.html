@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitoRank — Добро пожаловать</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FitoRank</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -11,250 +11,389 @@
   --gray: #1a1a1a; --gray-mid: #2e2e2e; --gray-light: #888;
   --green: #3ddc84; --gold: #f5c842; --blue: #4a9eff;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body { background: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; overflow: hidden; }
-
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body {
+  background: var(--black); color: var(--white);
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100%; overflow-x: hidden;
+}
 body::before {
   content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-  opacity: .45;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: .5;
 }
 .bg-grid {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: linear-gradient(rgba(232,38,11,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(232,38,11,.035) 1px, transparent 1px);
-  background-size: 64px 64px;
+  background-image: linear-gradient(rgba(232,38,11,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(232,38,11,.03) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
-.bg-fr {
-  position: fixed; z-index: 0; pointer-events: none;
-  font-family: 'Bebas Neue', sans-serif; font-size: 60vw; letter-spacing: -.05em; line-height: .85;
-  color: rgba(232,38,11,.025); top: 50%; left: 50%; transform: translate(-50%, -50%); user-select: none;
-}
-.top-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--red); z-index: 100; }
+.top-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--red); z-index: 200; }
 
-/* HEADER */
-.header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between; padding: 20px 40px 16px;
+/* ── WRAP ── */
+.wrap {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
 }
-.logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: .1em; line-height: 1; }
+
+/* ── HEADER ── */
+.header {
+  padding: 20px 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeDown .5s ease both;
+}
+@keyframes fadeDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(12px);  } to { opacity:1; transform:translateY(0); } }
+
+.logo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: .1em; line-height: 1; }
 .logo span { color: var(--red); }
-.lang-sw { display: flex; background: var(--gray); border: 1px solid var(--gray-mid); overflow: hidden; }
+
+.lang-switch { display: flex; border: 1px solid var(--gray-mid); overflow: hidden; }
 .lang-btn {
   background: none; border: none; color: var(--gray-light);
-  font-family: 'Montserrat', sans-serif; font-size: .55rem; font-weight: 700;
-  letter-spacing: .1em; padding: 7px 14px; cursor: pointer; transition: all .2s;
+  font-family: 'Montserrat', sans-serif; font-size: .6rem; font-weight: 700;
+  letter-spacing: .1em; padding: 8px 14px; cursor: pointer; transition: all .2s;
 }
 .lang-btn.active { background: var(--red); color: var(--white); }
 
-/* MAIN */
-.main {
-  position: relative; z-index: 10; height: 100vh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 80px 24px 60px;
+/* ── HERO ── */
+.hero {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px 20px 24px; text-align: center;
 }
 
-.logo-block { text-align: center; margin-bottom: 10px; animation: fadeDown .7s cubic-bezier(.16,1,.3,1) both; }
-@keyframes fadeDown { from { opacity:0; transform:translateY(-24px); } to { opacity:1; transform:translateY(0); } }
-.main-logo { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 9vw, 7.5rem); letter-spacing: .08em; line-height: 1; }
-.main-logo span { color: var(--red); }
-.tagline { font-size: clamp(.55rem, 1.1vw, .75rem); font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--gray-light); margin-top: 6px; }
-
-.center-divider { width: 1px; height: 28px; background: var(--gray-mid); margin: 18px 0; animation: grow .5s .3s ease both; }
-@keyframes grow { from { transform:scaleY(0); } to { transform:scaleY(1); } }
-
-.question {
-  font-size: clamp(.58rem, 1vw, .7rem); font-weight: 700; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--gray-light); text-align: center; margin-bottom: 22px;
-  animation: fadeUp .5s .35s ease both;
+.hero-eyebrow {
+  font-size: .6rem; font-weight: 700; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--red); margin-bottom: 12px;
+  animation: fadeUp .5s .1s ease both;
 }
-@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4.5rem, 22vw, 8rem);
+  letter-spacing: .06em; line-height: .88;
+  margin-bottom: 12px;
+  animation: fadeUp .55s .15s ease both;
+}
+.hero-title span { color: var(--red); }
+.hero-tagline {
+  font-size: clamp(.65rem, 3.2vw, .8rem); font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--gray-light);
+  margin-bottom: 36px; line-height: 1.6;
+  animation: fadeUp .55s .2s ease both;
+}
 
-/* CHOICES */
-.choices { display: flex; gap: 12px; width: 100%; max-width: 860px; animation: fadeUp .5s .45s ease both; }
+/* ── CHOICE CARDS ── */
+.cards { display: flex; flex-direction: column; gap: 12px; width: 100%; animation: fadeUp .55s .3s ease both; }
 
 .choice-card {
-  flex: 1; position: relative; overflow: hidden;
-  background: var(--gray); border: 2px solid var(--gray-mid);
-  padding: 32px 28px 28px; cursor: pointer;
-  transition: border-color .25s, transform .2s, background .2s;
-  display: flex; flex-direction: column;
+  display: block; text-decoration: none; color: inherit;
+  background: var(--gray); border: 2px solid transparent;
+  padding: 22px 20px; position: relative; overflow: hidden;
+  transition: border-color .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .choice-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--gray-mid); transition: background .25s;
+  transition: background .2s;
 }
-.choice-card:hover { transform: translateY(-4px); }
-.choice-card:active { transform: translateY(-1px) scale(.99); }
+.choice-card.desktop-card::before { background: var(--red); }
+.choice-card.mobile-card::before  { background: var(--green); }
+.choice-card:active { transform: scale(.98); }
 
-.desktop-card:hover { border-color: rgba(245,200,66,.35); background: #1c1a10; }
-.desktop-card:hover::before { background: var(--gold); }
-.mobile-card:hover { border-color: rgba(232,38,11,.4); background: #1c0a0a; }
-.mobile-card:hover::before { background: var(--red); }
-
-.choice-icon { font-size: 2.4rem; line-height: 1; margin-bottom: 16px; }
-.choice-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.5rem, 2.8vw, 2rem); letter-spacing: .06em; line-height: 1; margin-bottom: 6px; }
-.choice-subtitle { font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-light); margin-bottom: 14px; }
-.choice-desc { font-size: .68rem; font-weight: 400; color: var(--gray-light); line-height: 1.6; margin-bottom: 18px; flex: 1; }
-
-.choice-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
-.ctag { font-size: .48rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; background: var(--gray-mid); color: var(--gray-light); }
-.ctag.ready { background: rgba(61,220,132,.1); color: var(--green); }
-.ctag.concept { background: rgba(245,200,66,.1); color: var(--gold); }
-.ctag.wip { background: rgba(74,158,255,.1); color: var(--blue); }
-
-.choice-status { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.06); }
-.status-label { font-size: .56rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.status-label.gold { color: var(--gold); }
-.status-label.green { color: var(--green); }
-.choice-arrow { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: .08em; color: var(--gray-light); transition: color .2s, transform .2s; }
-.choice-card:hover .choice-arrow { color: var(--white); transform: translateX(5px); }
-
-/* SEPARATOR */
-.choices-sep { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; padding: 0 4px; }
-.sep-line { width: 1px; flex: 1; background: var(--gray-mid); }
-.sep-or { font-size: .52rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-mid); }
-
-/* FOOTER */
-.footer-note {
-  position: fixed; bottom: 24px; left: 0; right: 0; text-align: center; z-index: 10;
-  font-size: .52rem; font-weight: 400; color: var(--gray-mid); letter-spacing: .08em;
-  animation: fadeUp .5s .6s ease both;
+.card-top { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.card-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+.card-head { flex: 1; }
+.card-device {
+  font-size: .52rem; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--gray-light); margin-bottom: 4px;
 }
-.footer-note span { color: var(--gray-light); }
-
-/* TRANSITION */
-.transition-overlay {
-  position: fixed; inset: 0; z-index: 500; background: var(--black);
-  display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem; letter-spacing: .05em; line-height: 1;
 }
-.transition-overlay.show { display: flex; animation: tfadeIn .35s ease; }
-@keyframes tfadeIn { from { opacity:0; } to { opacity:1; } }
-.to-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: .1em; animation: tpulse 1s ease infinite; }
-@keyframes tpulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
-.to-logo span { color: var(--red); }
-.to-label { font-size: .6rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gray-light); }
+.card-arrow {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+  color: var(--gray-mid); flex-shrink: 0; transition: color .2s, transform .2s;
+}
+.choice-card.desktop-card .card-arrow { color: rgba(232,38,11,.4); }
+.choice-card.mobile-card  .card-arrow { color: rgba(61,220,132,.4); }
+
+.card-desc {
+  font-size: .72rem; font-weight: 400; color: var(--gray-light);
+  line-height: 1.55; margin-bottom: 14px;
+}
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: .5rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 9px;
+}
+.tag-green { background: rgba(61,220,132,.1);  color: var(--green); }
+.tag-red   { background: rgba(232,38,11,.1);   color: var(--red); }
+.tag-gold  { background: rgba(245,200,66,.1);  color: var(--gold); }
+.tag-blue  { background: rgba(74,158,255,.1);  color: var(--blue); }
+
+/* ── ROADMAP ── */
+.roadmap {
+  padding: 24px 20px;
+  border-top: 1px solid rgba(255,255,255,.05);
+  animation: fadeUp .55s .4s ease both;
+}
+.roadmap-title {
+  font-size: .52rem; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--gray-light); margin-bottom: 16px;
+}
+.steps { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.step:last-child { border-bottom: none; }
+.step-dot-col { display: flex; flex-direction: column; align-items: center; gap: 0; padding-top: 2px; }
+.step-dot {
+  width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+}
+.step-dot.done  { background: var(--green); }
+.step-dot.now   { background: var(--red); box-shadow: 0 0 8px rgba(232,38,11,.5); }
+.step-dot.next  { background: transparent; border: 2px solid var(--gray-mid); }
+.step-line { width: 1px; flex: 1; background: rgba(255,255,255,.05); min-height: 8px; }
+.step-body { flex: 1; padding-top: 0; }
+.step-phase {
+  font-size: .5rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--gray-light); margin-bottom: 3px;
+}
+.step-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem; letter-spacing: .05em; line-height: 1;
+}
+.step-name.now { color: var(--red); }
+.step-desc { font-size: .6rem; color: var(--gray-light); margin-top: 3px; line-height: 1.4; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 16px 20px calc(env(safe-area-inset-bottom, 12px) + 16px);
+  border-top: 1px solid rgba(255,255,255,.04);
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeUp .5s .45s ease both;
+}
+.footer-copy { font-size: .52rem; color: var(--gray-light); }
+.footer-copy span { color: var(--red); }
+.footer-link {
+  font-size: .55rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gray-light);
+  text-decoration: none; transition: color .2s;
+}
+.footer-link:hover { color: var(--white); }
+
+/* ── DESKTOP OVERRIDE ── */
+@media (min-width: 768px) {
+  .hero { padding: 48px 48px 32px; }
+  .hero-title { font-size: clamp(6rem, 14vw, 11rem); }
+  .header { padding: 28px 48px 0; }
+  .cards { flex-direction: row; gap: 16px; }
+  .choice-card { flex: 1; }
+  .roadmap { padding: 28px 48px; }
+  .steps { flex-direction: row; gap: 0; align-items: flex-start; }
+  .step { flex-direction: column; align-items: center; text-align: center; flex: 1; padding: 0 8px; border-bottom: none; border-right: 1px solid rgba(255,255,255,.04); }
+  .step:last-child { border-right: none; }
+  .step-dot-col { flex-direction: row; padding-top: 0; margin-bottom: 12px; }
+  .step-line { display: none; }
+  .footer { padding: 16px 48px calc(env(safe-area-inset-bottom,12px) + 16px); }
+}
+
+/* ── TRANSITION ── */
+.t-overlay { position: fixed; inset: 0; z-index: 500; background: var(--black); pointer-events: none; opacity: 0; transition: opacity .3s ease; }
+.t-overlay.show { opacity: 1; pointer-events: all; }
 </style>
 </head>
 <body>
-
 <div class="top-line"></div>
 <div class="bg-grid"></div>
-<div class="bg-fr">FR</div>
+<div class="t-overlay" id="overlay"></div>
 
-<div class="header">
-  <div class="logo">FITO<span>RANK</span></div>
-  <div class="lang-sw">
-    <button class="lang-btn active" id="btn-ru" onclick="setLang('ru')">RU</button>
-    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
-  </div>
-</div>
+<div class="wrap">
 
-<div class="transition-overlay" id="transOverlay">
-  <div class="to-logo">FITO<span>RANK</span></div>
-  <div class="to-label" id="transLabel">Загружаем...</div>
-</div>
-
-<div class="main">
-
-  <div class="logo-block">
-    <div class="main-logo">FITO<span>RANK</span></div>
-    <div class="tagline" id="tagline">ДОКАЖИ. ПОБЕЙ. ВОЙДИ В ИСТОРИЮ.</div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">FITO<span>RANK</span></div>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-ru" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
   </div>
 
-  <div class="center-divider"></div>
-  <div class="question" id="question">С КАКОГО УСТРОЙСТВА ВЫ СМОТРИТЕ?</div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow" id="eyebrow">ПЛАТФОРМА СИЛОВЫХ РЕКОРДОВ</div>
+    <div class="hero-title">FITO<span>RANK</span></div>
+    <div class="hero-tagline" id="tagline">ДОКАЖИ · ПОБЕЙ · ВОЙДИ В ИСТОРИЮ</div>
 
-  <div class="choices">
+    <div class="cards">
 
-    <!-- DESKTOP -->
-    <div class="choice-card desktop-card" onclick="goTo('desktop')">
-      <div class="choice-icon">🖥</div>
-      <div class="choice-title" id="desktop_title">КОМПЬЮТЕР</div>
-      <div class="choice-subtitle" id="desktop_sub">Desktop · Полная версия</div>
-      <div class="choice-desc" id="desktop_desc">19 страниц концепта. Полный дизайн-фронтенд: лента, профили, лидерборд, программы, дневник. Здесь живут идеи и фантазия без ограничений.</div>
-      <div class="choice-tags">
-        <span class="ctag concept" id="dtag1">КОНЦЕПТ</span>
-        <span class="ctag" id="dtag2">19 СТРАНИЦ</span>
-        <span class="ctag concept" id="dtag3">ДИЗАЙН-АРХИВ</span>
-        <span class="ctag" id="dtag4">ВДОХНОВЕНИЕ</span>
+      <!-- DESKTOP -->
+      <a class="choice-card desktop-card" href="fitorank-sitemap-desktop.html"
+         onclick="nav(event,'fitorank-sitemap-desktop.html')">
+        <div class="card-top">
+          <div class="card-icon">🖥️</div>
+          <div class="card-head">
+            <div class="card-device" id="device_desktop">КОМПЬЮТЕР / ПЛАНШЕТ</div>
+            <div class="card-title" id="title_desktop">ПОЛНАЯ ВЕРСИЯ</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+        <div class="card-desc" id="desc_desktop">
+          Все концепты, страницы и идеи. 19 экранов — генератор фантазии без ограничений.
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-red"   id="t_pages">19 СТРАНИЦ</span>
+          <span class="tag tag-blue"  id="t_concept">КОНЦЕПТЫ</span>
+          <span class="tag tag-gold"  id="t_roadmap">РОАДМАП</span>
+        </div>
+      </a>
+
+      <!-- MOBILE -->
+      <a class="choice-card mobile-card" href="fitorank-sitemap-mobile.html"
+         onclick="nav(event,'fitorank-sitemap-mobile.html')">
+        <div class="card-top">
+          <div class="card-icon">📱</div>
+          <div class="card-head">
+            <div class="card-device" id="device_mobile">СМАРТФОН</div>
+            <div class="card-title" id="title_mobile">МОБИЛЬНЫЙ MVP</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+        <div class="card-desc" id="desc_mobile">
+          4 экрана готовы к бета-тесту. Онбординг, лента, добавить рекорд, профиль.
+        </div>
+        <div class="card-tags">
+          <span class="tag tag-red"   id="t_beta">БЕТА</span>
+          <span class="tag tag-green" id="t_screens">4 ЭКРАНА</span>
+          <span class="tag tag-green" id="t_ready">ГОТОВО К ТЕСТУ</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <div class="roadmap">
+    <div class="roadmap-title" id="rm_title">ПЛАН РАЗРАБОТКИ</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot-col">
+          <div class="step-dot done"></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-phase" id="ph_done">ГОТОВО</div>
+          <div class="step-name" id="s1">ДИЗАЙН MVP</div>
+          <div class="step-desc" id="s1d">19 десктоп страниц</div>
+        </div>
       </div>
-      <div class="choice-status">
-        <div class="status-label gold" id="desktop_status">✦ ДИЗАЙН-РЕФЕРЕНС</div>
-        <div class="choice-arrow" id="desktop_arrow">СМОТРЕТЬ →</div>
+      <div class="step">
+        <div class="step-dot-col">
+          <div class="step-dot now"></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-phase" id="ph_now">СЕЙЧАС</div>
+          <div class="step-name now" id="s2">МОБИЛЬНЫЙ MVP</div>
+          <div class="step-desc" id="s2d">4 экрана, бета-тест</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot-col">
+          <div class="step-dot next"></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-phase" id="ph_next">ДАЛЕЕ</div>
+          <div class="step-name" id="s3">BACKEND</div>
+          <div class="step-desc" id="s3d">Supabase + Node.js</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot-col">
+          <div class="step-dot next"></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-phase" id="ph_next2">ДАЛЕЕ</div>
+          <div class="step-name" id="s4">ЗАКРЫТЫЙ ЗАПУСК</div>
+          <div class="step-desc" id="s4d">100 первых атлетов</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot-col">
+          <div class="step-dot next"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-phase" id="ph_future">БУДУЩЕЕ</div>
+          <div class="step-name" id="s5">ПУБЛИЧНЫЙ ЗАПУСК</div>
+          <div class="step-desc" id="s5d">iOS / Android / Web</div>
+        </div>
       </div>
     </div>
-
-    <div class="choices-sep">
-      <div class="sep-line"></div>
-      <div class="sep-or" id="sep_or">ИЛИ</div>
-      <div class="sep-line"></div>
-    </div>
-
-    <!-- MOBILE -->
-    <div class="choice-card mobile-card" onclick="goTo('mobile')">
-      <div class="choice-icon">📱</div>
-      <div class="choice-title" id="mobile_title">МОБИЛЬНЫЙ</div>
-      <div class="choice-subtitle" id="mobile_sub">Mobile · Бета-версия</div>
-      <div class="choice-desc" id="mobile_desc">4 экрана мобильного MVP. Онбординг, лента, добавление рекорда, профиль. Выжимка необходимого для запуска — уже можно тестировать.</div>
-      <div class="choice-tags">
-        <span class="ctag ready" id="mtag1">БЕТА-ГОТОВО</span>
-        <span class="ctag" id="mtag2">4 ЭКРАНА</span>
-        <span class="ctag wip" id="mtag3">RU / EN</span>
-        <span class="ctag ready" id="mtag4">ТЕСТИРУЕМО</span>
-      </div>
-      <div class="choice-status">
-        <div class="status-label green" id="mobile_status">✦ MVP ГОТОВ</div>
-        <div class="choice-arrow" id="mobile_arrow">СМОТРЕТЬ →</div>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<div class="footer-note" id="footerNote">FitoRank · Закрытая разработка · <span>Март 2026</span></div>
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-copy">© 2026 <span>FITORANK</span></div>
+    <a class="footer-link" href="fitorank-feed-mobile.html" id="footer_app">ОТКРЫТЬ ПРИЛОЖЕНИЕ →</a>
+  </div>
+
+</div>
 
 <script>
 const T = {
   ru: {
-    tagline: 'ДОКАЖИ. ПОБЕЙ. ВОЙДИ В ИСТОРИЮ.',
-    question: 'С КАКОГО УСТРОЙСТВА ВЫ СМОТРИТЕ?',
-    desktop_title: 'КОМПЬЮТЕР', desktop_sub: 'Desktop · Полная версия',
-    desktop_desc: '19 страниц концепта. Полный дизайн-фронтенд: лента, профили, лидерборд, программы, дневник. Здесь живут идеи и фантазия без ограничений.',
-    dtag1:'КОНЦЕПТ', dtag2:'19 СТРАНИЦ', dtag3:'ДИЗАЙН-АРХИВ', dtag4:'ВДОХНОВЕНИЕ',
-    desktop_status: '✦ ДИЗАЙН-РЕФЕРЕНС', desktop_arrow: 'СМОТРЕТЬ →',
-    sep_or: 'ИЛИ',
-    mobile_title: 'МОБИЛЬНЫЙ', mobile_sub: 'Mobile · Бета-версия',
-    mobile_desc: '4 экрана мобильного MVP. Онбординг, лента, добавление рекорда, профиль. Выжимка необходимого для запуска — уже можно тестировать.',
-    mtag1:'БЕТА-ГОТОВО', mtag2:'4 ЭКРАНА', mtag3:'RU / EN', mtag4:'ТЕСТИРУЕМО',
-    mobile_status: '✦ MVP ГОТОВ', mobile_arrow: 'СМОТРЕТЬ →',
-    footer: 'FitoRank · Закрытая разработка · <span>Март 2026</span>',
-    loading_d: 'Открываем десктоп-версию...', loading_m: 'Открываем мобильную версию...',
+    eyebrow:'ПЛАТФОРМА СИЛОВЫХ РЕКОРДОВ',
+    tagline:'ДОКАЖИ · ПОБЕЙ · ВОЙДИ В ИСТОРИЮ',
+    device_desktop:'КОМПЬЮТЕР / ПЛАНШЕТ', title_desktop:'ПОЛНАЯ ВЕРСИЯ',
+    desc_desktop:'Все концепты, страницы и идеи. 19 экранов — генератор фантазии без ограничений.',
+    t_pages:'19 СТРАНИЦ', t_concept:'КОНЦЕПТЫ', t_roadmap:'РОАДМАП',
+    device_mobile:'СМАРТФОН', title_mobile:'МОБИЛЬНЫЙ MVP',
+    desc_mobile:'4 экрана готовы к бета-тесту. Онбординг, лента, добавить рекорд, профиль.',
+    t_beta:'БЕТА', t_screens:'4 ЭКРАНА', t_ready:'ГОТОВО К ТЕСТУ',
+    rm_title:'ПЛАН РАЗРАБОТКИ',
+    ph_done:'ГОТОВО', ph_now:'СЕЙЧАС', ph_next:'ДАЛЕЕ', ph_next2:'ДАЛЕЕ', ph_future:'БУДУЩЕЕ',
+    s1:'ДИЗАЙН MVP', s1d:'19 десктоп страниц',
+    s2:'МОБИЛЬНЫЙ MVP', s2d:'4 экрана, бета-тест',
+    s3:'BACKEND', s3d:'Supabase + Node.js',
+    s4:'ЗАКРЫТЫЙ ЗАПУСК', s4d:'100 первых атлетов',
+    s5:'ПУБЛИЧНЫЙ ЗАПУСК', s5d:'iOS / Android / Web',
+    footer_app:'ОТКРЫТЬ ПРИЛОЖЕНИЕ →',
   },
   en: {
-    tagline: 'PROVE IT. BEAT IT. MAKE HISTORY.',
-    question: 'WHAT DEVICE ARE YOU ON?',
-    desktop_title: 'DESKTOP', desktop_sub: 'Desktop · Full version',
-    desktop_desc: '19 concept pages. Full design frontend: feed, profiles, leaderboard, programs, diary. No limits — this is where ideas and vision live.',
-    dtag1:'CONCEPT', dtag2:'19 PAGES', dtag3:'DESIGN ARCHIVE', dtag4:'INSPIRATION',
-    desktop_status: '✦ DESIGN REFERENCE', desktop_arrow: 'EXPLORE →',
-    sep_or: 'OR',
-    mobile_title: 'MOBILE', mobile_sub: 'Mobile · Beta version',
-    mobile_desc: '4 mobile MVP screens. Onboarding, feed, add record, profile. The essentials for beta launch — ready to test right now.',
-    mtag1:'BETA-READY', mtag2:'4 SCREENS', mtag3:'RU / EN', mtag4:'TESTABLE',
-    mobile_status: '✦ MVP READY', mobile_arrow: 'EXPLORE →',
-    footer: 'FitoRank · Private development · <span>March 2026</span>',
-    loading_d: 'Loading desktop version...', loading_m: 'Loading mobile version...',
+    eyebrow:'STRENGTH RECORDS PLATFORM',
+    tagline:'PROVE IT · BEAT IT · MAKE HISTORY',
+    device_desktop:'DESKTOP / TABLET', title_desktop:'FULL VERSION',
+    desc_desktop:'All concepts, pages and ideas. 19 screens — unlimited imagination canvas.',
+    t_pages:'19 PAGES', t_concept:'CONCEPTS', t_roadmap:'ROADMAP',
+    device_mobile:'SMARTPHONE', title_mobile:'MOBILE MVP',
+    desc_mobile:'4 screens ready for beta testing. Onboarding, feed, add record, profile.',
+    t_beta:'BETA', t_screens:'4 SCREENS', t_ready:'READY TO TEST',
+    rm_title:'DEVELOPMENT ROADMAP',
+    ph_done:'DONE', ph_now:'NOW', ph_next:'NEXT', ph_next2:'NEXT', ph_future:'FUTURE',
+    s1:'MVP DESIGN', s1d:'19 desktop pages',
+    s2:'MOBILE MVP', s2d:'4 screens, beta test',
+    s3:'BACKEND', s3d:'Supabase + Node.js',
+    s4:'CLOSED LAUNCH', s4d:'First 100 athletes',
+    s5:'PUBLIC LAUNCH', s5d:'iOS / Android / Web',
+    footer_app:'OPEN APP →',
   }
 };
 
-let lang = localStorage.getItem('fitorank_lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en');
+let lang = localStorage.getItem('fitorank_lang') ||
+  (navigator.language.toLowerCase().startsWith('ru') ? 'ru' : 'en');
 
 function applyLang() {
   const t = T[lang];
   Object.keys(t).forEach(k => {
     const el = document.getElementById(k);
-    if (el) el.innerHTML = t[k];
+    if (el) el.textContent = t[k];
   });
   document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
@@ -266,12 +405,10 @@ function setLang(l) {
   applyLang();
 }
 
-function goTo(dest) {
-  const t = T[lang];
-  document.getElementById('transLabel').textContent = dest === 'desktop' ? t.loading_d : t.loading_m;
-  document.getElementById('transOverlay').classList.add('show');
-  const url = dest === 'desktop' ? 'fitorank-sitemap-desktop.html' : 'fitorank-sitemap-mobile.html';
-  setTimeout(() => { window.location.href = url; }, 850);
+function nav(e, url) {
+  e.preventDefault();
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(() => { window.location.href = url; }, 280);
 }
 
 applyLang();
