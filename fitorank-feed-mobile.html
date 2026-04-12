@@ -152,24 +152,95 @@ body::before {
 .verify-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--gold); letter-spacing: .04em; line-height: 1; }
 .verify-label { font-size: .5rem; color: var(--gray-light); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 
-/* ACTION BUTTONS — всегда активны */
+/* ACTION ROW — ВЕРЮ / НЕ ВЕРЮ */
 .card-actions {
-  display: flex; align-items: center;
-  border-top: 1px solid rgba(255,255,255,.07); padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+/* ВЕРЮ / НЕ ВЕРЮ row */
+.vote-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-believe {
+  flex: 1; background: rgba(61,220,132,.08); border: 1px solid rgba(61,220,132,.2);
+  color: var(--green); font-family: 'Montserrat', sans-serif;
+  font-size: .65rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase;
+  padding: 10px 8px; cursor: pointer; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-believe.voted { background: var(--green); color: var(--black); border-color: var(--green); }
+.btn-believe:active { transform: scale(.96); }
+
+.btn-notbelieve {
+  flex: 1; background: rgba(232,38,11,.07); border: 1px solid rgba(232,38,11,.2);
+  color: var(--red); font-family: 'Montserrat', sans-serif;
+  font-size: .65rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase;
+  padding: 10px 8px; cursor: pointer; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-notbelieve.voted { background: var(--red); color: var(--white); border-color: var(--red); }
+.btn-notbelieve:active { transform: scale(.96); }
+
+/* СЧЁТЧИК ПРОЦЕНТОВ */
+.vote-pct-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; min-width: 44px; }
+.vote-pct { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: .04em; line-height: 1; color: var(--green); transition: color .3s; }
+.vote-pct.negative { color: var(--red); }
+.vote-pct-label { font-size: .42rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gray-light); }
+.vote-bar { width: 100%; height: 3px; background: rgba(232,38,11,.25); border-radius: 2px; overflow: hidden; }
+.vote-bar-fill { height: 100%; background: var(--green); transition: width .4s ease; }
+
+/* НАТУРАЛ / ХИМИК row */
+.natural-row {
+  display: flex; align-items: center; gap: 6px;
+}
+.natural-label {
+  font-size: .48rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--gray-light); flex-shrink: 0;
+  white-space: nowrap;
+}
+.btn-natural, .btn-pharma {
+  flex: 1; background: none; border: 1px solid var(--gray-mid);
+  color: var(--gray-light); font-family: 'Montserrat', sans-serif;
+  font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 7px 6px; cursor: pointer; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-natural:disabled, .btn-pharma:disabled { opacity: .35; cursor: not-allowed; }
+.btn-natural.voted  { background: rgba(61,220,132,.12); border-color: var(--green); color: var(--green); }
+.btn-pharma.voted   { background: rgba(245,200,66,.1);  border-color: var(--gold);  color: var(--gold); }
+.btn-natural:not(:disabled):active, .btn-pharma:not(:disabled):active { transform: scale(.96); }
+
+/* НИЖНЯЯ СТРОКА — комментарий + вызов + поделиться */
+.action-row {
+  display: flex; align-items: center; gap: 0;
+  border-top: 1px solid rgba(255,255,255,.05); padding-top: 10px;
 }
 .action-btn {
   flex: 1; background: none; border: none;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  color: var(--gray-light); cursor: pointer; padding: 6px 0;
+  color: var(--gray-light); cursor: pointer; padding: 4px 0;
   transition: color .15s, transform .1s;
   -webkit-tap-highlight-color: transparent;
 }
 .action-btn:active { transform: scale(.85); }
-.action-icon { font-size: 1.3rem; line-height: 1; display: block; }
-.action-count { font-size: .55rem; font-weight: 700; letter-spacing: .06em; display: block; }
-.action-btn.vote-up.voted   { color: var(--green); }
-.action-btn.vote-down.voted { color: var(--red); }
-.action-btn.commented       { color: var(--blue); }
+.action-icon { font-size: 1.2rem; line-height: 1; display: block; }
+.action-count { font-size: .52rem; font-weight: 700; letter-spacing: .06em; display: block; }
+.action-btn.commented { color: var(--blue); }
+
+/* ВЫЗОВ — особая кнопка */
+.btn-challenge {
+  flex: 1; background: none; border: none; border-left: 1px solid rgba(255,255,255,.06);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--gold); cursor: pointer; padding: 4px 0;
+  transition: color .15s, transform .1s;
+  font-family: 'Montserrat', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-challenge:active { transform: scale(.85); }
+.challenge-icon { font-size: 1.2rem; line-height: 1; display: block; }
+.challenge-label { font-size: .52rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; display: block; }
 
 /* POPUP */
 .popup-overlay {
@@ -288,10 +359,28 @@ body::before {
         <div class="record-verify"><div class="verify-score">94%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">312</span></button>
-        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">18</span></button>
-        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">47</span></button>
-        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        <!-- ВЕРЮ / НЕ ВЕРЮ -->
+        <div class="vote-row">
+          <button class="btn-believe" onclick="handleBelieve(this)">✓ ВЕРЮ</button>
+          <div class="vote-pct-wrap">
+            <div class="vote-pct">94%</div>
+            <div class="vote-bar"><div class="vote-bar-fill" style="width:94%"></div></div>
+            <div class="vote-pct-label">верят</div>
+          </div>
+          <button class="btn-notbelieve" onclick="handleNotBelieve(this)">✗ НЕТ</button>
+        </div>
+        <!-- НАТУРАЛ / ХИМИК -->
+        <div class="natural-row">
+          <span class="natural-label">НАТУРАЛ?</span>
+          <button class="btn-natural" disabled onclick="handleNatural(this)">🌿 ДА</button>
+          <button class="btn-pharma"  disabled onclick="handlePharma(this)">⚗️ ХИМИК</button>
+        </div>
+        <!-- КОММЕНТАРИЙ + ВЫЗОВ + ПОДЕЛИТЬСЯ -->
+        <div class="action-row">
+          <button class="action-btn" onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">47</span></button>
+          <button class="btn-challenge" onclick="handleChallenge(this)"><span class="challenge-icon">⚔️</span><span class="challenge-label">ВЫЗОВ</span></button>
+          <button class="action-btn" onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        </div>
       </div>
     </div>
   </article>
@@ -322,10 +411,25 @@ body::before {
         <div class="record-verify"><div class="verify-score">88%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">201</span></button>
-        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">9</span></button>
-        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">33</span></button>
-        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        <div class="vote-row">
+          <button class="btn-believe" onclick="handleBelieve(this)">✓ ВЕРЮ</button>
+          <div class="vote-pct-wrap">
+            <div class="vote-pct">88%</div>
+            <div class="vote-bar"><div class="vote-bar-fill" style="width:88%"></div></div>
+            <div class="vote-pct-label">верят</div>
+          </div>
+          <button class="btn-notbelieve" onclick="handleNotBelieve(this)">✗ НЕТ</button>
+        </div>
+        <div class="natural-row">
+          <span class="natural-label">НАТУРАЛ?</span>
+          <button class="btn-natural" disabled onclick="handleNatural(this)">🌿 ДА</button>
+          <button class="btn-pharma"  disabled onclick="handlePharma(this)">⚗️ ХИМИК</button>
+        </div>
+        <div class="action-row">
+          <button class="action-btn" onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">33</span></button>
+          <button class="btn-challenge" onclick="handleChallenge(this)"><span class="challenge-icon">⚔️</span><span class="challenge-label">ВЫЗОВ</span></button>
+          <button class="action-btn" onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        </div>
       </div>
     </div>
   </article>
@@ -356,10 +460,25 @@ body::before {
         <div class="record-verify"><div class="verify-score">97%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">156</span></button>
-        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">4</span></button>
-        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">22</span></button>
-        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        <div class="vote-row">
+          <button class="btn-believe" onclick="handleBelieve(this)">✓ ВЕРЮ</button>
+          <div class="vote-pct-wrap">
+            <div class="vote-pct">97%</div>
+            <div class="vote-bar"><div class="vote-bar-fill" style="width:97%"></div></div>
+            <div class="vote-pct-label">верят</div>
+          </div>
+          <button class="btn-notbelieve" onclick="handleNotBelieve(this)">✗ НЕТ</button>
+        </div>
+        <div class="natural-row">
+          <span class="natural-label">НАТУРАЛ?</span>
+          <button class="btn-natural" disabled onclick="handleNatural(this)">🌿 ДА</button>
+          <button class="btn-pharma"  disabled onclick="handlePharma(this)">⚗️ ХИМИК</button>
+        </div>
+        <div class="action-row">
+          <button class="action-btn" onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">22</span></button>
+          <button class="btn-challenge" onclick="handleChallenge(this)"><span class="challenge-icon">⚔️</span><span class="challenge-label">ВЫЗОВ</span></button>
+          <button class="action-btn" onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        </div>
       </div>
     </div>
   </article>
@@ -390,10 +509,25 @@ body::before {
         <div class="record-verify"><div class="verify-score">82%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">89</span></button>
-        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">11</span></button>
-        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">15</span></button>
-        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        <div class="vote-row">
+          <button class="btn-believe" onclick="handleBelieve(this)">✓ ВЕРЮ</button>
+          <div class="vote-pct-wrap">
+            <div class="vote-pct">82%</div>
+            <div class="vote-bar"><div class="vote-bar-fill" style="width:82%"></div></div>
+            <div class="vote-pct-label">верят</div>
+          </div>
+          <button class="btn-notbelieve" onclick="handleNotBelieve(this)">✗ НЕТ</button>
+        </div>
+        <div class="natural-row">
+          <span class="natural-label">НАТУРАЛ?</span>
+          <button class="btn-natural" disabled onclick="handleNatural(this)">🌿 ДА</button>
+          <button class="btn-pharma"  disabled onclick="handlePharma(this)">⚗️ ХИМИК</button>
+        </div>
+        <div class="action-row">
+          <button class="action-btn" onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">15</span></button>
+          <button class="btn-challenge" onclick="handleChallenge(this)"><span class="challenge-icon">⚔️</span><span class="challenge-label">ВЫЗОВ</span></button>
+          <button class="action-btn" onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        </div>
       </div>
     </div>
   </article>
@@ -423,10 +557,25 @@ body::before {
         <div class="record-verify"><div class="verify-score">91%</div><div class="verify-label" data-t="trust"></div></div>
       </div>
       <div class="card-actions">
-        <button class="action-btn vote-up"   onclick="handleVote(this)"><span class="action-icon">👍</span><span class="action-count">73</span></button>
-        <button class="action-btn vote-down" onclick="handleVote(this)"><span class="action-icon">👎</span><span class="action-count">5</span></button>
-        <button class="action-btn comment"   onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">8</span></button>
-        <button class="action-btn"           onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        <div class="vote-row">
+          <button class="btn-believe" onclick="handleBelieve(this)">✓ ВЕРЮ</button>
+          <div class="vote-pct-wrap">
+            <div class="vote-pct">91%</div>
+            <div class="vote-bar"><div class="vote-bar-fill" style="width:91%"></div></div>
+            <div class="vote-pct-label">верят</div>
+          </div>
+          <button class="btn-notbelieve" onclick="handleNotBelieve(this)">✗ НЕТ</button>
+        </div>
+        <div class="natural-row">
+          <span class="natural-label">НАТУРАЛ?</span>
+          <button class="btn-natural" disabled onclick="handleNatural(this)">🌿 ДА</button>
+          <button class="btn-pharma"  disabled onclick="handlePharma(this)">⚗️ ХИМИК</button>
+        </div>
+        <div class="action-row">
+          <button class="action-btn" onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">8</span></button>
+          <button class="btn-challenge" onclick="handleChallenge(this)"><span class="challenge-icon">⚔️</span><span class="challenge-label">ВЫЗОВ</span></button>
+          <button class="action-btn" onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count" data-t="share"></span></button>
+        </div>
       </div>
     </div>
   </article>
@@ -443,6 +592,19 @@ body::before {
     <div class="popup-actions">
       <button class="popup-cta"  id="popupCta"  onclick="goOnboarding()"></button>
       <button class="popup-back" id="popupBack" onclick="closePopup()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- CHALLENGE POPUP -->
+<div class="popup-overlay" id="challengePopup">
+  <div class="popup" style="border-top-color:var(--gold);">
+    <div class="popup-icon">⚔️</div>
+    <div class="popup-title" id="challengeTitle">БРОСИТЬ ВЫЗОВ?</div>
+    <div class="popup-text" id="challengeText">Ты хочешь бросить вызов этому атлету по данному упражнению. После принятия вызова у тебя будет 30 дней чтобы побить этот рекорд.</div>
+    <div class="popup-actions">
+      <button class="popup-cta" id="challengeCta" style="background:var(--gold);color:var(--black);" onclick="confirmChallenge()">⚔️ БРОСИТЬ ВЫЗОВ</button>
+      <button class="popup-back" id="challengeCancel" onclick="closeChallenge()">ОТМЕНА</button>
     </div>
   </div>
 </div>
@@ -479,6 +641,12 @@ const T = {
     years:'лет', kg:'кг', rep:'повтор', reps:'повтора',
     bench:'Жим лёжа', deadlift:'Становая тяга', squat:'Присед со штангой',
     loading:'Загрузка...', nav_feed:'Лента', nav_search:'Поиск', nav_record:'Рекорд', nav_profile:'Профиль', nav_more:'Ещё',
+    believe:'✓ ВЕРЮ', notbelieve:'✗ НЕТ', believe_pct:'верят',
+    natural_q:'НАТУРАЛ?', natural_yes:'🌿 ДА', natural_pharma:'⚗️ ХИМИК',
+    challenge:'ВЫЗОВ', challenge_done:'ВЫЗОВ ✓',
+    challenge_title:'БРОСИТЬ ВЫЗОВ?',
+    challenge_text:'Ты хочешь бросить вызов этому атлету по данному упражнению. После принятия вызова у тебя будет 30 дней чтобы побить этот рекорд.',
+    challenge_cta:'⚔️ БРОСИТЬ ВЫЗОВ', challenge_cancel:'ОТМЕНА',
     p_vote_icon:'👊',   p_vote_title:'Ещё не зарегистрирован?',
     p_vote_text:'Хочешь голосовать за рекорды и оставлять комментарии? <b>Пройди быструю регистрацию</b> — займёт меньше минуты.',
     p_record_icon:'🏆', p_record_title:'Добавь свой рекорд',
@@ -495,6 +663,12 @@ const T = {
     years:'y.o.', kg:'kg', rep:'rep', reps:'reps',
     bench:'Bench Press', deadlift:'Deadlift', squat:'Back Squat',
     loading:'Loading...', nav_feed:'Feed', nav_search:'Search', nav_record:'Record', nav_profile:'Profile', nav_more:'More',
+    believe:'✓ LEGIT', notbelieve:'✗ FAKE', believe_pct:'believe',
+    natural_q:'NATURAL?', natural_yes:'🌿 YES', natural_pharma:'⚗️ ENHANCED',
+    challenge:'CHALLENGE', challenge_done:'CHALLENGED ✓',
+    challenge_title:'SEND A CHALLENGE?',
+    challenge_text:'You want to challenge this athlete on this exercise. Once accepted, you have 30 days to beat this record.',
+    challenge_cta:'⚔️ SEND CHALLENGE', challenge_cancel:'CANCEL',
     p_vote_icon:'👊',   p_vote_title:'Not signed up yet?',
     p_vote_text:'Want to vote on records and leave comments? <b>Quick sign-up</b> — takes less than a minute.',
     p_record_icon:'🏆', p_record_title:'Post your record',
@@ -531,6 +705,31 @@ function applyLang() {
     if (v !== undefined) el.textContent = v;
   });
   document.getElementById('signinBtn').textContent = t.signin;
+
+  // Кнопки голосования — переводим напрямую по классу
+  document.querySelectorAll('.btn-believe').forEach(el => {
+    if (!el.classList.contains('voted')) el.textContent = t.believe;
+  });
+  document.querySelectorAll('.btn-notbelieve').forEach(el => {
+    if (!el.classList.contains('voted')) el.textContent = t.notbelieve;
+  });
+  document.querySelectorAll('.vote-pct-label').forEach(el => el.textContent = t.believe_pct);
+  document.querySelectorAll('.natural-label').forEach(el => el.textContent = t.natural_q);
+  document.querySelectorAll('.btn-natural').forEach(el => {
+    if (!el.classList.contains('voted')) el.textContent = t.natural_yes;
+  });
+  document.querySelectorAll('.btn-pharma').forEach(el => {
+    if (!el.classList.contains('voted')) el.textContent = t.natural_pharma;
+  });
+  document.querySelectorAll('.challenge-label').forEach(el => {
+    if (!el.textContent.includes('✓')) el.textContent = t.challenge;
+  });
+
+  // Popup вызова
+  document.getElementById('challengeTitle').textContent = t.challenge_title;
+  document.getElementById('challengeText').textContent  = t.challenge_text;
+  document.getElementById('challengeCta').textContent   = t.challenge_cta;
+  document.getElementById('challengeCancel').textContent = t.challenge_cancel;
 }
 
 // AUTH
@@ -550,28 +749,91 @@ function setSort(el) {
   el.classList.add('active');
 }
 
-// VOTE
-function handleVote(btn) {
+// ВЕРЮ / НЕ ВЕРЮ
+function handleBelieve(btn) {
   if (!isLoggedIn) { showPopup('vote'); return; }
   const actions = btn.closest('.card-actions');
-  const up   = actions.querySelector('.vote-up');
-  const down = actions.querySelector('.vote-down');
-  const cnt  = btn.querySelector('.action-count');
-  const n    = parseInt(cnt.textContent) || 0;
-  if (btn.classList.contains('voted')) {
-    btn.classList.remove('voted');
-    cnt.textContent = n - 1;
-  } else {
-    const other = btn.classList.contains('vote-up') ? down : up;
-    if (other.classList.contains('voted')) {
-      other.classList.remove('voted');
-      const oc = other.querySelector('.action-count');
-      oc.textContent = parseInt(oc.textContent) - 1;
-    }
-    btn.classList.add('voted');
-    cnt.textContent = n + 1;
+  const notBtn = actions.querySelector('.btn-notbelieve');
+  const pctEl  = actions.querySelector('.vote-pct');
+  const barEl  = actions.querySelector('.vote-bar-fill');
+  const naturalBtns = actions.querySelectorAll('.btn-natural, .btn-pharma');
+
+  const wasVoted = btn.classList.contains('voted');
+  btn.classList.toggle('voted', !wasVoted);
+  notBtn.classList.remove('voted');
+
+  const base = parseInt(pctEl.textContent) || 80;
+  const newPct = wasVoted ? Math.max(base - 3, 50) : Math.min(base + 2, 99);
+  pctEl.textContent = newPct + '%';
+  barEl.style.width = newPct + '%';
+  pctEl.classList.toggle('negative', newPct < 50);
+
+  // разблокировать натурал/химик
+  naturalBtns.forEach(b => b.disabled = false);
+}
+
+function handleNotBelieve(btn) {
+  if (!isLoggedIn) { showPopup('vote'); return; }
+  const actions = btn.closest('.card-actions');
+  const belBtn  = actions.querySelector('.btn-believe');
+  const pctEl   = actions.querySelector('.vote-pct');
+  const barEl   = actions.querySelector('.vote-bar-fill');
+  const naturalBtns = actions.querySelectorAll('.btn-natural, .btn-pharma');
+
+  const wasVoted = btn.classList.contains('voted');
+  btn.classList.toggle('voted', !wasVoted);
+  belBtn.classList.remove('voted');
+
+  const base = parseInt(pctEl.textContent) || 80;
+  const newPct = wasVoted ? Math.min(base + 3, 99) : Math.max(base - 5, 10);
+  pctEl.textContent = newPct + '%';
+  barEl.style.width = newPct + '%';
+  pctEl.classList.toggle('negative', newPct < 50);
+
+  naturalBtns.forEach(b => b.disabled = false);
+}
+
+// НАТУРАЛ / ХИМИК
+function handleNatural(btn) {
+  if (!isLoggedIn) { showPopup('vote'); return; }
+  if (btn.disabled) return;
+  const row = btn.closest('.natural-row');
+  const pharma = row.querySelector('.btn-pharma');
+  btn.classList.toggle('voted');
+  if (btn.classList.contains('voted')) pharma.classList.remove('voted');
+}
+
+function handlePharma(btn) {
+  if (!isLoggedIn) { showPopup('vote'); return; }
+  if (btn.disabled) return;
+  const row = btn.closest('.natural-row');
+  const natural = row.querySelector('.btn-natural');
+  btn.classList.toggle('voted');
+  if (btn.classList.contains('voted')) natural.classList.remove('voted');
+}
+
+// ВЫЗОВ
+let challengeBtn = null;
+function handleChallenge(btn) {
+  if (!isLoggedIn) { showPopup('vote'); return; }
+  challengeBtn = btn;
+  document.getElementById('challengePopup').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function confirmChallenge() {
+  closeChallenge();
+  if (challengeBtn) {
+    challengeBtn.style.color = 'var(--red)';
+    challengeBtn.querySelector('.challenge-label').textContent = T[lang].challenge_done;
   }
 }
+function closeChallenge() {
+  document.getElementById('challengePopup').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.getElementById('challengePopup').addEventListener('click', e => {
+  if (e.target === document.getElementById('challengePopup')) closeChallenge();
+});
 
 // COMMENT
 function handleComment(btn) {
