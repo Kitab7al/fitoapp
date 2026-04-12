@@ -6,150 +6,147 @@
 <title>FitoRank — Добавить рекорд</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black:#080808; --white:#f5f2ee; --red:#e8260b; --red-dark:#b51e08;
-  --gray:#1a1a1a; --gray-mid:#2e2e2e; --gray-light:#888;
-  --green:#3ddc84; --gold:#f5c842; --blue:#4a9eff;
-}
+:root{--black:#080808;--white:#f5f2ee;--red:#e8260b;--red-dark:#b51e08;--gray:#1a1a1a;--gray-mid:#2e2e2e;--gray-light:#888;--green:#3ddc84;--gold:#f5c842;--blue:#4a9eff;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;}
+html,body{height:100%;overscroll-behavior:none;}
 body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow:hidden;}
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:0;opacity:.4;
-}
-
-/* LANG */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
 .lang-switcher{position:fixed;top:16px;right:16px;z-index:200;display:flex;background:rgba(26,26,26,.92);border:1px solid var(--gray-mid);backdrop-filter:blur(8px);overflow:hidden;}
 .lang-btn{background:none;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:.1em;padding:7px 11px;cursor:pointer;transition:all .2s;}
 .lang-btn.active{background:var(--red);color:var(--white);}
-
-/* SCREENS */
 .screens{position:fixed;inset:0;z-index:1;}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(32px);transition:opacity .3s ease,transform .3s ease;overflow-y:auto;overflow-x:hidden;}
 .screen.active{opacity:1;pointer-events:all;transform:translateX(0);}
 .screen.exit{opacity:0;transform:translateX(-32px);}
-
-/* HEADER */
-.sh-header{padding:calc(env(safe-area-inset-top,0px) + 52px) 24px 22px;border-bottom:1px solid var(--gray-mid);flex-shrink:0;}
-.back-btn{display:flex;align-items:center;gap:7px;color:var(--gray-light);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:0;margin-bottom:20px;}
+.sh-header{padding:calc(env(safe-area-inset-top,0px) + 52px) 24px 20px;border-bottom:1px solid var(--gray-mid);flex-shrink:0;}
+.back-btn{display:flex;align-items:center;gap:7px;color:var(--gray-light);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:0;margin-bottom:18px;}
 .back-btn svg{width:14px;height:14px;flex-shrink:0;}
 .sh-tag{font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
-.sh-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1.05;margin-bottom:4px;}
-.sh-sub{font-size:.66rem;color:var(--gray-light);line-height:1.6;}
+.sh-title{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1.05;margin-bottom:4px;}
+.sh-sub{font-size:.64rem;color:var(--gray-light);line-height:1.6;}
 .step-dots{display:flex;gap:6px;margin-top:12px;}
-.dot{width:20px;height:3px;background:var(--gray-mid);border-radius:2px;transition:all .3s;}
-.dot.active{background:var(--red);width:32px;}
+.dot{width:18px;height:3px;background:var(--gray-mid);border-radius:2px;transition:all .3s;}
+.dot.active{background:var(--red);width:28px;}
 .dot.done{background:var(--green);}
-
-/* FORM */
-.form-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-bottom:8px;}
+.form-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding-bottom:8px;}
 .form-footer{padding:12px 24px calc(env(safe-area-inset-bottom,0px) + 20px);flex-shrink:0;border-top:1px solid rgba(255,255,255,.06);background:var(--black);}
-
-/* FIELD */
 .field{display:flex;flex-direction:column;gap:6px;}
 .field-label{font-size:.52rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-light);}
 .field-input{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:600;padding:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0;width:100%;}
 .field-input::placeholder{color:var(--gray-light);font-weight:400;font-size:.85rem;}
 .field-input:focus{border-color:var(--red);}
 .field-input[type="date"]{color-scheme:dark;}
-
-/* EXERCISE SEARCH */
+/* STEP 0 */
+#s-step0 .form-body{padding:0;gap:0;}
+.type-choice{display:flex;flex-direction:column;flex:1;}
+.type-card{flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding:28px 28px 36px;cursor:pointer;position:relative;overflow:hidden;transition:background .2s;background:var(--gray);border:none;text-align:left;width:100%;}
+.type-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;}
+.card-1rm::after{background:linear-gradient(135deg,rgba(232,38,11,.18) 0%,transparent 65%);}
+.card-reps::after{background:linear-gradient(135deg,rgba(245,200,66,.12) 0%,transparent 65%);}
+.type-card:active::after{opacity:1;}
+.type-card:active{background:#1e1e1e;}
+.tc-icon{font-size:2.8rem;margin-bottom:12px;display:block;line-height:1;position:relative;z-index:1;}
+.tc-tag{font-size:.5rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
+.tc-tag.red{color:var(--red);}
+.tc-tag.gold{color:var(--gold);}
+.tc-name{font-family:'Bebas Neue',sans-serif;font-size:2.3rem;line-height:1;margin-bottom:8px;position:relative;z-index:1;}
+.tc-desc{font-size:.63rem;color:var(--gray-light);line-height:1.65;max-width:270px;position:relative;z-index:1;}
+.tc-arrow{position:absolute;right:24px;bottom:32px;font-size:1.3rem;color:var(--gray-light);transition:transform .2s,color .2s;z-index:1;}
+.type-card:active .tc-arrow{transform:translateX(5px);color:var(--white);}
+.tc-divider{height:1px;background:rgba(255,255,255,.06);flex-shrink:0;}
+/* EXERCISE */
 .ex-search-wrap{position:relative;}
 .ex-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gray-light);font-size:.9rem;pointer-events:none;}
 .field-input.with-icon{padding-left:40px;}
-.ex-results{background:var(--gray);border:1px solid var(--gray-mid);border-top:none;display:none;max-height:190px;overflow-y:auto;}
+.ex-results{background:var(--gray);border:1px solid var(--gray-mid);border-top:none;display:none;max-height:180px;overflow-y:auto;}
 .ex-results.show{display:block;}
-.ex-item{padding:12px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;transition:background .15s;}
+.ex-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;transition:background .15s;}
 .ex-item:last-child{border-bottom:none;}
 .ex-item:active{background:var(--gray-mid);}
 .ex-item-name{font-size:.8rem;font-weight:600;}
-.ex-item-cat{font-size:.52rem;color:var(--gray-light);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+.ex-item-cat{font-size:.5rem;color:var(--gray-light);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
 .ex-selected{background:rgba(232,38,11,.08);border:1px solid rgba(232,38,11,.3);padding:12px 14px;display:none;align-items:center;justify-content:space-between;}
 .ex-selected.show{display:flex;}
 .ex-sel-name{font-size:.85rem;font-weight:700;}
 .ex-sel-cat{font-size:.52rem;color:var(--red);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
 .ex-sel-clear{background:none;border:none;color:var(--gray-light);font-size:1.1rem;cursor:pointer;padding:4px;}
-
-/* TYPE TABS (1RM / Reps) */
-.type-tabs{display:flex;gap:0;border:1px solid var(--gray-mid);overflow:hidden;}
-.type-tab{flex:1;background:none;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:12px 8px;cursor:pointer;transition:all .2s;border-right:1px solid var(--gray-mid);}
-.type-tab:last-child{border-right:none;}
-.type-tab.active{background:var(--red);color:var(--white);}
-.type-tab:active{opacity:.8;}
-
-/* BODYWEIGHT TOGGLE */
-.bw-toggle{display:none;flex-direction:column;gap:8px;}
+/* TABS */
+.rm-tabs{display:flex;border:1px solid var(--gray-mid);overflow:hidden;}
+.rm-tab{flex:1;background:none;border:none;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px 8px;cursor:pointer;transition:all .2s;border-right:1px solid var(--gray-mid);}
+.rm-tab:last-child{border-right:none;}
+.rm-tab.active{background:var(--red);color:var(--white);}
+/* BW */
+.bw-toggle{display:none;flex-direction:column;gap:6px;animation:fadeUp .2s ease;}
 .bw-toggle.show{display:flex;}
-.bw-options{display:flex;gap:8px;flex-wrap:wrap;}
-.bw-chip{flex:1;min-width:0;background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 8px;cursor:pointer;text-align:center;transition:all .2s;white-space:nowrap;}
-.bw-chip.active{background:var(--red);border-color:var(--red);color:var(--white);}
+.bw-options{display:flex;gap:6px;flex-wrap:wrap;}
+.bw-chip{flex:1;min-width:0;background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;}
+.bw-chip.active{background:var(--gold);border-color:var(--gold);color:var(--black);}
 .bw-chip:active{transform:scale(.95);}
-
-/* WEIGHT ROW */
-.weight-row{display:flex;gap:10px;align-items:flex-end;}
-.weight-wrap{position:relative;flex:1;}
+/* WEIGHT */
+.weight-wrap{position:relative;}
 .weight-unit-toggle{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:center;}
 .unit-btn{height:100%;padding:0 12px;background:var(--gray-mid);border:none;border-left:1px solid #3a3a3a;color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:all .2s;}
 .unit-btn.active{background:var(--red);color:var(--white);}
-.field-input.weight-input{padding-right:96px;}
-
-/* REPS INPUT */
-.reps-wrap{display:flex;flex-direction:column;gap:6px;}
+.field-input.weight-input{padding-right:96px;font-size:1.3rem;font-weight:700;}
+/* REPS */
 .reps-quick{display:flex;gap:6px;flex-wrap:wrap;}
-.rep-chip{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:9px 13px;cursor:pointer;transition:all .2s;}
+.rep-chip{background:var(--gray);border:1px solid var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;padding:9px 13px;cursor:pointer;transition:all .2s;}
 .rep-chip.active{background:var(--red);border-color:var(--red);color:var(--white);}
 .rep-chip:active{transform:scale(.93);}
-.reps-custom-wrap{display:none;}
-.reps-custom-wrap.show{display:flex;gap:8px;align-items:center;}
+.reps-custom-row{display:none;gap:8px;align-items:center;margin-top:4px;}
+.reps-custom-row.show{display:flex;}
 .reps-custom-label{font-size:.6rem;color:var(--gray-light);white-space:nowrap;}
 .field-input.reps-input{width:90px;text-align:center;font-size:1.1rem;}
-
-/* LEVEL BADGE */
-.level-badge{display:none;padding:12px 14px;gap:12px;align-items:center;animation:fadeUp .25s ease;}
+/* LEVEL */
+.level-badge{display:none;padding:13px 14px;gap:12px;align-items:center;animation:fadeUp .3s ease;}
 .level-badge.show{display:flex;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.level-icon{font-size:1.8rem;flex-shrink:0;line-height:1;}
+.level-icon{font-size:2rem;flex-shrink:0;line-height:1;}
 .level-info{flex:1;}
-.level-name{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.04em;line-height:1;}
+.level-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;line-height:1;}
 .level-desc{font-size:.58rem;color:var(--gray-light);margin-top:2px;line-height:1.5;}
 .level-bar-wrap{height:4px;background:var(--gray-mid);margin-top:8px;overflow:hidden;}
-.level-bar{height:100%;transition:width .5s ease;width:0%;}
+.level-bar{height:100%;transition:width .6s ease;width:0%;}
 .level-next{font-size:.52rem;color:var(--gray-light);margin-top:5px;letter-spacing:.06em;}
-
-/* PREVIEW CARD */
-.preview-card{background:var(--gray-mid);border:1px solid rgba(255,255,255,.08);padding:13px 14px;display:flex;gap:12px;align-items:center;}
-.pc-media{width:44px;height:44px;background:var(--gray);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:1px solid rgba(255,255,255,.08);}
+/* PREVIEW */
+.preview-card{background:var(--gray-mid);border:1px solid rgba(255,255,255,.08);padding:12px 14px;display:flex;gap:12px;align-items:center;}
+.pc-media{width:40px;height:40px;background:var(--gray);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:1px solid rgba(255,255,255,.08);}
 .pc-exercise{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;}
 .pc-weight{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1;}
 .pc-unit{font-size:.75rem;color:var(--gray-light);}
-.pc-meta{font-size:.55rem;color:var(--gray-light);margin-top:2px;}
-
+.pc-meta{font-size:.54rem;color:var(--gray-light);margin-top:2px;}
+.pc-type-badge{margin-left:auto;font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;flex-shrink:0;}
+.pc-type-badge.one-rm{background:rgba(232,38,11,.15);color:var(--red);border:1px solid rgba(232,38,11,.3);}
+.pc-type-badge.multi-rep{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.3);}
 /* BUTTONS */
 .btn-p{width:100%;background:var(--red);color:var(--white);border:none;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s,transform .1s;-webkit-appearance:none;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);}
 .btn-p:active{background:var(--red-dark);transform:scale(.98);}
 .btn-p:disabled{opacity:.4;pointer-events:none;}
-.btn-s{width:100%;background:transparent;color:var(--white);border:1px solid var(--gray-mid);font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;-webkit-appearance:none;}
+.btn-s{width:100%;background:transparent;color:var(--white);border:1px solid var(--gray-mid);font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;}
 .btn-s:active{border-color:var(--white);}
-
 /* STEP 2 */
 .url-wrap{position:relative;}
 .url-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;}
 .field-input.url-input{padding-left:40px;font-size:.82rem;}
 .link-preview{background:var(--gray);border:1px solid var(--gray-mid);padding:13px;display:none;gap:11px;align-items:flex-start;animation:fadeUp .25s ease;}
 .link-preview.show{display:flex;}
-.lp-thumb{width:56px;height:56px;background:var(--gray-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.lp-thumb{width:52px;height:52px;background:var(--gray-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
 .lp-platform{font-size:.5rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:3px;}
 .lp-title{font-size:.75rem;font-weight:600;line-height:1.4;}
 .lp-handle{font-size:.58rem;color:var(--gray-light);margin-top:2px;}
 .lp-ok{font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-top:5px;}
-.url-hint{font-size:.56rem;color:var(--gray-light);margin-top:5px;line-height:1.6;}
-.field-textarea{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.85rem;font-weight:400;padding:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0;width:100%;resize:none;min-height:86px;line-height:1.6;}
+.url-hint{font-size:.56rem;color:var(--gray-light);line-height:1.6;}
+.freak-btn{background:none;border:1px dashed var(--gray-mid);color:var(--gray-light);font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px 14px;cursor:pointer;transition:all .2s;text-align:left;width:100%;margin-top:6px;}
+.freak-btn:active,.freak-btn.active{border-color:var(--gold);color:var(--gold);}
+.freak-wrap{margin-top:6px;display:flex;flex-direction:column;gap:6px;}
+.video-required-hint{font-size:.6rem;color:var(--gray-light);text-align:center;padding:2px 0;line-height:1.5;}
+.video-required-hint.error{color:var(--red);}
+.field-textarea{background:var(--gray);border:1px solid var(--gray-mid);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.85rem;padding:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0;width:100%;resize:none;min-height:80px;line-height:1.6;}
 .field-textarea::placeholder{color:var(--gray-light);}
 .field-textarea:focus{border-color:var(--red);}
 .char-count{font-size:.52rem;color:var(--gray-light);text-align:right;margin-top:3px;}
-
+.pub-note{font-size:.58rem;color:var(--gray-light);line-height:1.7;padding:10px 12px;border:1px solid var(--gray-mid);background:rgba(255,255,255,.02);}
+.divider{height:1px;background:rgba(255,255,255,.06);}
 /* SUCCESS */
 #s-success{justify-content:center;align-items:center;text-align:center;padding:40px 28px;background:radial-gradient(ellipse 80% 45% at 50% 35%,rgba(61,220,132,.07) 0%,transparent 70%);}
 .success-icon{font-size:3.4rem;margin-bottom:14px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
@@ -165,747 +162,285 @@ body::before{
 </style>
 </head>
 <body>
-
 <div class="lang-switcher">
   <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
   <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
 </div>
-
 <div class="screens">
 
-  <!-- ══ ШАГ 1 ══ -->
-  <div class="screen" id="s-step1">
-    <div class="sh-header">
-      <button class="back-btn" onclick="goFeed()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
-        <span data-t="back"></span>
+<!-- STEP 0 -->
+<div class="screen" id="s-step0">
+  <div class="sh-header">
+    <button class="back-btn" onclick="goFeed()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+      <span data-t="back"></span>
+    </button>
+    <div class="sh-tag" data-t="s0_tag"></div>
+    <div class="sh-title" data-t="s0_title"></div>
+    <div class="sh-sub" data-t="s0_sub"></div>
+    <div class="step-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+  <div class="form-body">
+    <div class="type-choice">
+      <button class="type-card card-1rm" onclick="chooseType('1rm')">
+        <span class="tc-icon">&#127942;</span>
+        <div class="tc-tag red" data-t="tc_tag_1rm"></div>
+        <div class="tc-name" data-t="tc_name_1rm"></div>
+        <div class="tc-desc" data-t="tc_desc_1rm"></div>
+        <span class="tc-arrow">&#8594;</span>
       </button>
-      <div class="sh-tag"   data-t="s1_tag"></div>
-      <div class="sh-title" data-t="s1_title"></div>
-      <div class="sh-sub"   data-t="s1_sub"></div>
-      <div class="step-dots"><div class="dot active"></div><div class="dot"></div></div>
+      <div class="tc-divider"></div>
+      <button class="type-card card-reps" onclick="chooseType('reps')">
+        <span class="tc-icon">&#128293;</span>
+        <div class="tc-tag gold" data-t="tc_tag_reps"></div>
+        <div class="tc-name" data-t="tc_name_reps"></div>
+        <div class="tc-desc" data-t="tc_desc_reps"></div>
+        <span class="tc-arrow">&#8594;</span>
+      </button>
     </div>
+  </div>
+</div>
 
-    <div class="form-body">
-
-      <!-- EXERCISE -->
-      <div class="field">
-        <div class="field-label" data-t="ex_label"></div>
-        <div class="ex-search-wrap">
-          <span class="ex-search-icon">🔍</span>
-          <input class="field-input with-icon" id="exInput" type="text"
-            oninput="searchEx(this.value)" onfocus="searchEx(this.value)"
-            data-t-ph="ex_ph">
-          <div class="ex-results" id="exResults"></div>
-        </div>
-        <div class="ex-selected" id="exSelected">
-          <div><div class="ex-sel-name" id="exSelName"></div><div class="ex-sel-cat" id="exSelCat"></div></div>
-          <button class="ex-sel-clear" onclick="clearEx()">✕</button>
-        </div>
+<!-- STEP 1 -->
+<div class="screen" id="s-step1">
+  <div class="sh-header">
+    <button class="back-btn" onclick="go('s-step0')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+      <span data-t="back"></span>
+    </button>
+    <div class="sh-tag" id="s1_tag"></div>
+    <div class="sh-title" id="s1_title"></div>
+    <div class="sh-sub" data-t="s1_sub"></div>
+    <div class="step-dots"><div class="dot done"></div><div class="dot active"></div><div class="dot"></div></div>
+  </div>
+  <div class="form-body">
+    <div class="field">
+      <div class="field-label" data-t="ex_label"></div>
+      <div class="ex-search-wrap">
+        <span class="ex-search-icon">&#128269;</span>
+        <input class="field-input with-icon" id="exInput" type="text" oninput="searchEx(this.value)" onfocus="searchEx(this.value)" data-t-ph="ex_ph">
+        <div class="ex-results" id="exResults"></div>
       </div>
-
-      <!-- RECORD TYPE TABS -->
-      <div class="field">
-        <div class="field-label" data-t="type_label"></div>
-        <div class="type-tabs">
-          <button class="type-tab active" id="tab1rm"  onclick="setType('1rm')"  data-t="tab_1rm"></button>
-          <button class="type-tab"        id="tabReps" onclick="setType('reps')" data-t="tab_reps"></button>
-        </div>
+      <button class="freak-btn" id="freakBtn" onclick="toggleFreak()" data-t="freak_btn"></button>
+      <div class="freak-wrap" id="freakWrap" style="display:none;">
+        <input class="field-input" id="freakInput" type="text" oninput="onFreakInput()" data-t-ph="freak_ph">
+        <div class="url-hint" data-t="freak_hint"></div>
       </div>
-
-      <!-- BODYWEIGHT TOGGLE (shown for bodyweight exercises) -->
+      <div class="ex-selected" id="exSelected">
+        <div><div class="ex-sel-name" id="exSelName"></div><div class="ex-sel-cat" id="exSelCat"></div></div>
+        <button class="ex-sel-clear" onclick="clearEx()">&#10005;</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="field">
+      <div class="field-label" data-t="result_label"></div>
+      <div class="rm-tabs">
+        <button class="rm-tab active" id="rmTab1rm" onclick="setSubType('1rm')" data-t="tab_1rm"></button>
+        <button class="rm-tab" id="rmTabReps" onclick="setSubType('reps')" data-t="tab_reps"></button>
+      </div>
       <div class="bw-toggle" id="bwToggle">
         <div class="field-label" data-t="bw_label"></div>
         <div class="bw-options">
-          <button class="bw-chip active" onclick="setBW(this,'bw')"     data-t="bw_only"></button>
-          <button class="bw-chip"        onclick="setBW(this,'bw+ext')" data-t="bw_plus"></button>
-          <button class="bw-chip"        onclick="setBW(this,'ext')"    data-t="bw_ext"></button>
+          <button class="bw-chip active" onclick="setBW(this,'bw')" data-t="bw_only"></button>
+          <button class="bw-chip" onclick="setBW(this,'bw+ext')" data-t="bw_plus"></button>
+          <button class="bw-chip" onclick="setBW(this,'ext')" data-t="bw_ext"></button>
         </div>
       </div>
-
-      <!-- WEIGHT -->
-      <div class="field" id="weightField">
-        <div class="field-label" id="weightLabel" data-t="weight_label"></div>
-        <div class="weight-row">
-          <div class="weight-wrap" style="flex:1">
-            <input class="field-input weight-input" id="weightInput" type="number"
-              inputmode="decimal" min="0" max="9999" step="0.5"
-              oninput="onWeightInput()">
-            <div class="weight-unit-toggle">
-              <button class="unit-btn active" id="btnKg"  onclick="setUnit('kg')">КГ</button>
-              <button class="unit-btn"        id="btnLbs" onclick="setUnit('lbs')">LBS</button>
-            </div>
+      <div id="weightField">
+        <div class="weight-wrap">
+          <input class="field-input weight-input" id="weightInput" type="number" inputmode="decimal" min="0" max="9999" step="0.5" oninput="onWeightInput()" placeholder="0">
+          <div class="weight-unit-toggle">
+            <button class="unit-btn active" id="unitKg" onclick="setUnit('kg')">KG</button>
+            <button class="unit-btn" id="unitLbs" onclick="setUnit('lbs')">LBS</button>
           </div>
         </div>
       </div>
-
-      <!-- REPS (1RM = fixed 1, multi = editable) -->
-      <div class="field" id="repsField">
-        <div class="field-label" data-t="reps_label"></div>
-        <!-- 1RM mode: quick chips -->
-        <div class="reps-quick" id="repsQuick">
-          <button class="rep-chip active" onclick="setRep(this,1)">1</button>
-          <button class="rep-chip"        onclick="setRep(this,2)">2</button>
-          <button class="rep-chip"        onclick="setRep(this,3)">3</button>
-          <button class="rep-chip"        onclick="setRep(this,5)">5</button>
+      <div id="repsSection" style="display:none;">
+        <div class="field-label" style="margin-top:4px;" data-t="reps_label"></div>
+        <div class="reps-quick">
+          <button class="rep-chip" onclick="setRep(this,2)">2</button>
+          <button class="rep-chip" onclick="setRep(this,3)">3</button>
+          <button class="rep-chip" onclick="setRep(this,5)">5</button>
+          <button class="rep-chip active" onclick="setRep(this,10)">10</button>
+          <button class="rep-chip" onclick="setRep(this,15)">15</button>
+          <button class="rep-chip" onclick="setRep(this,20)">20</button>
+          <button class="rep-chip" id="repCustomChip" onclick="toggleCustomRep(this)">+</button>
         </div>
-        <!-- Reps mode: free input -->
-        <div class="reps-custom-wrap" id="repsCustom">
-          <input class="field-input reps-input" id="repsInput" type="number"
-            inputmode="numeric" min="1" max="999" value="10"
-            oninput="onRepsInput()">
-          <span class="reps-custom-label" data-t="reps_unit"></span>
+        <div class="reps-custom-row" id="repsCustomRow">
+          <span class="reps-custom-label" data-t="reps_custom_label"></span>
+          <input class="field-input reps-input" id="repsInput" type="number" inputmode="numeric" min="1" max="999" oninput="onRepsInput()">
         </div>
       </div>
-
-      <!-- LIVE LEVEL BADGE -->
-      <div class="level-badge" id="levelBadge">
-        <div class="level-icon"     id="lvlIcon"></div>
-        <div class="level-info">
-          <div class="level-name"   id="lvlName"></div>
-          <div class="level-desc"   id="lvlDesc"></div>
-          <div class="level-bar-wrap"><div class="level-bar" id="lvlBar"></div></div>
-          <div class="level-next"   id="lvlNext"></div>
+    </div>
+    <div class="level-badge" id="levelBadge">
+      <div class="level-icon" id="lvlIcon">&#127945;</div>
+      <div class="level-info">
+        <div class="level-name" id="lvlName"></div>
+        <div class="level-desc" id="lvlDesc"></div>
+        <div class="level-bar-wrap"><div class="level-bar" id="lvlBar"></div></div>
+        <div class="level-next" id="lvlNext"></div>
+      </div>
+    </div>
+    <!-- ATHLETE WEIGHT -->
+    <div class="field">
+      <div class="field-label" data-t="ath_weight_label"></div>
+      <div class="weight-wrap">
+        <input class="field-input weight-input" id="athWeightInput" type="number" inputmode="decimal" min="30" max="300" step="0.5" placeholder="80" oninput="checkStep1()">
+        <div class="weight-unit-toggle">
+          <button class="unit-btn active" id="athUnitKg" onclick="setAthUnit('kg')">KG</button>
+          <button class="unit-btn" id="athUnitLbs" onclick="setAthUnit('lbs')">LBS</button>
         </div>
       </div>
+      <div class="url-hint" data-t="ath_weight_hint"></div>
+    </div>
 
-      <!-- DATE -->
-      <div class="field">
-        <div class="field-label" data-t="date_label"></div>
-        <input class="field-input" id="dateInput" type="date" onchange="checkStep1()">
+    <!-- LEAGUE -->
+    <div class="field">
+      <div class="field-label" data-t="league_label"></div>
+      <div class="rm-tabs" id="leagueTabs">
+        <button class="rm-tab active" id="leaguePro" onclick="setLeague('pro')" data-t="league_pro"></button>
+        <button class="rm-tab" id="leagueAm" onclick="setLeague('amateur')" data-t="league_amateur"></button>
       </div>
+      <div class="url-hint" id="leagueHint" data-t="league_pro_hint"></div>
+    </div>
 
-      <!-- PREVIEW -->
-      <div class="preview-card">
-        <div class="pc-media" id="pcMedia">🏋️</div>
+    <!-- DATE -->
+    <div class="field">
+      <div class="field-label" data-t="date_label"></div>
+      <input class="field-input" id="dateInput" type="date">
+    </div>
+    <div class="preview-card">
+      <div class="pc-media" id="pcMedia">&#127939;</div>
+      <div style="flex:1;min-width:0;">
+        <div class="pc-exercise" id="pcExercise"></div>
+        <div><span class="pc-weight" id="pcWeight">&#8212;</span><span class="pc-unit" id="pcUnit"></span></div>
+        <div class="pc-meta" id="pcMeta"></div>
+      </div>
+      <div class="pc-type-badge one-rm" id="pcTypeBadge"></div>
+    </div>
+  </div>
+  <div class="form-footer">
+    <button class="btn-p" id="s1Btn" onclick="goStep2()" disabled data-t="s1_btn"></button>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="screen" id="s-step2">
+  <div class="sh-header">
+    <button class="back-btn" onclick="go('s-step1')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+      <span data-t="back"></span>
+    </button>
+    <div class="sh-tag" data-t="s2_tag"></div>
+    <div class="sh-title" data-t="s2_title"></div>
+    <div class="sh-sub" data-t="s2_sub"></div>
+    <div class="step-dots"><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div></div>
+  </div>
+  <div class="form-body">
+    <div class="preview-card">
+      <div class="pc-media" id="pcMedia2">&#127939;</div>
+      <div style="flex:1;min-width:0;">
+        <div class="pc-exercise" id="pcExercise2"></div>
+        <div><span class="pc-weight" id="pcWeight2">&#8212;</span><span class="pc-unit" id="pcUnit2"></span></div>
+        <div class="pc-meta" id="pcMeta2"></div>
+      </div>
+      <div class="pc-type-badge one-rm" id="pcTypeBadge2"></div>
+    </div>
+    <div class="field">
+      <div class="field-label" data-t="url_label"></div>
+      <div class="url-wrap">
+        <span class="url-icon" id="urlIcon">&#128279;</span>
+        <input class="field-input url-input" id="urlInput" type="url" inputmode="url" oninput="handleUrl(this.value)" data-t-ph="url_ph">
+      </div>
+      <div class="url-hint" data-t="url_hint"></div>
+      <div class="link-preview" id="linkPreview">
+        <div class="lp-thumb" id="lpThumb">&#9654;</div>
         <div>
-          <div class="pc-exercise" id="pcExercise" data-t="no_ex"></div>
-          <div class="pc-weight"><span id="pcWeight">—</span><span class="pc-unit" id="pcUnit"></span></div>
-          <div class="pc-meta" id="pcMeta"></div>
+          <div class="lp-platform" id="lpPlatform"></div>
+          <div class="lp-title" id="lpTitle"></div>
+          <div class="lp-handle" id="lpHandle"></div>
+          <div class="lp-ok" data-t="lp_ok"></div>
         </div>
       </div>
-
     </div>
-    <div class="form-footer">
-      <button class="btn-p" id="s1Btn" onclick="goStep2()" disabled>
-        <span data-t="s1_cta"></span><span>→</span>
-      </button>
+    <div class="field">
+      <div class="field-label" data-t="comment_label"></div>
+      <textarea class="field-textarea" id="commentInput" maxlength="300" oninput="document.getElementById('charCount').textContent=this.value.length" data-t-ph="comment_ph"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/300</div>
     </div>
+    <div class="pub-note" data-t="pub_note"></div>
   </div>
-
-  <!-- ══ ШАГ 2 ══ -->
-  <div class="screen" id="s-step2">
-    <div class="sh-header">
-      <button class="back-btn" onclick="go('s-step1')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
-        <span data-t="back"></span>
-      </button>
-      <div class="sh-tag"   data-t="s2_tag"></div>
-      <div class="sh-title" data-t="s2_title"></div>
-      <div class="sh-sub"   data-t="s2_sub"></div>
-      <div class="step-dots"><div class="dot done"></div><div class="dot active"></div></div>
-    </div>
-
-    <div class="form-body">
-      <!-- URL -->
-      <div class="field">
-        <div class="field-label" data-t="url_label"></div>
-        <div class="url-wrap">
-          <span id="urlIcon" class="url-icon">🔗</span>
-          <input class="field-input url-input" id="urlInput" type="url"
-            inputmode="url" autocomplete="off" oninput="handleUrl(this.value)"
-            data-t-ph="url_ph">
-        </div>
-        <div class="link-preview" id="linkPreview">
-          <div class="lp-thumb"    id="lpThumb">▶</div>
-          <div>
-            <div class="lp-platform" id="lpPlatform"></div>
-            <div class="lp-title"    id="lpTitle"></div>
-            <div class="lp-handle"   id="lpHandle"></div>
-            <div class="lp-ok"       data-t="link_ok"></div>
-          </div>
-        </div>
-        <div class="url-hint" data-t="url_hint"></div>
-      </div>
-
-      <!-- COMMENT -->
-      <div class="field">
-        <div class="field-label" data-t="comment_label"></div>
-        <textarea class="field-textarea" id="commentInput" maxlength="300"
-          oninput="document.getElementById('charCount').textContent=this.value.length"
-          data-t-ph="comment_ph"></textarea>
-        <div class="char-count"><span id="charCount">0</span>/300</div>
-      </div>
-
-      <!-- PREVIEW -->
-      <div class="field">
-        <div class="field-label" data-t="preview_label"></div>
-        <div class="preview-card">
-          <div class="pc-media" id="pcMedia2">🏋️</div>
-          <div>
-            <div class="pc-exercise" id="pcExercise2"></div>
-            <div class="pc-weight"><span id="pcWeight2">—</span><span class="pc-unit" id="pcUnit2"></span></div>
-            <div class="pc-meta" id="pcMeta2"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-footer">
-      <button class="btn-p" onclick="publish()">
-        <span data-t="publish_cta"></span><span>🔥</span>
-      </button>
-    </div>
+  <div class="form-footer" style="display:flex;flex-direction:column;gap:10px;">
+    <button class="btn-p" id="pubBtn" onclick="publish()" disabled data-t="pub_btn"></button>
+    <div class="video-required-hint" id="videoRequiredHint" data-t="video_required_hint"></div>
   </div>
+</div>
 
-  <!-- ══ УСПЕХ ══ -->
-  <div class="screen" id="s-success">
-    <div class="success-icon">🔥</div>
-    <div class="success-title" data-t="suc_title"></div>
-    <div class="success-sub"   data-t="suc_sub"></div>
-    <div class="success-card">
-      <div class="sc-row">
-        <div class="sc-label" data-t="ex_label"></div>
-        <div class="sc-val" id="scEx">—</div>
-      </div>
-      <div class="sc-row">
-        <div class="sc-label" data-t="weight_label"></div>
-        <div class="sc-val" id="scW">—</div>
-      </div>
-      <div class="sc-sub" id="scMeta"></div>
-    </div>
-    <div class="success-actions">
-      <button class="btn-p" onclick="goFeed()"><span data-t="suc_feed"></span><span>→</span></button>
-      <button class="btn-s" onclick="resetForm();go('s-step1')"><span data-t="suc_another"></span></button>
-    </div>
+<!-- SUCCESS -->
+<div class="screen" id="s-success" style="justify-content:center;align-items:center;text-align:center;padding:40px 28px;background:radial-gradient(ellipse 80% 45% at 50% 35%,rgba(61,220,132,.07) 0%,transparent 70%);">
+  <div class="success-icon">&#127881;</div>
+  <div class="success-title" data-t="suc_title"></div>
+  <div class="success-sub" data-t="suc_sub"></div>
+  <div class="success-card">
+    <div class="sc-row"><span class="sc-label" data-t="suc_ex"></span><span class="sc-val" id="scEx">&#8212;</span></div>
+    <div class="sc-row"><span class="sc-label" data-t="suc_result"></span><span class="sc-val" id="scW">&#8212;</span></div>
+    <div class="sc-sub" id="scMeta"></div>
   </div>
+  <div class="success-actions">
+    <button class="btn-p" onclick="goFeed()" data-t="suc_feed"></button>
+    <button class="btn-s" onclick="addAnother()" data-t="suc_more"></button>
+  </div>
+</div>
 
-</div><!-- /screens -->
-
+</div>
 <script>
-// ══════════════════════════════
-//  TRANSLATIONS
-// ══════════════════════════════
-const T = {
-  ru:{
-    back:'Назад',
-    s1_tag:'Шаг 1 из 2', s1_title:'УПРАЖНЕНИЕ\nИ РЕЗУЛЬТАТ', s1_sub:'Выбери упражнение и укажи результат.',
-    s1_cta:'Далее — медиа',
-    s2_tag:'Шаг 2 из 2', s2_title:'МЕДИА\nИ ПУБЛИКАЦИЯ', s2_sub:'Добавь ссылку на видео или фото.',
-    publish_cta:'Опубликовать рекорд',
-    ex_label:'Упражнение', ex_ph:'Поиск упражнения...',
-    type_label:'Тип рекорда',
-    tab_1rm:'Силовой максимум (1RM)',
-    tab_reps:'Многоповторный рекорд',
-    bw_label:'Вариант выполнения',
-    bw_only:'Только свой вес', bw_plus:'Свой вес + доп. вес', bw_ext:'Только доп. вес',
-    weight_label:'Вес (кг)', weight_ext_label:'Доп. вес',
-    reps_label:'Повторения', reps_unit:'повт.',
-    date_label:'Дата рекорда',
-    no_ex:'Упражнение не выбрано',
-    url_label:'Ссылка на видео / фото',
-    url_ph:'https://tiktok.com/@...',
-    url_hint:'Вставь ссылку из TikTok или Instagram. Видео не загружается — только ретрансляция.',
-    link_ok:'✓ Ссылка распознана',
-    comment_label:'Комментарий автора',
-    comment_ph:'Расскажи об этом рекорде — условия, подготовка, ощущения...',
-    preview_label:'Как будет выглядеть',
-    suc_title:'РЕКОРД\nОПУБЛИКОВАН!',
-    suc_sub:'Твой рекорд отправлен на проверку сообществу. Обычно это занимает несколько минут.',
-    suc_feed:'Перейти в ленту', suc_another:'Добавить ещё один рекорд',
-    kg:'кг', lbs:'фунт', rep:'повт.',
-    // levels
-    lv_beg:   ['🌱','Новичок',       '#4a9eff'],
-    lv_int:   ['💪','Любитель',      '#4a9eff'],
-    lv_adv:   ['⚡','Продвинутый',   '#f5c842'],
-    lv_1r:    ['🥉','1-й разряд',    '#f5c842'],
-    lv_cms:   ['🥈','КМС',           '#e8e8e8'],
-    lv_ms:    ['🥇','Мастер спорта', '#f5c842'],
-    lv_msic:  ['🏆','МСМК',          '#e8260b'],
-    lv_next: 'До следующего уровня: ',
-    lv_peak: 'Элита — это уже мировой уровень 🌍',
-    lv_desc_beg:'Хорошее начало — главное не останавливаться!',
-    lv_desc_int:'Уже выше среднего по залу.',
-    lv_desc_adv:'Серьёзный спортсмен. Люди смотрят.',
-    lv_desc_1r:'Официальный 1-й спортивный разряд.',
-    lv_desc_cms:'Кандидат в Мастера Спорта — это очень серьёзно.',
-    lv_desc_ms:'Мастер Спорта России. Годы работы.',
-    lv_desc_msic:'МСМК — Мастер Спорта Международного Класса.',
-  },
-  en:{
-    back:'Back',
-    s1_tag:'Step 1 of 2', s1_title:'EXERCISE\n& RESULT', s1_sub:'Choose an exercise and enter your result.',
-    s1_cta:'Next — media',
-    s2_tag:'Step 2 of 2', s2_title:'MEDIA\n& PUBLISH', s2_sub:'Add a TikTok or Instagram link.',
-    publish_cta:'Publish record',
-    ex_label:'Exercise', ex_ph:'Search exercise...',
-    type_label:'Record type',
-    tab_1rm:'Strength max (1RM)',
-    tab_reps:'Max reps record',
-    bw_label:'Bodyweight option',
-    bw_only:'Bodyweight only', bw_plus:'BW + added weight', bw_ext:'Added weight only',
-    weight_label:'Weight (kg)', weight_ext_label:'Added weight',
-    reps_label:'Reps', reps_unit:'reps',
-    date_label:'Record date',
-    no_ex:'No exercise selected',
-    url_label:'Video / photo link',
-    url_ph:'https://tiktok.com/@...',
-    url_hint:'Paste a TikTok or Instagram link. Video is not hosted — retransmitted from source.',
-    link_ok:'✓ Link recognised',
-    comment_label:"Author's comment",
-    comment_ph:'Tell the story — conditions, prep, how it felt...',
-    preview_label:'Preview',
-    suc_title:'RECORD\nPUBLISHED!',
-    suc_sub:'Your record is live and open for community voting.',
-    suc_feed:'Go to feed', suc_another:'Add another record',
-    kg:'kg', lbs:'lbs', rep:'rep',
-    lv_beg:  ['🌱','Beginner',      '#4a9eff'],
-    lv_int:  ['💪','Intermediate',  '#4a9eff'],
-    lv_adv:  ['⚡','Advanced',      '#f5c842'],
-    lv_1r:   ['🥉','Class I',       '#f5c842'],
-    lv_cms:  ['🥈','Candidate MS',  '#e8e8e8'],
-    lv_ms:   ['🥇','Master of Sport','#f5c842'],
-    lv_msic: ['🏆','Elite MSIC',    '#e8260b'],
-    lv_next: 'To next level: ',
-    lv_peak: 'Elite — world-class territory 🌍',
-    lv_desc_beg:'Great start — keep pushing!',
-    lv_desc_int:'Above average gym-goer.',
-    lv_desc_adv:'Serious athlete. People notice.',
-    lv_desc_1r:'Official Class I sports rank.',
-    lv_desc_cms:'Candidate Master of Sport — very serious.',
-    lv_desc_ms:'Master of Sport. Years of hard work.',
-    lv_desc_msic:'International class Master of Sport.',
-  }
-};
+const T={ru:{back:'Назад',s0_tag:'Новый рекорд',s0_title:'ТИП РЕКОРДА',s0_sub:'Выбери формат — от этого зависит расчёт уровня',tc_tag_1rm:'Силовой максимум',tc_name_1rm:'ОДНО ПОВТОРЕНИЕ',tc_desc_1rm:'Максимальный вес в одном повторении. Классический силовой рекорд — жим, приседания, становая.',tc_tag_reps:'Многоповторка',tc_name_reps:'НА ПОВТОРЕНИЯ',tc_desc_reps:'Максимальный вес на заданное количество повторений. Например: 10 × 100 кг на жиме лёжа.',s1_tag_1rm:'1RM — Силовой максимум',s1_tag_reps:'Многоповторный рекорд',s1_title_1rm:'РЕЗУЛЬТАТ',s1_title_reps:'РЕЗУЛЬТАТ',s1_sub:'Выбери упражнение и введи свой результат',ex_label:'Упражнение',ex_ph:'Поиск упражнения...',result_label:'Результат',tab_1rm:'1 Повторение (1RM)',tab_reps:'На повторения',bw_label:'Формат выполнения',bw_only:'Только свой вес',bw_plus:'Свой вес + доп.',bw_ext:'Только доп. вес',weight_label:'Вес отягощения',reps_label:'Количество повторений',reps_custom_label:'Своё:',ath_weight_label:'Вес атлета на дату рекорда',ath_weight_hint:'Вес мог отличаться от текущего — укажи вес в день рекорда',league_label:'Лига',league_pro:'👑 Профессионал',league_amateur:'⚡ Любитель',league_pro_hint:'Официальные нормативы. Для соревновательных атлетов.',league_amateur_hint:'Без ограничений. Для любителей и фитнес-атлетов.',freak_btn:'🎪 Не нашёл упражнение? Добавить своё',freak_ph:'Например: отжимания на пальцах, planche...',freak_hint:'Фрик-упражнение — без нормативов, только в разделе «Цирк силы»',date_label:'Дата рекорда',s1_btn:'Далее — Медиа →',badge_1rm:'1RM',badge_reps:'Рекорд',no_ex:'Упражнение',reps_unit:'пов',rep:'пов',kg:'кг',lbs:'фнт',lv_next:'До следующего: ',lv_peak:'Вершина! 🔝',lv_beg:'Начинающий',lv_beg_d:'Хорошее начало пути',lv_nov:'Новичок',lv_nov_d:'Уверенный старт',lv_int:'Любитель',lv_int_d:'Выше среднего',lv_adv:'Продвинутый',lv_adv_d:'Серьёзный уровень',lv_kms:'КМС',lv_kms_d:'Кандидат в мастера спорта',lv_ms:'Мастер спорта',lv_ms_d:'Элитный атлет',lv_msic:'МСМК',lv_msic_d:'Международный класс',s2_tag:'Шаг 3',s2_title:'МЕДИА',s2_sub:'Видео обязательно — без него рекорд нельзя опубликовать',url_label:'Ссылка на видео',url_ph:'TikTok / Instagram / YouTube...',url_hint:'Вставь ссылку из TikTok, Instagram Reels или YouTube Shorts',lp_ok:'✓ Ссылка распознана',comment_label:'Комментарий (необязательно)',comment_ph:'Контекст рекорда, условия, экипировка...',pub_note:'Рекорд будет опубликован в ленте. Сообщество проголосует: Верю / Не верю.',pub_btn:'Опубликовать рекорд →',video_required_hint:'🎥 Добавь видео — без него публикация недоступна',suc_title:'РЕКОРД ЗАФИКСИРОВАН',suc_sub:'Отправлен на верификацию. Голосование начнётся через несколько минут.',suc_ex:'Упражнение',suc_result:'Результат',suc_feed:'Смотреть ленту →',suc_more:'Добавить ещё один'},en:{back:'Back',s0_tag:'New Record',s0_title:'RECORD TYPE',s0_sub:'Pick the format — it determines how your level is calculated',tc_tag_1rm:'One Rep Max',tc_name_1rm:'ONE REPETITION',tc_desc_1rm:'Maximum weight for a single rep. The classic strength record — bench, squat, deadlift.',tc_tag_reps:'Rep Record',tc_name_reps:'FOR REPS',tc_desc_reps:'Maximum weight for a given number of reps. For example: 10 × 225 lbs on bench press.',s1_tag_1rm:'1RM — One Rep Max',s1_tag_reps:'Rep Record',s1_title_1rm:'RESULT',s1_title_reps:'RESULT',s1_sub:'Choose an exercise and enter your result',ex_label:'Exercise',ex_ph:'Search exercise...',result_label:'Result',tab_1rm:'1 Rep Max (1RM)',tab_reps:'For Reps',bw_label:'Format',bw_only:'Bodyweight only',bw_plus:'Bodyweight + extra',bw_ext:'Extra weight only',weight_label:'Load weight',reps_label:'Number of reps',reps_custom_label:'Custom:',ath_weight_label:'Athlete weight on record date',ath_weight_hint:'Weight may differ from current — enter your weight on the day of the record',league_label:'League',league_pro:'👑 Professional',league_amateur:'⚡ Amateur',league_pro_hint:'Official standards. For competitive athletes.',league_amateur_hint:'No restrictions. For fitness and recreational athletes.',freak_btn:"🎪 Can't find your exercise? Add custom",freak_ph:'E.g.: fingertip push-ups, planche...',freak_hint:"Freak exercise — no standards, appears in 'Circus of Strength' section only",date_label:'Date',s1_btn:'Next — Media →',badge_1rm:'1RM',badge_reps:'Record',no_ex:'Exercise',reps_unit:'reps',rep:'rep',kg:'kg',lbs:'lbs',lv_next:'To next level: ',lv_peak:"You're at the top! 🔝",lv_beg:'Beginner',lv_beg_d:'A great start',lv_nov:'Novice',lv_nov_d:'Solid foundation',lv_int:'Intermediate',lv_int_d:'Above average',lv_adv:'Advanced',lv_adv_d:'Serious athlete',lv_kms:'Near-Elite',lv_kms_d:'Candidate Master',lv_ms:'Master',lv_ms_d:'Elite athlete',lv_msic:'International',lv_msic_d:'World class',s2_tag:'Step 3',s2_title:'MEDIA',s2_sub:'Video is required — records without proof cannot be published',url_label:'Video link',url_ph:'TikTok / Instagram / YouTube...',url_hint:'Paste a link from TikTok, Instagram Reels or YouTube Shorts',lp_ok:'✓ Link recognized',comment_label:'Comment (optional)',comment_ph:'Context, conditions, equipment...',pub_note:"The record will be published in the feed. The community votes: Believe / Don't Believe.",pub_btn:'Publish Record →',video_required_hint:'🎥 Add a video link — required to publish',suc_title:'RECORD SAVED',suc_sub:'Submitted for community verification. Voting starts in a few minutes.',suc_ex:'Exercise',suc_result:'Result',suc_feed:'View Feed →',suc_more:'Add Another'}};
+const EXERCISES=[{id:'bench',name:{ru:'Жим лёжа',en:'Bench Press'},cat:{ru:'Грудь',en:'Chest'},bw:false,emoji:'🏋️'},{id:'squat',name:{ru:'Приседания со штангой',en:'Barbell Squat'},cat:{ru:'Ноги',en:'Legs'},bw:false,emoji:'🦵'},{id:'deadlift',name:{ru:'Становая тяга',en:'Deadlift'},cat:{ru:'Спина',en:'Back'},bw:false,emoji:'⚡'},{id:'ohp',name:{ru:'Жим стоя',en:'Overhead Press'},cat:{ru:'Плечи',en:'Shoulders'},bw:false,emoji:'🔝'},{id:'pullup',name:{ru:'Подтягивания',en:'Pull-ups'},cat:{ru:'Спина',en:'Back'},bw:true,emoji:'🔗'},{id:'dip',name:{ru:'Отжимания на брусьях',en:'Dips'},cat:{ru:'Грудь/Трицепс',en:'Chest/Tri'},bw:true,emoji:'🔃'},{id:'pushup',name:{ru:'Отжимания от пола',en:'Push-ups'},cat:{ru:'Грудь',en:'Chest'},bw:true,emoji:'💪'},{id:'row',name:{ru:'Тяга штанги в наклоне',en:'Barbell Row'},cat:{ru:'Спина',en:'Back'},bw:false,emoji:'🔄'},{id:'curl',name:{ru:'Сгибания на бицепс',en:'Bicep Curl'},cat:{ru:'Бицепс',en:'Biceps'},bw:false,emoji:'💪'},{id:'rdl',name:{ru:'Румынская тяга',en:'Romanian Deadlift'},cat:{ru:'Ноги/Спина',en:'Legs/Back'},bw:false,emoji:'🏋️'},{id:'incbench',name:{ru:'Жим на наклонной',en:'Incline Bench'},cat:{ru:'Грудь',en:'Chest'},bw:false,emoji:'📐'},{id:'legpress',name:{ru:'Жим ногами',en:'Leg Press'},cat:{ru:'Ноги',en:'Legs'},bw:false,emoji:'🦵'},{id:'frontpr',name:{ru:'Фронтальные приседания',en:'Front Squat'},cat:{ru:'Ноги',en:'Legs'},bw:false,emoji:'🔆'},{id:'trappull',name:{ru:'Трэп-становая',en:'Trap Bar Deadlift'},cat:{ru:'Ноги/Спина',en:'Legs/Back'},bw:false,emoji:'🔷'},{id:'lsit',name:{ru:'Уголок в висе',en:'L-sit Hold'},cat:{ru:'Кор',en:'Core'},bw:true,emoji:'📐'}];
+const STANDARDS={bench:[40,60,90,120,145,170,200],squat:[50,80,110,150,185,220,260],deadlift:[60,100,140,190,230,275,320],ohp:[25,40,60,80,100,120,145],pullup:[1,5,10,15,20,25,30],dip:[3,8,15,25,35,50,70],pushup:[5,15,30,50,75,100,120],row:[40,60,85,110,135,160,190],curl:[15,25,40,55,70,85,100],rdl:[50,80,110,150,185,220,260],incbench:[30,50,75,100,125,150,180],legpress:[80,120,170,220,270,320,380],frontpr:[40,65,90,120,150,180,215],trappull:[70,110,155,205,250,300,350],lsit:[3,8,15,25,35,45,60]};
+const LV_KEYS=['beg','nov','int','adv','kms','ms','msic'];
+const LV_COLORS=['#888','#4a9eff','#3ddc84','#f5c842','#f5c842','#e8260b','#e8260b'];
+const LV_ICONS=['🏅','🥉','🥈','🥇','⭐','🏆','👑'];
+let lang=(()=>{const s=localStorage.getItem('fitorank_lang');if(s)return s;const ul=(navigator.language||'').toLowerCase();return(ul.startsWith('ru')||ul.startsWith('uk')||ul.startsWith('be')||ul.startsWith('kk'))?'ru':'en';})();
+let selectedEx=null,recordType='1rm',subType='1rm',bwMode='bw',unit='kg',athUnit='kg',reps=10,customRep=false,league='pro',isFreak=false,freakName='';
 
-// ══════════════════════════════
-//  EXERCISES
-// ══════════════════════════════
-// bodyweight:true = показывать bw-toggle
-// levels = [beg,int,adv,1r,cms,ms,msic] в кг для мужчин (упрощённо)
-const EXERCISES = {
-  ru:[
-    {name:'Жим лёжа',         cat:'Грудь',    icon:'🏋️', bw:false, lv:[40,70,100,120,140,165,185]},
-    {name:'Становая тяга',    cat:'Спина',    icon:'💪', bw:false, lv:[60,100,140,170,200,230,270]},
-    {name:'Присед со штангой',cat:'Ноги',     icon:'🦵', bw:false, lv:[50,90,130,155,180,210,250]},
-    {name:'Жим стоя (ОХП)',   cat:'Плечи',   icon:'🏋️', bw:false, lv:[25,45,65,80,100,120,140]},
-    {name:'Подтягивания',     cat:'Спина',    icon:'💪', bw:true,  lv:[1,5,10,15,20,25,30]},
-    {name:'Отжимания',        cat:'Грудь',    icon:'💪', bw:true,  lv:[10,20,35,50,70,90,120]},
-    {name:'Тяга в наклоне',   cat:'Спина',    icon:'💪', bw:false, lv:[40,65,90,110,130,155,180]},
-    {name:'Румынская тяга',   cat:'Ноги',     icon:'🦵', bw:false, lv:[50,80,120,145,170,200,235]},
-    {name:'Жим ногами',       cat:'Ноги',     icon:'🦵', bw:false, lv:[60,110,160,200,240,290,350]},
-    {name:'Сгибание рук',     cat:'Бицепс',   icon:'💪', bw:false, lv:[20,35,50,65,80,95,110]},
-    {name:'Французский жим',  cat:'Трицепс',  icon:'💪', bw:false, lv:[15,30,45,60,75,90,105]},
-    {name:'Рывок',            cat:'Тяжёлая',  icon:'🏆', bw:false, lv:[30,55,80,100,120,145,165]},
-    {name:'Толчок',           cat:'Тяжёлая',  icon:'🏆', bw:false, lv:[40,70,100,125,150,175,200]},
-    {name:'Фронтальный присед',cat:'Ноги',    icon:'🦵', bw:false, lv:[40,70,100,125,150,175,205]},
-    {name:'Брусья',           cat:'Грудь',    icon:'💪', bw:true,  lv:[1,5,10,15,20,25,35]},
-  ],
-  en:[
-    {name:'Bench Press',       cat:'Chest',    icon:'🏋️', bw:false, lv:[40,70,100,120,140,165,185]},
-    {name:'Deadlift',          cat:'Back',     icon:'💪', bw:false, lv:[60,100,140,170,200,230,270]},
-    {name:'Back Squat',        cat:'Legs',     icon:'🦵', bw:false, lv:[50,90,130,155,180,210,250]},
-    {name:'Overhead Press',    cat:'Shoulders',icon:'🏋️', bw:false, lv:[25,45,65,80,100,120,140]},
-    {name:'Pull-ups',          cat:'Back',     icon:'💪', bw:true,  lv:[1,5,10,15,20,25,30]},
-    {name:'Push-ups',          cat:'Chest',    icon:'💪', bw:true,  lv:[10,20,35,50,70,90,120]},
-    {name:'Barbell Row',       cat:'Back',     icon:'💪', bw:false, lv:[40,65,90,110,130,155,180]},
-    {name:'Romanian Deadlift', cat:'Legs',     icon:'🦵', bw:false, lv:[50,80,120,145,170,200,235]},
-    {name:'Leg Press',         cat:'Legs',     icon:'🦵', bw:false, lv:[60,110,160,200,240,290,350]},
-    {name:'Bicep Curl',        cat:'Biceps',   icon:'💪', bw:false, lv:[20,35,50,65,80,95,110]},
-    {name:'Tricep Extension',  cat:'Triceps',  icon:'💪', bw:false, lv:[15,30,45,60,75,90,105]},
-    {name:'Snatch',            cat:'Weightlift',icon:'🏆',bw:false, lv:[30,55,80,100,120,145,165]},
-    {name:'Clean & Jerk',      cat:'Weightlift',icon:'🏆',bw:false, lv:[40,70,100,125,150,175,200]},
-    {name:'Front Squat',       cat:'Legs',     icon:'🦵', bw:false, lv:[40,70,100,125,150,175,205]},
-    {name:'Dips',              cat:'Chest',    icon:'💪', bw:true,  lv:[1,5,10,15,20,25,35]},
-  ]
-};
-const LV_KEYS = ['lv_beg','lv_int','lv_adv','lv_1r','lv_cms','lv_ms','lv_msic'];
-const LV_DESC = ['lv_desc_beg','lv_desc_int','lv_desc_adv','lv_desc_1r','lv_desc_cms','lv_desc_ms','lv_desc_msic'];
-const LV_BAR_COLORS = ['#4a9eff','#4a9eff','#f5c842','#f5c842','#c0c0c0','#f5c842','#e8260b'];
-
-// ══════════════════════════════
-//  STATE
-// ══════════════════════════════
-let lang = detectLang();
-let unit = 'kg';
-let recordType = '1rm'; // '1rm' | 'reps'
-let bwMode = 'bw';      // 'bw' | 'bw+ext' | 'ext'
-let reps = 1;
-let selectedEx = null;
-
-function detectLang(){
-  const s=localStorage.getItem('fitorank_lang');
-  if(s==='ru'||s==='en') return s;
-  const bl=(navigator.language||'ru').toLowerCase();
-  return ['ru','uk','kk','be','uz','hy','az','ka','tg','tk','ky'].some(l=>bl.startsWith(l))?'ru':'en';
-}
-
-// ══════════════════════════════
-//  LANG
-// ══════════════════════════════
-function setLang(l){
-  lang=l; localStorage.setItem('fitorank_lang',l);
-  document.getElementById('btn-ru').classList.toggle('active',l==='ru');
-  document.getElementById('btn-en').classList.toggle('active',l==='en');
-  applyLang();
-}
-function applyLang(){
-  const t=T[lang];
-  document.querySelectorAll('[data-t]').forEach(el=>{
-    const v=t[el.dataset.t]; if(v!==undefined) el.textContent=v;
-  });
-  document.querySelectorAll('[data-t-ph]').forEach(el=>{
-    const v=t[el.dataset.tPh]; if(v!==undefined) el.placeholder=v;
-  });
-  document.getElementById('btnKg').textContent  = lang==='ru'?'КГ':'KG';
-  document.getElementById('btnLbs').textContent = 'LBS';
-  updatePreview(); updateLevel();
-}
-
-// ══════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════
-function go(id){
-  const cur=document.querySelector('.screen.active');
-  if(cur){cur.classList.add('exit');cur.classList.remove('active');setTimeout(()=>cur.classList.remove('exit'),320);}
-  document.getElementById(id).classList.add('active');
-  // scroll to top
-  setTimeout(()=>{ const el=document.getElementById(id); if(el) el.scrollTop=0; },50);
-}
-function goFeed(){ window.location.href='fitorank-feed-mobile.html'; }
-function goStep2(){
-  updatePreview();
-  syncStep2Preview();
-  go('s-step2');
-}
-
-// ══════════════════════════════
-//  EXERCISE SEARCH
-// ══════════════════════════════
-function searchEx(q){
-  if(selectedEx) return;
-  const list=EXERCISES[lang]||EXERCISES.ru;
-  const res=document.getElementById('exResults');
-  const term=q.trim().toLowerCase();
-  if(!term){res.classList.remove('show');res.innerHTML='';return;}
-  const filtered=list.filter(e=>e.name.toLowerCase().includes(term)||e.cat.toLowerCase().includes(term));
-  if(!filtered.length){res.classList.remove('show');res.innerHTML='';return;}
-  res.innerHTML=filtered.slice(0,6).map((e,i)=>
-    `<div class="ex-item" onclick="selectEx(${list.indexOf(e)})">
-      <div><div class="ex-item-name">${e.icon} ${e.name}</div><div class="ex-item-cat">${e.cat}</div></div>
-      <span style="color:var(--gray-light)">›</span>
-    </div>`
-  ).join('');
-  res.classList.add('show');
-}
-
-function selectEx(idx){
-  const list=EXERCISES[lang]||EXERCISES.ru;
-  selectedEx=list[idx];
-  document.getElementById('exInput').value='';
-  document.getElementById('exResults').classList.remove('show');
-  document.getElementById('exResults').innerHTML='';
-  document.getElementById('exSelName').textContent=selectedEx.icon+' '+selectedEx.name;
-  document.getElementById('exSelCat').textContent=selectedEx.cat;
-  document.getElementById('exSelected').classList.add('show');
-  document.getElementById('pcMedia').textContent=selectedEx.icon;
-  document.getElementById('pcMedia2').textContent=selectedEx.icon;
-
-  // Show/hide bodyweight toggle
-  if(selectedEx.bw){
-    document.getElementById('bwToggle').classList.add('show');
-    setBWMode(); // refresh weight field visibility
-  } else {
-    document.getElementById('bwToggle').classList.remove('show');
-    document.getElementById('weightField').style.display='';
-  }
-  updatePreview(); updateLevel(); checkStep1();
-}
-
-function clearEx(){
-  selectedEx=null;
-  document.getElementById('exSelected').classList.remove('show');
-  document.getElementById('exInput').value='';
-  document.getElementById('bwToggle').classList.remove('show');
-  document.getElementById('weightField').style.display='';
-  document.getElementById('pcMedia').textContent='🏋️';
-  document.getElementById('pcMedia2').textContent='🏋️';
-  document.getElementById('levelBadge').classList.remove('show');
-  updatePreview(); checkStep1();
-}
-
-// ══════════════════════════════
-//  RECORD TYPE
-// ══════════════════════════════
-function setType(type){
-  recordType=type;
-  document.getElementById('tab1rm').classList.toggle('active',  type==='1rm');
-  document.getElementById('tabReps').classList.toggle('active', type==='reps');
-
-  const quick=document.getElementById('repsQuick');
-  const custom=document.getElementById('repsCustom');
-
-  if(type==='1rm'){
-    quick.style.display=''; custom.classList.remove('show');
-    reps=1;
-    quick.querySelectorAll('.rep-chip').forEach(c=>c.classList.remove('active'));
-    quick.querySelector('[onclick*=",1)"]').classList.add('active');
-    // weight field always visible for 1rm
-    if(selectedEx&&selectedEx.bw) setBWMode();
-    else document.getElementById('weightField').style.display='';
-  } else {
-    quick.style.display='none'; custom.classList.add('show');
-    reps=parseInt(document.getElementById('repsInput').value)||10;
-    // For bw exercises in reps mode: if bw-only, hide weight
-    if(selectedEx&&selectedEx.bw) setBWMode();
-  }
-  updateLevel(); updatePreview(); checkStep1();
-}
-
-// ══════════════════════════════
-//  BODYWEIGHT
-// ══════════════════════════════
-function setBW(chip, mode){
-  bwMode=mode;
-  document.querySelectorAll('.bw-chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  setBWMode();
-}
-function setBWMode(){
-  const t=T[lang];
-  const wf=document.getElementById('weightField');
-  const wl=document.getElementById('weightLabel');
-  if(!selectedEx||!selectedEx.bw){ wf.style.display=''; return; }
-  if(bwMode==='bw'){
-    // no weight field needed
-    wf.style.display='none';
-  } else if(bwMode==='bw+ext'){
-    wf.style.display='';
-    wl.textContent=t.weight_ext_label;
-    document.getElementById('weightInput').placeholder='0';
-  } else {
-    wf.style.display='';
-    wl.textContent=t.weight_ext_label;
-    document.getElementById('weightInput').placeholder='0';
-  }
-  updateLevel(); updatePreview(); checkStep1();
-}
-
-// ══════════════════════════════
-//  UNIT
-// ══════════════════════════════
-function setUnit(u){
-  unit=u;
-  document.getElementById('btnKg').classList.toggle('active',  u==='kg');
-  document.getElementById('btnLbs').classList.toggle('active', u==='lbs');
-  updateLevel(); updatePreview();
-}
-
-// ══════════════════════════════
-//  REPS (1RM quick chips)
-// ══════════════════════════════
-function setRep(chip,n){
-  reps=n;
-  document.querySelectorAll('.rep-chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  updatePreview(); checkStep1();
-}
-function onRepsInput(){
-  reps=parseInt(document.getElementById('repsInput').value)||1;
-  updatePreview(); checkStep1();
-}
-
-// ══════════════════════════════
-//  WEIGHT INPUT
-// ══════════════════════════════
-function onWeightInput(){ updateLevel(); updatePreview(); checkStep1(); }
-
-// ══════════════════════════════
-//  LEVEL CALCULATION
-// ══════════════════════════════
-function updateLevel(){
-  const badge=document.getElementById('levelBadge');
-  if(!selectedEx) { badge.classList.remove('show'); return; }
-
-  const rawW = parseFloat(document.getElementById('weightInput').value);
-  let value;
-
-  if(selectedEx.bw){
-    if(bwMode==='bw'){
-      // for bw exercises use reps as the metric
-      value = recordType==='reps' ? reps : reps; // reps always
-    } else {
-      if(isNaN(rawW)||rawW<=0){ badge.classList.remove('show'); return; }
-      value = unit==='lbs' ? rawW*0.453592 : rawW;
-    }
-  } else {
-    if(isNaN(rawW)||rawW<=0){ badge.classList.remove('show'); return; }
-    value = unit==='lbs' ? rawW*0.453592 : rawW;
-  }
-
-  const lv=selectedEx.lv;
-  const t=T[lang];
-  let idx=0;
-  for(let i=0;i<lv.length;i++){ if(value>=lv[i]) idx=i; }
-
-  const [icon,name,color]=t[LV_KEYS[idx]];
-  const desc=t[LV_DESC[idx]];
-
-  // progress within current level
-  let pct=100, nextStr='';
-  if(idx<lv.length-1){
-    const lo=lv[idx], hi=lv[idx+1];
-    pct=Math.min(99,Math.round(((value-lo)/(hi-lo))*100));
-    const diff=Math.round((hi-value)*10)/10;
-    nextStr=t.lv_next+(diff>0?'+'+diff+' '+(unit==='lbs'?t.lbs:t.kg):'');
-  } else {
-    nextStr=t.lv_peak;
-  }
-
-  document.getElementById('lvlIcon').textContent=icon;
-  document.getElementById('lvlName').textContent=name;
-  document.getElementById('lvlDesc').textContent=desc;
-  document.getElementById('lvlBar').style.cssText=`width:${pct}%;background:${color};`;
-  document.getElementById('lvlNext').textContent=nextStr;
-  badge.style.cssText=`border:1px solid ${color}33;background:${color}0d;`;
-  badge.classList.add('show');
-}
-
-// ══════════════════════════════
-//  PREVIEW
-// ══════════════════════════════
-function updatePreview(){
-  const t=T[lang];
-  const w=document.getElementById('weightInput').value||'—';
-  const d=document.getElementById('dateInput').value;
-  const unitLabel=t[unit]||unit;
-  const exName=selectedEx?selectedEx.name:t.no_ex;
-  const repsStr=recordType==='reps'
-    ?(reps+' '+t.reps_unit)
-    :(reps===1?'1 '+t.rep:reps+' '+t.reps_unit);
-
-  let weightStr, unitStr;
-  if(selectedEx&&selectedEx.bw&&bwMode==='bw'){
-    weightStr=repsStr; unitStr='';
-  } else {
-    weightStr=w; unitStr=' '+unitLabel;
-  }
-
-  document.getElementById('pcExercise').textContent=exName;
-  document.getElementById('pcWeight').textContent=weightStr;
-  document.getElementById('pcUnit').textContent=unitStr;
-  document.getElementById('pcMeta').textContent=(selectedEx&&selectedEx.bw&&bwMode==='bw'?'':(repsStr+' · '))+formatDate(d);
-}
-
-function syncStep2Preview(){
-  ['pcExercise','pcWeight','pcUnit','pcMeta'].forEach(id=>{
-    document.getElementById(id+'2').textContent=document.getElementById(id).textContent||'';
-  });
-}
-
-function formatDate(iso){
-  if(!iso) return '—';
-  const[y,m,d]=iso.split('-');
-  return d+'.'+m+'.'+y;
-}
-
-// ══════════════════════════════
-//  VALIDATION
-// ══════════════════════════════
-function checkStep1(){
-  const hasEx=!!selectedEx;
-  const bwOnly=selectedEx&&selectedEx.bw&&bwMode==='bw';
-  const hasW=bwOnly||!!document.getElementById('weightInput').value;
-  const hasD=!!document.getElementById('dateInput').value;
-  const hasReps=recordType==='1rm'||!!(document.getElementById('repsInput').value);
-  document.getElementById('s1Btn').disabled=!(hasEx&&hasW&&hasD&&hasReps);
-}
-
-// ══════════════════════════════
-//  URL PARSING (Step 2)
-// ══════════════════════════════
-function handleUrl(val){
-  val=val.trim();
-  const preview=document.getElementById('linkPreview');
-  const icon=document.getElementById('urlIcon');
-  if(val.includes('tiktok.com')){
-    icon.textContent='🎵';
-    document.getElementById('lpPlatform').textContent='TikTok';
-    document.getElementById('lpThumb').textContent='▶';
-    document.getElementById('lpTitle').textContent=lang==='ru'?'Видео из TikTok':'TikTok video';
-    document.getElementById('lpHandle').textContent=extractHandle(val,'tiktok');
-    preview.classList.add('show');
-  } else if(val.includes('instagram.com')||val.includes('instagr.am')){
-    icon.textContent='📸';
-    document.getElementById('lpPlatform').textContent='Instagram';
-    document.getElementById('lpThumb').textContent=val.includes('/reel')?'▶':'📷';
-    document.getElementById('lpTitle').textContent=lang==='ru'?'Публикация из Instagram':'Instagram post';
-    document.getElementById('lpHandle').textContent=extractHandle(val,'instagram');
-    preview.classList.add('show');
-  } else if(val.includes('youtube.com')||val.includes('youtu.be')){
-    icon.textContent='▶';
-    document.getElementById('lpPlatform').textContent='YouTube';
-    document.getElementById('lpThumb').textContent='▶';
-    document.getElementById('lpTitle').textContent=lang==='ru'?'Видео YouTube':'YouTube video';
-    document.getElementById('lpHandle').textContent='';
-    preview.classList.add('show');
-  } else {
-    icon.textContent='🔗';
-    preview.classList.remove('show');
-  }
-}
-function extractHandle(url,platform){
-  try{
-    const parts=new URL(url).pathname.split('/').filter(Boolean);
-    if(parts[0]) return '@'+parts[0].replace('@','');
-  }catch(e){}
-  return '';
-}
-
-// ══════════════════════════════
-//  PUBLISH
-// ══════════════════════════════
-function publish(){
-  const t=T[lang];
-  const w=document.getElementById('weightInput').value;
-  const bwOnly=selectedEx&&selectedEx.bw&&bwMode==='bw';
-  document.getElementById('scEx').textContent=selectedEx?selectedEx.name:'—';
-  document.getElementById('scW').textContent=bwOnly?(reps+' '+t.reps_unit):(w+' '+t[unit]);
-  document.getElementById('scMeta').textContent=formatDate(document.getElementById('dateInput').value);
-  go('s-success');
-}
-
-function resetForm(){
-  selectedEx=null;
-  document.getElementById('exInput').value='';
-  document.getElementById('exSelected').classList.remove('show');
-  document.getElementById('bwToggle').classList.remove('show');
-  document.getElementById('weightInput').value='';
-  document.getElementById('weightField').style.display='';
-  document.getElementById('repsInput').value='10';
-  document.getElementById('urlInput').value='';
-  document.getElementById('commentInput').value='';
-  document.getElementById('charCount').textContent='0';
-  document.getElementById('linkPreview').classList.remove('show');
-  document.getElementById('levelBadge').classList.remove('show');
-  document.getElementById('pcMedia').textContent='🏋️';
-  document.getElementById('pcMedia2').textContent='🏋️';
-  recordType='1rm'; bwMode='bw'; reps=1;
-  setType('1rm');
-  updatePreview();
-}
-
-// ══════════════════════════════
-//  INIT
-// ══════════════════════════════
-// Set today as default date, block future
-const today=new Date();
-const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-document.getElementById('dateInput').value=todayStr;
-document.getElementById('dateInput').max=todayStr;
-
-setLang(lang);
-go('s-step1');
+function setLeague(l){league=l;document.getElementById('leaguePro').classList.toggle('active',l==='pro');document.getElementById('leagueAm').classList.toggle('active',l==='amateur');const t=T[lang];document.getElementById('leagueHint').textContent=l==='pro'?t.league_pro_hint:t.league_amateur_hint;}
+function setAthUnit(u){athUnit=u;document.getElementById('athUnitKg').classList.toggle('active',u==='kg');document.getElementById('athUnitLbs').classList.toggle('active',u==='lbs');}
+function toggleFreak(){isFreak=!isFreak;const btn=document.getElementById('freakBtn');const wrap=document.getElementById('freakWrap');const searchWrap=document.querySelector('.ex-search-wrap');btn.classList.toggle('active',isFreak);wrap.style.display=isFreak?'flex':'none';if(isFreak){clearEx();searchWrap.style.display='none';document.getElementById('exSelected').classList.remove('show');document.getElementById('freakInput').focus();}else{searchWrap.style.display='';freakName='';document.getElementById('freakInput').value='';checkStep1();}}
+function onFreakInput(){freakName=document.getElementById('freakInput').value.trim();checkStep1();}
+function checkVideo(){const url=document.getElementById('urlInput').value.trim();const hasVideo=url.includes('tiktok.com')||url.includes('instagram.com')||url.includes('instagr.am')||url.includes('youtube.com')||url.includes('youtu.be');const btn=document.getElementById('pubBtn');const hint=document.getElementById('videoRequiredHint');btn.disabled=!hasVideo;hint.classList.toggle('error',!hasVideo&&url.length>0);return hasVideo;}
+function setLang(l){lang=l;localStorage.setItem('fitorank_lang',l);document.getElementById('btn-ru').classList.toggle('active',l==='ru');document.getElementById('btn-en').classList.toggle('active',l==='en');const t=T[l];document.querySelectorAll('[data-t]').forEach(el=>{const k=el.dataset.t;if(t[k]!==undefined)el.textContent=t[k];});document.querySelectorAll('[data-t-ph]').forEach(el=>{const k=el.dataset.tPh;if(t[k]!==undefined)el.placeholder=t[k];});updateS1Header();updatePcTypeBadge();updatePreview();}
+function go(id){document.querySelectorAll('.screen').forEach(s=>{if(s.id===id){s.classList.remove('exit');s.classList.add('active');}else{s.classList.remove('active');s.classList.add('exit');setTimeout(()=>s.classList.remove('exit'),350);}});}
+function goFeed(){window.location.href='fitorank-feed-mobile.html';}
+function chooseType(type){recordType=type;subType=type;updateS1Header();updateRmTabs();updateRepsSection();updatePreview();go('s-step1');}
+function goStep2(){syncStep2Preview();go('s-step2');}
+function updateS1Header(){const t=T[lang];document.getElementById('s1_tag').textContent=recordType==='1rm'?t.s1_tag_1rm:t.s1_tag_reps;document.getElementById('s1_title').textContent=recordType==='1rm'?t.s1_title_1rm:t.s1_title_reps;}
+function searchEx(q){const results=document.getElementById('exResults');if(selectedEx){results.classList.remove('show');return;}q=q.trim().toLowerCase();const list=q?EXERCISES.filter(e=>e.name[lang].toLowerCase().includes(q)||e.cat[lang].toLowerCase().includes(q)):EXERCISES;if(!list.length){results.classList.remove('show');return;}results.innerHTML=list.slice(0,8).map(e=>`<div class="ex-item" onclick="selectEx('${e.id}')"><div><div class="ex-item-name">${e.emoji} ${e.name[lang]}</div><div class="ex-item-cat">${e.cat[lang]}</div></div>${e.bw?'<span style="font-size:.5rem;color:var(--gold);font-weight:700;letter-spacing:.1em;">BW</span>':''}</div>`).join('');results.classList.add('show');}
+function selectEx(id){selectedEx=EXERCISES.find(e=>e.id===id);document.getElementById('exInput').value='';document.getElementById('exResults').classList.remove('show');document.getElementById('exSelName').textContent=selectedEx.name[lang];document.getElementById('exSelCat').textContent=selectedEx.cat[lang];document.getElementById('exSelected').classList.add('show');document.getElementById('pcMedia').textContent=selectedEx.emoji;document.getElementById('pcMedia2').textContent=selectedEx.emoji;if(selectedEx.bw){document.getElementById('bwToggle').classList.add('show');applyBWMode(bwMode);}else{document.getElementById('bwToggle').classList.remove('show');document.getElementById('weightField').style.display='';}onWeightInput();updatePreview();checkStep1();}
+function clearEx(){selectedEx=null;document.getElementById('exInput').value='';document.getElementById('exSelected').classList.remove('show');document.getElementById('bwToggle').classList.remove('show');document.getElementById('weightField').style.display='';document.getElementById('levelBadge').classList.remove('show');document.getElementById('pcMedia').textContent='🏋️';document.getElementById('pcMedia2').textContent='🏋️';updatePreview();checkStep1();}
+function setSubType(t){subType=t;updateRmTabs();updateRepsSection();onWeightInput();updatePreview();checkStep1();}
+function updateRmTabs(){document.getElementById('rmTab1rm').classList.toggle('active',subType==='1rm');document.getElementById('rmTabReps').classList.toggle('active',subType==='reps');}
+function updateRepsSection(){document.getElementById('repsSection').style.display=(subType==='reps')?'':'none';}
+function setBW(btn,mode){document.querySelectorAll('.bw-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyBWMode(mode);}
+function applyBWMode(mode){bwMode=mode;document.getElementById('weightField').style.display=(mode==='bw')?'none':'';onWeightInput();updatePreview();checkStep1();}
+function setUnit(u){unit=u;document.getElementById('unitKg').classList.toggle('active',u==='kg');document.getElementById('unitLbs').classList.toggle('active',u==='lbs');onWeightInput();}
+function onWeightInput(){updatePreview();calcLevel();checkStep1();}
+function setRep(btn,n){reps=n;customRep=false;document.querySelectorAll('.rep-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('repsCustomRow').classList.remove('show');document.getElementById('repsInput').value='';updatePreview();calcLevel();checkStep1();}
+function toggleCustomRep(btn){customRep=!customRep;document.querySelectorAll('.rep-chip').forEach(b=>b.classList.remove('active'));btn.classList.toggle('active',customRep);document.getElementById('repsCustomRow').classList.toggle('show',customRep);if(customRep)document.getElementById('repsInput').focus();}
+function onRepsInput(){const v=parseInt(document.getElementById('repsInput').value)||0;if(v>0)reps=v;updatePreview();calcLevel();checkStep1();}
+function calcLevel(){const badge=document.getElementById('levelBadge');const t=T[lang];if(!selectedEx){badge.classList.remove('show');return;}const wRaw=parseFloat(document.getElementById('weightInput').value);let value;if(selectedEx.bw){if(bwMode==='bw'){value=reps;}else{if(isNaN(wRaw)||wRaw<=0){badge.classList.remove('show');return;}value=unit==='lbs'?wRaw*0.453592:wRaw;}}else{if(isNaN(wRaw)||wRaw<=0){badge.classList.remove('show');return;}value=unit==='lbs'?wRaw*0.453592:wRaw;if(subType==='reps'&&reps>1)value=value*(1+reps/30);}const std=STANDARDS[selectedEx.id];if(!std){badge.classList.remove('show');return;}let lvlIdx=0;for(let i=std.length-1;i>=0;i--){if(value>=std[i]){lvlIdx=i;break;}}const key=LV_KEYS[lvlIdx];const color=LV_COLORS[lvlIdx];const icon=LV_ICONS[lvlIdx];const name=t['lv_'+key];const desc=t['lv_'+key+'_d'];let pct=0,nextStr='';if(lvlIdx<std.length-1){const lo=std[lvlIdx],hi=std[lvlIdx+1];pct=Math.min(99,Math.round(((value-lo)/(hi-lo))*100));const diff=Math.round((hi-value)*10)/10;const unitLbl=selectedEx.bw&&bwMode==='bw'?(lang==='ru'?'пов.':'reps'):(unit==='lbs'?t.lbs:t.kg);nextStr=t.lv_next+(diff>0?'+'+diff+' '+unitLbl:'');}else{nextStr=t.lv_peak;}document.getElementById('lvlIcon').textContent=icon;document.getElementById('lvlName').textContent=name;document.getElementById('lvlDesc').textContent=desc;document.getElementById('lvlBar').style.cssText='width:'+pct+'%;background:'+color+';';document.getElementById('lvlNext').textContent=nextStr;badge.style.cssText='border:1px solid '+color+'33;background:'+color+'0d;';badge.classList.add('show');}
+function updatePreview(){const t=T[lang];const w=document.getElementById('weightInput').value||'—';const d=document.getElementById('dateInput').value;const unitLbl=unit==='lbs'?t.lbs:t.kg;const exName=selectedEx?selectedEx.name[lang]:t.no_ex;const repsStr=reps+' '+(reps===1?t.rep:t.reps_unit);let weightStr,unitStr,metaStr;if(selectedEx&&selectedEx.bw&&bwMode==='bw'){weightStr=repsStr;unitStr='';metaStr=formatDate(d);}else{weightStr=w==='—'?'—':w;unitStr=' '+unitLbl;metaStr=(subType==='reps'?repsStr+' · ':'')+formatDate(d);}document.getElementById('pcExercise').textContent=exName;document.getElementById('pcWeight').textContent=weightStr;document.getElementById('pcUnit').textContent=unitStr;document.getElementById('pcMeta').textContent=metaStr;updatePcTypeBadge();}
+function updatePcTypeBadge(){const t=T[lang];const is1rm=(subType==='1rm');const lbl=is1rm?t.badge_1rm:t.badge_reps;const cls='pc-type-badge '+(is1rm?'one-rm':'multi-rep');['pcTypeBadge','pcTypeBadge2'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=lbl;el.className=cls;}});}
+function syncStep2Preview(){['pcExercise','pcWeight','pcUnit','pcMeta'].forEach(id=>{const el2=document.getElementById(id+'2');if(el2)el2.textContent=document.getElementById(id).textContent||'';});}
+function formatDate(iso){if(!iso)return '—';const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;}
+function checkStep1(){const hasEx=isFreak?(freakName.length>0):!!selectedEx;const bwOnly=selectedEx&&selectedEx.bw&&bwMode==='bw';const hasW=isFreak||bwOnly||!!document.getElementById('weightInput').value;const hasD=!!document.getElementById('dateInput').value;const hasAthW=!!document.getElementById('athWeightInput').value;document.getElementById('s1Btn').disabled=!(hasEx&&hasW&&hasD&&hasAthW);}
+function handleUrl(val){val=val.trim();const preview=document.getElementById('linkPreview');const icon=document.getElementById('urlIcon');if(val.includes('tiktok.com')){icon.textContent='🎵';document.getElementById('lpPlatform').textContent='TikTok';document.getElementById('lpThumb').textContent='▶';document.getElementById('lpTitle').textContent=lang==='ru'?'Видео из TikTok':'TikTok video';document.getElementById('lpHandle').textContent=extractHandle(val);preview.classList.add('show');}else if(val.includes('instagram.com')||val.includes('instagr.am')){icon.textContent='📸';document.getElementById('lpPlatform').textContent='Instagram';document.getElementById('lpThumb').textContent=val.includes('/reel')?'▶':'📷';document.getElementById('lpTitle').textContent=lang==='ru'?'Публикация из Instagram':'Instagram post';document.getElementById('lpHandle').textContent=extractHandle(val);preview.classList.add('show');}else if(val.includes('youtube.com')||val.includes('youtu.be')){icon.textContent='▶';document.getElementById('lpPlatform').textContent='YouTube';document.getElementById('lpThumb').textContent='▶';document.getElementById('lpTitle').textContent=lang==='ru'?'Видео YouTube':'YouTube video';document.getElementById('lpHandle').textContent='';preview.classList.add('show');}else{icon.textContent='🔗';preview.classList.remove('show');}checkVideo();}
+function extractHandle(url){try{const p=new URL(url).pathname.split('/').filter(Boolean);if(p[0])return '@'+p[0].replace('@','');}catch(e){}return '';}
+function checkVideo(){const url=document.getElementById('urlInput').value.trim();const hasVideo=url.includes('tiktok.com')||url.includes('instagram.com')||url.includes('instagr.am')||url.includes('youtube.com')||url.includes('youtu.be');const btn=document.getElementById('pubBtn');const hint=document.getElementById('videoRequiredHint');btn.disabled=!hasVideo;hint.classList.toggle('error',!hasVideo&&url.length>0);return hasVideo;}
+function publish(){if(!checkVideo())return;const t=T[lang];const w=document.getElementById('weightInput').value;const bwOnly=selectedEx&&selectedEx.bw&&bwMode==='bw';const exName=isFreak?('🎪 '+freakName):(selectedEx?selectedEx.name[lang]:'—');document.getElementById('scEx').textContent=exName;document.getElementById('scW').textContent=bwOnly?(reps+' '+(reps===1?t.rep:t.reps_unit)):(w+' '+(unit==='lbs'?t.lbs:t.kg));document.getElementById('scMeta').textContent=formatDate(document.getElementById('dateInput').value);go('s-success');}
+function addAnother(){resetForm();go('s-step0');}
+function resetForm(){selectedEx=null;isFreak=false;freakName='';league='pro';document.getElementById('exInput').value='';document.getElementById('exSelected').classList.remove('show');document.getElementById('bwToggle').classList.remove('show');document.getElementById('weightInput').value='';document.getElementById('athWeightInput').value='';document.getElementById('weightField').style.display='';document.getElementById('repsInput').value='';document.getElementById('repsCustomRow').classList.remove('show');document.getElementById('urlInput').value='';document.getElementById('commentInput').value='';document.getElementById('charCount').textContent='0';document.getElementById('linkPreview').classList.remove('show');document.getElementById('levelBadge').classList.remove('show');document.getElementById('pcMedia').textContent='🏋️';document.getElementById('pcMedia2').textContent='🏋️';document.getElementById('freakBtn').classList.remove('active');document.getElementById('freakWrap').style.display='none';document.getElementById('freakInput').value='';document.querySelector('.ex-search-wrap').style.display='';setLeague('pro');recordType='1rm';subType='1rm';bwMode='bw';reps=10;customRep=false;updateRmTabs();updateRepsSection();updatePreview();checkStep1();checkVideo();}
+const today=new Date();const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');document.getElementById('dateInput').value=todayStr;document.getElementById('dateInput').max=todayStr;
+setLang(lang);setLeague('pro');checkVideo();go('s-step0');
 </script>
 </body>
 </html>
