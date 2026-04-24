@@ -343,7 +343,12 @@ body::before {
         <div class="field-label" data-t="email_label"></div>
         <input class="field-input" type="email" id="emailInput" inputmode="email" autocomplete="email">
       </div>
-      <button class="btn-p no-clip" data-t="email_btn" onclick="authWithEmail()"></button>
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label" data-t="password_label"></div>
+        <input class="field-input" type="password" id="passwordInput" autocomplete="new-password" placeholder="••••••••">
+      </div>
+      <div class="field-error" id="authError" style="display:none;color:var(--red);font-size:.62rem;margin-top:6px;"></div>
+      <button class="btn-p no-clip" data-t="email_btn" onclick="authWithEmail()" id="emailBtn"></button>
     </div>
     <div class="auth-footer">
       <div class="legal-text"><span data-t="legal"></span></div>
@@ -436,6 +441,7 @@ const T = {
     vk:            'Продолжить с VK',
     or:            'или',
     email_label:   'Email',
+    password_label:'Пароль (минимум 6 символов)',
     email_ph:      'твой@email.com',
     email_btn:     'Продолжить с email →',
     legal:         'Регистрируясь, ты принимаешь Условия использования и Политику конфиденциальности',
@@ -490,6 +496,7 @@ const T = {
     vk:            'Continue with VK',
     or:            'or',
     email_label:   'Email',
+    password_label:'Password (at least 6 characters)',
     email_ph:      'your@email.com',
     email_btn:     'Continue with email →',
     legal:         'By signing up you agree to our Terms of Service and Privacy Policy',
@@ -599,21 +606,72 @@ function closeGate() { go(prevScreen || 's-entry'); }
 // ═══════════════════════════════
 // AUTH
 // ═══════════════════════════════
-function authWith(provider) {
-  // Production: OAuth redirect
-  localStorage.setItem('fitorank_user', 'true');
-  go('s-dob');
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
-function authWithEmail() {
-  const email = document.getElementById('emailInput').value.trim();
-  const input = document.getElementById('emailInput');
+function clearAuthError() {
+  const el = document.getElementById('authError');
+  el.style.display = 'none';
+  el.textContent = '';
+}
+
+function setLoading(isLoading) {
+  const btn = document.getElementById('emailBtn');
+  if (!btn) return;
+  btn.disabled = isLoading;
+  btn.textContent = isLoading ? '...' : (T[lang].email_btn || 'Продолжить');
+}
+
+function authWith(provider) {
+  // OAuth — заглушка до настройки провайдеров в Supabase
+  showAuthError('OAuth будет доступен после настройки. Используй email.');
+}
+
+async function authWithEmail() {
+  clearAuthError();
+  const email    = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+
   if (!email || !email.includes('@')) {
-    input.style.borderColor = 'var(--red)';
-    input.focus();
+    showAuthError(lang === 'ru' ? 'Введи корректный email' : 'Enter a valid email');
     return;
   }
-  input.style.borderColor = '';
+  if (!password || password.length < 6) {
+    showAuthError(lang === 'ru' ? 'Пароль — минимум 6 символов' : 'Password must be at least 6 characters');
+    return;
+  }
+
+  setLoading(true);
+
+  // Пробуем войти — если пользователь уже есть
+  const { data: signInData, error: signInError } = await FR.auth.signIn(email, password);
+
+  if (!signInError && signInData?.user) {
+    // Успешный вход — существующий пользователь
+    localStorage.setItem('fitorank_user', 'true');
+    localStorage.setItem('fitorank_uid', signInData.user.id);
+    setLoading(false);
+    go('s-success'); // пропускаем DOB для существующих
+    return;
+  }
+
+  // Пользователь не найден — регистрируем
+  const username = email.split('@')[0].replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+  const { data: signUpData, error: signUpError } = await FR.auth.signUp(email, password, username, username);
+
+  setLoading(false);
+
+  if (signUpError) {
+    showAuthError(signUpError.message || (lang === 'ru' ? 'Ошибка регистрации' : 'Registration error'));
+    return;
+  }
+
+  localStorage.setItem('fitorank_user', 'true');
+  localStorage.setItem('fitorank_uid', signUpData?.user?.id || '');
   go('s-dob');
 }
 
@@ -669,9 +727,16 @@ function handleDob(input) {
   btn.disabled = false;
 }
 
-function completeDob() {
+async function completeDob() {
   if (!state.dob) return;
-  localStorage.setItem('fitorank_user', 'true'); // флаг для ленты
+  const uid = localStorage.getItem('fitorank_uid');
+  if (uid) {
+    // Сохраняем дату рождения в профиль
+    await FR.users.updateProfile(uid, {
+      birth_date: state.dob,
+    });
+  }
+  localStorage.setItem('fitorank_user', 'true');
   go('s-success');
 }
 
@@ -692,5 +757,7 @@ lang = detectLang();
 setLang(lang);
 go('s-entry');
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
 </body>
 </html>
