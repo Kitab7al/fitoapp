@@ -755,9 +755,65 @@ function showGate(reason) {
 // ═══════════════════════════════
 lang = detectLang();
 setLang(lang);
-go('s-entry');
+
+// Ждём загрузки Supabase CDN перед стартом
+function initApp() {
+  go('s-entry');
+}
+
+// Если FR уже готов — стартуем сразу, иначе ждём
+if (typeof FR !== 'undefined') {
+  initApp();
+} else {
+  window.addEventListener('fr-ready', initApp);
+}
 </script>
+
+<!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="supabase.js"></script>
+<script>
+// Inline Supabase client (без внешнего файла)
+const SUPABASE_URL  = 'https://hkwmjyvccwewbibjswtx.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhrd21qeXZjY3dld2JpYmpzd3R4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODI0MDIsImV4cCI6MjA4ODg1ODQwMn0.Nh_ICh8dW4707Dq9LNyIMkbUxa478_QLQcGt6yTyzZw';
+
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+window.FR = {
+  auth: {
+    signUp: async (email, password, username, displayName) => {
+      const { data, error } = await _sb.auth.signUp({
+        email, password,
+        options: { data: { username, display_name: displayName } }
+      });
+      if (!error && data.user) {
+        await _sb.from('users').insert({
+          id: data.user.id,
+          username: username.toLowerCase().replace(/[^a-z0-9_]/g, '_'),
+          display_name: displayName,
+          league: 'amateur',
+        });
+      }
+      return { data, error };
+    },
+    signIn: async (email, password) => {
+      return await _sb.auth.signInWithPassword({ email, password });
+    },
+    signOut: async () => await _sb.auth.signOut(),
+    getUser: async () => {
+      const { data: { user } } = await _sb.auth.getUser();
+      return user;
+    },
+  },
+  users: {
+    updateProfile: async (userId, updates) => {
+      return await _sb.from('users').update(updates).eq('id', userId);
+    },
+  },
+};
+
+// Сигнализируем что FR готов
+window.dispatchEvent(new Event('fr-ready'));
+console.log('✅ FitoRank × Supabase ready');
+</script>
 </body>
 </html>
