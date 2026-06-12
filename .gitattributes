@@ -1,0 +1,4 @@
+# GitHub Actions workflows исполняются на Linux — нужны LF-окончания строк,
+# иначе bash-скрипты внутри run: ломаются о символ возврата каретки (\r).
+*.yml  text eol=lf
+*.yaml text eol=lf
