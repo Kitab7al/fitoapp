@@ -159,9 +159,10 @@ async function createRecord(record) {
   const user = await authGetUser();
   if (!user) return { error: { message: 'Не авторизован' } };
 
+  // MVP: автоодобрение — рекорд сразу виден в ленте. Модерация (status:'pending') — позже.
   const { data, error } = await sb()
     .from('records')
-    .insert({ ...record, user_id: user.id, status: 'pending' })
+    .insert({ ...record, user_id: user.id, status: record.status || 'approved' })
     .select()
     .single();
   return { data, error };

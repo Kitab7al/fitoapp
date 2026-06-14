@@ -393,6 +393,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </div>
 
 </div>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
 <script>
 const T={ru:{back:'Назад',s0_tag:'Новый рекорд',s0_title:'ТИП РЕКОРДА',s0_sub:'Выбери формат — от этого зависит расчёт уровня',tc_tag_1rm:'Силовой максимум',tc_name_1rm:'ОДНО ПОВТОРЕНИЕ',tc_desc_1rm:'Максимальный вес в одном повторении. Классический силовой рекорд — жим, приседания, становая.',tc_tag_reps:'Многоповторка',tc_name_reps:'НА ПОВТОРЕНИЯ',tc_desc_reps:'Максимальный вес на заданное количество повторений. Например: 10 × 100 кг на жиме лёжа.',s1_tag_1rm:'1RM — Силовой максимум',s1_tag_reps:'Многоповторный рекорд',s1_title_1rm:'РЕЗУЛЬТАТ',s1_title_reps:'РЕЗУЛЬТАТ',s1_sub:'Выбери упражнение и введи свой результат',ex_label:'Упражнение',ex_ph:'Поиск упражнения...',result_label:'Результат',tab_1rm:'1 Повторение (1RM)',tab_reps:'На повторения',bw_label:'Формат выполнения',bw_only:'Только свой вес',bw_plus:'Свой вес + доп.',bw_ext:'Только доп. вес',weight_label:'Вес отягощения',reps_label:'Количество повторений',reps_custom_label:'Своё:',ath_weight_label:'Вес атлета на дату рекорда',ath_weight_hint:'Вес мог отличаться от текущего — укажи вес в день рекорда',league_label:'Лига',league_pro:'👑 Профессионал',league_amateur:'⚡ Любитель',league_pro_hint:'Официальные нормативы. Для соревновательных атлетов.',league_amateur_hint:'Без ограничений. Для любителей и фитнес-атлетов.',freak_btn:'🎪 Не нашёл упражнение? Добавить своё',freak_ph:'Например: отжимания на пальцах, planche...',freak_hint:'Фрик-упражнение — без нормативов, только в разделе «Цирк силы»',date_label:'Дата рекорда',s1_btn:'Далее — Медиа →',badge_1rm:'1RM',badge_reps:'Рекорд',no_ex:'Упражнение',reps_unit:'пов',rep:'пов',kg:'кг',lbs:'фнт',lv_next:'До следующего: ',lv_peak:'Вершина! 🔝',lv_beg:'Начинающий',lv_beg_d:'Хорошее начало пути',lv_nov:'Новичок',lv_nov_d:'Уверенный старт',lv_int:'Любитель',lv_int_d:'Выше среднего',lv_adv:'Продвинутый',lv_adv_d:'Серьёзный уровень',lv_kms:'КМС',lv_kms_d:'Кандидат в мастера спорта',lv_ms:'Мастер спорта',lv_ms_d:'Элитный атлет',lv_msic:'МСМК',lv_msic_d:'Международный класс',s2_tag:'Шаг 3',s2_title:'МЕДИА',s2_sub:'Видео обязательно — без него рекорд нельзя опубликовать',url_label:'Ссылка на видео',url_ph:'TikTok / Instagram / YouTube...',url_hint:'Вставь ссылку из TikTok, Instagram Reels или YouTube Shorts',lp_ok:'✓ Ссылка распознана',comment_label:'Комментарий (необязательно)',comment_ph:'Контекст рекорда, условия, экипировка...',pub_note:'Рекорд будет опубликован в ленте. Сообщество проголосует: Верю / Не верю.',pub_btn:'Опубликовать рекорд →',video_required_hint:'🎥 Добавь видео — без него публикация недоступна',suc_title:'РЕКОРД ЗАФИКСИРОВАН',suc_sub:'Отправлен на верификацию. Голосование начнётся через несколько минут.',suc_ex:'Упражнение',suc_result:'Результат',suc_feed:'Смотреть ленту →',suc_more:'Добавить ещё один'},en:{back:'Back',s0_tag:'New Record',s0_title:'RECORD TYPE',s0_sub:'Pick the format — it determines how your level is calculated',tc_tag_1rm:'One Rep Max',tc_name_1rm:'ONE REPETITION',tc_desc_1rm:'Maximum weight for a single rep. The classic strength record — bench, squat, deadlift.',tc_tag_reps:'Rep Record',tc_name_reps:'FOR REPS',tc_desc_reps:'Maximum weight for a given number of reps. For example: 10 × 225 lbs on bench press.',s1_tag_1rm:'1RM — One Rep Max',s1_tag_reps:'Rep Record',s1_title_1rm:'RESULT',s1_title_reps:'RESULT',s1_sub:'Choose an exercise and enter your result',ex_label:'Exercise',ex_ph:'Search exercise...',result_label:'Result',tab_1rm:'1 Rep Max (1RM)',tab_reps:'For Reps',bw_label:'Format',bw_only:'Bodyweight only',bw_plus:'Bodyweight + extra',bw_ext:'Extra weight only',weight_label:'Load weight',reps_label:'Number of reps',reps_custom_label:'Custom:',ath_weight_label:'Athlete weight on record date',ath_weight_hint:'Weight may differ from current — enter your weight on the day of the record',league_label:'League',league_pro:'👑 Professional',league_amateur:'⚡ Amateur',league_pro_hint:'Official standards. For competitive athletes.',league_amateur_hint:'No restrictions. For fitness and recreational athletes.',freak_btn:"🎪 Can't find your exercise? Add custom",freak_ph:'E.g.: fingertip push-ups, planche...',freak_hint:"Freak exercise — no standards, appears in 'Circus of Strength' section only",date_label:'Date',s1_btn:'Next — Media →',badge_1rm:'1RM',badge_reps:'Record',no_ex:'Exercise',reps_unit:'reps',rep:'rep',kg:'kg',lbs:'lbs',lv_next:'To next level: ',lv_peak:"You're at the top! 🔝",lv_beg:'Beginner',lv_beg_d:'A great start',lv_nov:'Novice',lv_nov_d:'Solid foundation',lv_int:'Intermediate',lv_int_d:'Above average',lv_adv:'Advanced',lv_adv_d:'Serious athlete',lv_kms:'Near-Elite',lv_kms_d:'Candidate Master',lv_ms:'Master',lv_ms_d:'Elite athlete',lv_msic:'International',lv_msic_d:'World class',s2_tag:'Step 3',s2_title:'MEDIA',s2_sub:'Video is required — records without proof cannot be published',url_label:'Video link',url_ph:'TikTok / Instagram / YouTube...',url_hint:'Paste a link from TikTok, Instagram Reels or YouTube Shorts',lp_ok:'✓ Link recognized',comment_label:'Comment (optional)',comment_ph:'Context, conditions, equipment...',pub_note:"The record will be published in the feed. The community votes: Believe / Don't Believe.",pub_btn:'Publish Record →',video_required_hint:'🎥 Add a video link — required to publish',suc_title:'RECORD SAVED',suc_sub:'Submitted for community verification. Voting starts in a few minutes.',suc_ex:'Exercise',suc_result:'Result',suc_feed:'View Feed →',suc_more:'Add Another'}};
 const EXERCISES=[{id:'bench',name:{ru:'Жим лёжа',en:'Bench Press'},cat:{ru:'Грудь',en:'Chest'},bw:false,emoji:'🏋️'},{id:'squat',name:{ru:'Приседания со штангой',en:'Barbell Squat'},cat:{ru:'Ноги',en:'Legs'},bw:false,emoji:'🦵'},{id:'deadlift',name:{ru:'Становая тяга',en:'Deadlift'},cat:{ru:'Спина',en:'Back'},bw:false,emoji:'⚡'},{id:'ohp',name:{ru:'Жим стоя',en:'Overhead Press'},cat:{ru:'Плечи',en:'Shoulders'},bw:false,emoji:'🔝'},{id:'pullup',name:{ru:'Подтягивания',en:'Pull-ups'},cat:{ru:'Спина',en:'Back'},bw:true,emoji:'🔗'},{id:'dip',name:{ru:'Отжимания на брусьях',en:'Dips'},cat:{ru:'Грудь/Трицепс',en:'Chest/Tri'},bw:true,emoji:'🔃'},{id:'pushup',name:{ru:'Отжимания от пола',en:'Push-ups'},cat:{ru:'Грудь',en:'Chest'},bw:true,emoji:'💪'},{id:'row',name:{ru:'Тяга штанги в наклоне',en:'Barbell Row'},cat:{ru:'Спина',en:'Back'},bw:false,emoji:'🔄'},{id:'curl',name:{ru:'Сгибания на бицепс',en:'Bicep Curl'},cat:{ru:'Бицепс',en:'Biceps'},bw:false,emoji:'💪'},{id:'rdl',name:{ru:'Румынская тяга',en:'Romanian Deadlift'},cat:{ru:'Ноги/Спина',en:'Legs/Back'},bw:false,emoji:'🏋️'},{id:'incbench',name:{ru:'Жим на наклонной',en:'Incline Bench'},cat:{ru:'Грудь',en:'Chest'},bw:false,emoji:'📐'},{id:'legpress',name:{ru:'Жим ногами',en:'Leg Press'},cat:{ru:'Ноги',en:'Legs'},bw:false,emoji:'🦵'},{id:'frontpr',name:{ru:'Фронтальные приседания',en:'Front Squat'},cat:{ru:'Ноги',en:'Legs'},bw:false,emoji:'🔆'},{id:'trappull',name:{ru:'Трэп-становая',en:'Trap Bar Deadlift'},cat:{ru:'Ноги/Спина',en:'Legs/Back'},bw:false,emoji:'🔷'},{id:'lsit',name:{ru:'Уголок в висе',en:'L-sit Hold'},cat:{ru:'Кор',en:'Core'},bw:true,emoji:'📐'}];
@@ -436,11 +439,91 @@ function checkStep1(){const hasEx=isFreak?(freakName.length>0):!!selectedEx;cons
 function handleUrl(val){val=val.trim();const preview=document.getElementById('linkPreview');const icon=document.getElementById('urlIcon');if(val.includes('tiktok.com')){icon.textContent='🎵';document.getElementById('lpPlatform').textContent='TikTok';document.getElementById('lpThumb').textContent='▶';document.getElementById('lpTitle').textContent=lang==='ru'?'Видео из TikTok':'TikTok video';document.getElementById('lpHandle').textContent=extractHandle(val);preview.classList.add('show');}else if(val.includes('instagram.com')||val.includes('instagr.am')){icon.textContent='📸';document.getElementById('lpPlatform').textContent='Instagram';document.getElementById('lpThumb').textContent=val.includes('/reel')?'▶':'📷';document.getElementById('lpTitle').textContent=lang==='ru'?'Публикация из Instagram':'Instagram post';document.getElementById('lpHandle').textContent=extractHandle(val);preview.classList.add('show');}else if(val.includes('youtube.com')||val.includes('youtu.be')){icon.textContent='▶';document.getElementById('lpPlatform').textContent='YouTube';document.getElementById('lpThumb').textContent='▶';document.getElementById('lpTitle').textContent=lang==='ru'?'Видео YouTube':'YouTube video';document.getElementById('lpHandle').textContent='';preview.classList.add('show');}else{icon.textContent='🔗';preview.classList.remove('show');}checkVideo();}
 function extractHandle(url){try{const p=new URL(url).pathname.split('/').filter(Boolean);if(p[0])return '@'+p[0].replace('@','');}catch(e){}return '';}
 function checkVideo(){const url=document.getElementById('urlInput').value.trim();const hasVideo=url.includes('tiktok.com')||url.includes('instagram.com')||url.includes('instagr.am')||url.includes('youtube.com')||url.includes('youtu.be');const btn=document.getElementById('pubBtn');const hint=document.getElementById('videoRequiredHint');btn.disabled=!hasVideo;hint.classList.toggle('error',!hasVideo&&url.length>0);return hasVideo;}
-function publish(){if(!checkVideo())return;const t=T[lang];const w=document.getElementById('weightInput').value;const bwOnly=selectedEx&&selectedEx.bw&&bwMode==='bw';const exName=isFreak?('🎪 '+freakName):(selectedEx?selectedEx.name[lang]:'—');document.getElementById('scEx').textContent=exName;document.getElementById('scW').textContent=bwOnly?(reps+' '+(reps===1?t.rep:t.reps_unit)):(w+' '+(unit==='lbs'?t.lbs:t.kg));document.getElementById('scMeta').textContent=formatDate(document.getElementById('dateInput').value);go('s-success');}
+async function publish(){
+  if(!checkVideo())return;
+  const t=T[lang];
+  const btn=document.getElementById('pubBtn');
+  const prevTxt=btn.textContent;
+  btn.disabled=true; btn.textContent='...';
+
+  // 1) Определяем exercise_id из базы
+  let exerciseId=null;
+  if(isFreak){
+    const {data,error}=await FR.exercises.createFreak(freakName,freakName);
+    if(error||!data){btn.disabled=false;btn.textContent=prevTxt;return showPubError(error);}
+    exerciseId=data.id;
+  } else {
+    if(!Object.keys(exMap).length) await loadExercises();
+    exerciseId=exMap[selectedEx.name.ru];
+    if(!exerciseId){btn.disabled=false;btn.textContent=prevTxt;return showPubError({message:lang==='ru'?'Упражнение не найдено в базе':'Exercise not found'});}
+  }
+
+  // 2) Собираем рекорд
+  const url=document.getElementById('urlInput').value.trim();
+  const bwOnly=selectedEx&&selectedEx.bw&&bwMode==='bw';
+  const wRaw=parseFloat(document.getElementById('weightInput').value);
+  const weightKg=bwOnly?null:(unit==='lbs'?Math.round(wRaw*0.453592*100)/100:wRaw);
+  const awRaw=parseFloat(document.getElementById('athWeightInput').value);
+  const athleteKg=Math.round((athUnit==='lbs'?awRaw*0.453592:awRaw)*10)/10;
+  const repsVal=subType==='reps'?reps:1;
+  let est=null;
+  if(weightKg){est=subType==='reps'?Math.round(weightKg*(1+repsVal/30)*100)/100:weightKg;}
+  let bwModeDb=null;
+  if(selectedEx&&selectedEx.bw){bwModeDb=bwMode==='bw'?'bw':(bwMode==='bw+ext'?'bw+extra':'extra');}
+  const platform=(window.FR&&FR.utils&&FR.utils.getVideoPlatform)?FR.utils.getVideoPlatform(url):null;
+
+  const record={
+    exercise_id:exerciseId,
+    record_type:subType,
+    weight_kg:weightKg,
+    reps:repsVal,
+    bw_mode:bwModeDb,
+    athlete_weight_kg:athleteKg,
+    league:league,
+    unit:unit,
+    record_date:document.getElementById('dateInput').value,
+    video_url:url,
+    video_platform:platform,
+    comment:document.getElementById('commentInput').value.trim()||null,
+    estimated_1rm:est
+  };
+
+  // 3) Сохраняем
+  const {data,error}=await FR.records.createRecord(record);
+  btn.disabled=false; btn.textContent=prevTxt;
+  if(error){
+    const m=(error.message||'');
+    if(m.includes('Не авторизован')||m.toLowerCase().includes('jwt')||m.toLowerCase().includes('auth')){
+      alert(lang==='ru'?'Нужно войти в аккаунт':'Please sign in');
+      window.location.href='fitorank-onboarding-mobile.html';
+      return;
+    }
+    return showPubError(error);
+  }
+
+  // 4) Успех
+  const w=document.getElementById('weightInput').value;
+  const exName=isFreak?('🎪 '+freakName):(selectedEx?selectedEx.name[lang]:'—');
+  document.getElementById('scEx').textContent=exName;
+  document.getElementById('scW').textContent=bwOnly?(reps+' '+(reps===1?t.rep:t.reps_unit)):(w+' '+(unit==='lbs'?t.lbs:t.kg));
+  document.getElementById('scMeta').textContent=formatDate(document.getElementById('dateInput').value);
+  go('s-success');
+}
+function showPubError(error){alert((lang==='ru'?'Ошибка сохранения: ':'Save error: ')+((error&&error.message)||'unknown'));}
 function addAnother(){resetForm();go('s-step0');}
 function resetForm(){selectedEx=null;isFreak=false;freakName='';league='pro';document.getElementById('exInput').value='';document.getElementById('exSelected').classList.remove('show');document.getElementById('bwToggle').classList.remove('show');document.getElementById('weightInput').value='';document.getElementById('athWeightInput').value='';document.getElementById('weightField').style.display='';document.getElementById('repsInput').value='';document.getElementById('repsCustomRow').classList.remove('show');document.getElementById('urlInput').value='';document.getElementById('commentInput').value='';document.getElementById('charCount').textContent='0';document.getElementById('linkPreview').classList.remove('show');document.getElementById('levelBadge').classList.remove('show');document.getElementById('pcMedia').textContent='🏋️';document.getElementById('pcMedia2').textContent='🏋️';document.getElementById('freakBtn').classList.remove('active');document.getElementById('freakWrap').style.display='none';document.getElementById('freakInput').value='';document.querySelector('.ex-search-wrap').style.display='';setLeague('pro');recordType='1rm';subType='1rm';bwMode='bw';reps=10;customRep=false;updateRmTabs();updateRepsSection();updatePreview();checkStep1();checkVideo();}
 const today=new Date();const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');document.getElementById('dateInput').value=todayStr;document.getElementById('dateInput').max=todayStr;
 setLang(lang);setLeague('pro');checkVideo();go('s-step0');
+
+// ===== Supabase: справочник упражнений (имя_ru -> uuid) =====
+let exMap={};
+async function loadExercises(){
+  try{
+    const {data}=await FR.exercises.getAll();
+    if(data){data.forEach(e=>{exMap[e.name_ru]=e.id;});}
+  }catch(e){console.error('exercises load error',e);}
+}
+loadExercises();
 </script>
 </body>
 </html>

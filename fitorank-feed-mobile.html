@@ -330,7 +330,7 @@ body::before {
 </div>
 
 <!-- FEED -->
-<main class="feed">
+<main class="feed" id="feedList">
 
   <article class="card">
     <div class="card-media">
@@ -633,6 +633,9 @@ body::before {
   </button>
 </nav>
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
 <script>
 const T = {
   ru: {
@@ -752,6 +755,7 @@ function setSort(el) {
 // ВЕРЮ / НЕ ВЕРЮ
 function handleBelieve(btn) {
   if (!isLoggedIn) { showPopup('vote'); return; }
+  dbVote(btn, 'believe');
   const actions = btn.closest('.card-actions');
   const notBtn = actions.querySelector('.btn-notbelieve');
   const pctEl  = actions.querySelector('.vote-pct');
@@ -774,6 +778,7 @@ function handleBelieve(btn) {
 
 function handleNotBelieve(btn) {
   if (!isLoggedIn) { showPopup('vote'); return; }
+  dbVote(btn, 'notbelieve');
   const actions = btn.closest('.card-actions');
   const belBtn  = actions.querySelector('.btn-believe');
   const pctEl   = actions.querySelector('.vote-pct');
@@ -797,6 +802,7 @@ function handleNotBelieve(btn) {
 function handleNatural(btn) {
   if (!isLoggedIn) { showPopup('vote'); return; }
   if (btn.disabled) return;
+  dbVote(btn, 'natural');
   const row = btn.closest('.natural-row');
   const pharma = row.querySelector('.btn-pharma');
   btn.classList.toggle('voted');
@@ -806,6 +812,7 @@ function handleNatural(btn) {
 function handlePharma(btn) {
   if (!isLoggedIn) { showPopup('vote'); return; }
   if (btn.disabled) return;
+  dbVote(btn, 'pharma');
   const row = btn.closest('.natural-row');
   const natural = row.querySelector('.btn-natural');
   btn.classList.toggle('voted');
@@ -848,7 +855,10 @@ function handleShare() {
 
 // NAV AUTH GUARD
 function requireAuth(ctx) {
-  if (!isLoggedIn) showPopup(ctx);
+  if (!isLoggedIn) { showPopup(ctx); return; }
+  if (ctx === 'record')  window.location.href = 'fitorank-add-record-mobile.html';
+  else if (ctx === 'profile') window.location.href = 'fitorank-profile-mobile.html';
+  // search / more — экраны пока не готовы
 }
 
 // POPUP
@@ -881,9 +891,121 @@ function goOnboarding() {
   window.location.href = 'fitorank-onboarding-mobile.html';
 }
 
+// ===== SUPABASE: голосование =====
+function dbVote(btn, type) {
+  const card = btn.closest('.card');
+  const id = card && card.dataset.id;
+  if (id && window.FR && FR.votes) FR.votes.vote(id, type).catch(e => console.error('vote', e));
+}
+
+// ===== Хелперы рендера =====
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function initials(name){return (String(name||'?').trim().split(/\s+/).map(w=>w[0]||'').slice(0,2).join('')||'?').toUpperCase();}
+function fmtDate(iso){if(!iso)return '';const p=String(iso).split('-');return p.length===3?(p[2]+'.'+p[1]+'.'+p[0]):iso;}
+function trimNum(n){return Number(n);}
+
+function renderCard(rec){
+  const t=T[lang], u=rec.users||{}, ex=rec.exercises||{};
+  const exName = lang==='ru' ? (ex.name_ru||'') : (ex.name_en||ex.name_ru||'');
+  const cat = lang==='ru' ? (ex.category_ru||'') : (ex.category_en||ex.category_ru||'');
+  // результат
+  let bigNum, unitLabel;
+  if (rec.weight_kg==null){ bigNum = rec.reps||0; unitLabel=''; }
+  else if (rec.unit==='lbs'){ bigNum = Math.round((+rec.weight_kg)/0.453592); unitLabel=' lbs'; }
+  else { bigNum = trimNum(rec.weight_kg); unitLabel=' '+t.kg; }
+  const repsStr = rec.record_type==='reps'
+    ? (rec.reps+' '+((rec.reps==1)?t.rep:t.reps))
+    : ('1 '+t.rep);
+  const pct = (window.FR&&FR.utils)?FR.utils.getBelievePct(rec.believe_count||0, rec.notbelieve_count||0):null;
+  const pctTxt = (pct==null)?'—':(pct+'%');
+  const pctW = (pct==null)?0:pct;
+  const hasVideo = !!rec.video_url;
+  return `<article class="card" data-id="${esc(rec.id)}">
+    <div class="card-media" data-video="${esc(rec.video_url||'')}" data-platform="${esc(rec.video_platform||'')}" ${hasVideo?'onclick="playVideo(this)"':''} style="${hasVideo?'cursor:pointer;':''}">
+      <div class="card-media-placeholder">
+        <svg width="100%" height="100%" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g${esc(rec.id)}" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#e8260b" stop-opacity=".16"/><stop offset="100%" stop-color="#080808"/></radialGradient></defs>
+          <rect fill="url(#g${esc(rec.id)})" width="400" height="500"/>
+          <text x="200" y="290" font-family="Bebas Neue,sans-serif" font-size="130" fill="rgba(255,255,255,.06)" text-anchor="middle">${esc(bigNum)}</text>
+        </svg>
+      </div>
+      ${cat?`<div class="badge-cat">${esc(cat)}</div>`:''}
+      ${hasVideo?'<div class="play-icon"><div class="play-circle"></div></div>':''}
+    </div>
+    <div class="card-body">
+      <div class="card-athlete">
+        <div class="athlete-avatar" style="background:#1f1508;color:var(--gold);">${esc(initials(u.display_name||u.username))}</div>
+        <div><div class="athlete-name">${esc(u.display_name||u.username||'—')}</div><div class="athlete-meta">${esc(u.league||'')}</div></div>
+      </div>
+      <div class="card-record">
+        <div>
+          <div class="record-exercise">${esc(exName)}</div>
+          <div class="record-weight">${esc(bigNum)}<span class="unit">${esc(unitLabel)}</span></div>
+          <div class="record-reps">${esc(repsStr)} · ${esc(fmtDate(rec.record_date))}</div>
+        </div>
+        <div class="record-verify"><div class="verify-score">${pctTxt}</div><div class="verify-label">${esc(t.trust)}</div></div>
+      </div>
+      <div class="card-actions">
+        <div class="vote-row">
+          <button class="btn-believe" onclick="handleBelieve(this)">${esc(t.believe)}</button>
+          <div class="vote-pct-wrap">
+            <div class="vote-pct${(pct!=null&&pct<50)?' negative':''}">${pctTxt}</div>
+            <div class="vote-bar"><div class="vote-bar-fill" style="width:${pctW}%"></div></div>
+            <div class="vote-pct-label">${esc(t.believe_pct)}</div>
+          </div>
+          <button class="btn-notbelieve" onclick="handleNotBelieve(this)">${esc(t.notbelieve)}</button>
+        </div>
+        <div class="natural-row">
+          <span class="natural-label">${esc(t.natural_q)}</span>
+          <button class="btn-natural" disabled onclick="handleNatural(this)">${esc(t.natural_yes)}</button>
+          <button class="btn-pharma" disabled onclick="handlePharma(this)">${esc(t.natural_pharma)}</button>
+        </div>
+        <div class="action-row">
+          <button class="action-btn" onclick="handleComment(this)"><span class="action-icon">💬</span><span class="action-count">0</span></button>
+          <button class="btn-challenge" onclick="handleChallenge(this)"><span class="challenge-icon">⚔️</span><span class="challenge-label">${esc(t.challenge)}</span></button>
+          <button class="action-btn" onclick="handleShare()"><span class="action-icon">↗</span><span class="action-count">${esc(t.share)}</span></button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+// ===== Встроенный плеер видео =====
+function ytId(u){const m=String(u).match(/(?:youtu\.be\/|[?&]v=|shorts\/|embed\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:null;}
+function ttId(u){const m=String(u).match(/\/video\/(\d+)/)||String(u).match(/[?&]item_id=(\d+)/);return m?m[1]:null;}
+function playVideo(el){
+  const url=el.getAttribute('data-video'), platform=el.getAttribute('data-platform');
+  if(!url) return;
+  let embed='';
+  const ifr=src=>`<iframe src="${src}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;border:0;"></iframe>`;
+  if(platform==='youtube'){const id=ytId(url);if(id)embed=ifr('https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1');}
+  else if(platform==='tiktok'){const id=ttId(url);if(id)embed=ifr('https://www.tiktok.com/player/v1/'+id+'?autoplay=1');}
+  if(embed){el.innerHTML=embed;el.onclick=null;el.style.cursor='default';}
+  else{window.open(url,'_blank','noopener');}  // Instagram / короткие ссылки — открываем на платформе
+}
+
+// ===== Загрузка ленты =====
+async function loadFeed(){
+  const list=document.getElementById('feedList');
+  list.innerHTML='<div class="load-more">'+T[lang].loading+'</div>';
+  try{
+    const {data,error}=await FR.records.getFeed({sort:'new',limit:20});
+    if(error) throw error;
+    if(!data||!data.length){
+      list.innerHTML='<div class="load-more">'+(lang==='ru'?'Пока нет рекордов. Добавь первый!':'No records yet. Add the first one!')+'</div>';
+      return;
+    }
+    list.innerHTML=data.map(renderCard).join('');
+  }catch(e){
+    console.error('feed load error',e);
+    list.innerHTML='<div class="load-more">'+(lang==='ru'?'Не удалось загрузить ленту':'Failed to load feed')+'</div>';
+  }
+}
+
 // INIT
 setLang(lang);
 applyAuthState();
+loadFeed();
 </script>
 </body>
 </html>
